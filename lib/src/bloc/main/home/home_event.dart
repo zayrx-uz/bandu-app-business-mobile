@@ -1,0 +1,206 @@
+part of 'home_bloc.dart';
+
+class HomeEvent extends Equatable {
+  @override
+  // TODO: implement props
+  List<Object?> get props => throw UnimplementedError();
+}
+
+class GetCompanyEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class GetCategoryEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class GetCompanyWithFilterEvent extends HomeEvent {
+  final int page;
+  final int? categoryId;
+  final String? search;
+
+  GetCompanyWithFilterEvent({
+    required this.page,
+    required this.categoryId,
+    this.search,
+  });
+
+  @override
+  List<Object?> get props => [page, categoryId, search];
+}
+
+class CompanyDetailChangeOpacityEvent extends HomeEvent {
+  final double opacity;
+
+  CompanyDetailChangeOpacityEvent({required this.opacity});
+
+  @override
+  List<Object?> get props => [opacity];
+}
+
+class GetCompanyDetailEvent extends HomeEvent {
+  final int companyId;
+
+  GetCompanyDetailEvent({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
+class ResourceCategoryChangeEvent extends HomeEvent {
+  final int categoryId;
+
+  ResourceCategoryChangeEvent({required this.categoryId});
+
+  @override
+  List<Object?> get props => [categoryId];
+}
+
+class GetMonitoringEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class GetMeEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class GetImageEvent extends HomeEvent {
+  final bool isSelfie;
+
+  GetImageEvent({required this.isSelfie});
+
+  @override
+  List<Object?> get props => [isSelfie];
+}
+
+class UserUpdateEvent extends HomeEvent {
+  final UserUpdateModel data;
+
+  UserUpdateEvent({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetPlaceEvent extends HomeEvent {
+  final int companyId;
+
+  GetPlaceEvent({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
+class BookingEvent extends HomeEvent {
+  final BookingSendModel data;
+
+  BookingEvent({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetPlaceBusinessEvent extends HomeEvent {
+  final int companyId;
+
+  GetPlaceBusinessEvent({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
+class SetPlaceEvent extends HomeEvent {
+  final String name;
+  final int number;
+
+  SetPlaceEvent({required this.name, required this.number});
+
+  @override
+  List<Object?> get props => [name, number];
+}
+
+class GetStatisticEvent extends HomeEvent {
+  final DateTime date;
+  final String period;
+
+  GetStatisticEvent({required this.date, required this.period});
+
+  @override
+  List<Object?> get props => [date, period];
+}
+
+class GetEmployeeEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class SaveCompanyEvent extends HomeEvent {
+  final CreateCompanyModel data;
+
+  SaveCompanyEvent({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class SaveEmployeeEvent extends HomeEvent {
+  final String name;
+  final String phone;
+  final String password;
+  final String role;
+
+  SaveEmployeeEvent({
+    required this.name,
+    required this.phone,
+    required this.password,
+    required this.role,
+  });
+
+  @override
+  List<Object?> get props => [name, phone, password, role];
+}
+
+class GetQrCodeEvent extends HomeEvent {
+  final String url;
+
+  GetQrCodeEvent({required this.url});
+
+  @override
+  List<Object?> get props => [url];
+}
+
+class GetQrBookCodeEvent extends HomeEvent {
+  final String url;
+
+  GetQrBookCodeEvent({required this.url});
+
+  @override
+  List<Object?> get props => [url];
+}
+
+class ConfirmBookEvent extends HomeEvent {
+  final int bookId;
+
+  ConfirmBookEvent({required this.bookId});
+
+  @override
+  List<Object?> get props => [bookId];
+}
+
+class GetResourceCategoryEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class ResourceSearchEvent extends HomeEvent {
+  final String search;
+
+  ResourceSearchEvent({required this.search});
+
+  @override
+  List<Object?> get props => [search];
+}

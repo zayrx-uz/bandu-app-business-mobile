@@ -1,0 +1,135 @@
+import 'package:bandu_business/src/helper/helper_functions.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
+import 'package:bandu_business/src/model/api/auth/login_model.dart';
+import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
+import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
+import 'package:bandu_business/src/ui/main/main_screen.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+
+part 'auth_event.dart';
+
+part 'auth_state.dart';
+
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  AuthRepository authRepository;
+
+  AuthBloc({required this.authRepository}) : super(AuthInitial()) {
+    ///splash change event
+    on<SplashChangeEvent>(_splashChange);
+
+    ///get image event
+    on<GetImageEvent>(_getImage);
+
+    ///login event
+    on<LoginEvent>(_login);
+
+    ///register event
+    on<RegisterEvent>(_register);
+
+    ///otp event
+    on<OtpEvent>(_otp);
+  }
+
+  void _splashChange(SplashChangeEvent event, Emitter<AuthState> emit) async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (CacheService.getToken() != '') {
+      if (HelperFunctions.getCompanyId() == -1) {
+        emit(SplashChangeState(page: SelectCompanyScreen()));
+      } else {
+        emit(SplashChangeState(page: MainScreen()));
+      }
+    } else {
+      emit(SplashChangeState(page: OnboardScreen()));
+    }
+  }
+
+  void _getImage(GetImageEvent event, Emitter<AuthState> emit) async {
+    final pick = ImagePicker();
+    try {
+      if (event.isSelfie) {
+        final img = await pick.pickImage(source: ImageSource.camera);
+        if (img != null) {
+          emit(GetImageSuccessState(img: img));
+        }
+      } else {
+        final img = await pick.pickImage(source: ImageSource.gallery);
+        if (img != null) {
+          emit(GetImageSuccessState(img: img));
+        }
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+  void _login(LoginEvent event, Emitter<AuthState> emit) async {
+    emit(LoginLoadingState());
+    try {
+      final result = await authRepository.login(
+        phone: event.phone,
+        password: event.password,
+        role: event.role
+      );
+      if (result.isSuccess) {
+        LoginModel data = LoginModel.fromJson(result.result);
+        HelperFunctions.saveLoginData(data);
+        emit(LoginSuccessState());
+      } else {
+        emit(AuthErrorState(message: result.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+  void _register(RegisterEvent event, Emitter<AuthState> emit) async {
+    emit(RegisterLoadingState());
+    try {
+      final imgResult = await authRepository.uploadImage(filePath: event.img);
+
+      if (imgResult.isSuccess) {
+        final result = await authRepository.register(
+          phone: event.phone,
+          fullName: event.fullName,
+          password: event.password,
+          img: imgResult.result['data']['data']['url'],
+          role: event.role,
+        );
+        if (result.isSuccess) {
+          emit(
+            RegisterSuccessState(otpToken: result.result["data"]['otpToken']),
+          );
+        } else {
+          emit(AuthErrorState(message: result.result['message']));
+        }
+      } else {
+        emit(AuthErrorState(message: imgResult.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+  void _otp(OtpEvent event, Emitter<AuthState> emit) async {
+    emit(OtpLoadingState());
+    try {
+      final result = await authRepository.otp(
+        otpToken: event.otpToken,
+        code: event.code,
+      );
+      if (result.isSuccess) {
+        LoginModel data = LoginModel.fromJson(result.result);
+        HelperFunctions.saveLoginData(data);
+        emit(OtpSuccessState());
+      } else {
+        emit(AuthErrorState(message: result.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+}
