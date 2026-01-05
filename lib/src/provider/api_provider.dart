@@ -29,6 +29,8 @@ class ApiProvider {
           .post(Uri.parse(url), headers: headers, body: json.encode(body))
           .timeout(_timeout);
 
+
+
       return _result(response);
     } on TimeoutException catch (_) {
       return _networkError();
@@ -138,6 +140,13 @@ class ApiProvider {
         isSuccess: true,
         status: status,
         result: json.decode(body),
+      );
+    }
+    if (status <= 500) {
+      return HttpResult(
+        isSuccess: false,
+        status: 500,
+        result: "Server xatoligi",
       );
     }
 
