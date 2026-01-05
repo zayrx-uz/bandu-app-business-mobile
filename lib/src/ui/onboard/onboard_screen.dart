@@ -28,8 +28,9 @@ class _OnboardScreenState extends State<OnboardScreen> {
           children: [
             Image.asset(
               AppImages.onb,
-              height: 358.h,
+              height: 378.h,
               width: MediaQuery.of(context).size.width,
+              fit : BoxFit.cover
             ),
             SizedBox(height: 12.h),
             Text("Exclusive Services", style: AppTextStyle.f600s24),

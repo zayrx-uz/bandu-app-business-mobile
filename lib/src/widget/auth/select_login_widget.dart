@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/device_helper/device_helper.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -24,7 +25,10 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool tablet = DeviceHelper.isTablet(context);
+
     return Container(
+
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -68,8 +72,9 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
               }),
             ],
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 10.h),
           AppButton(
+            width: double.infinity,
             onTap: () {
               if (index != -1) {
                 Navigator.pop(context);
@@ -142,10 +147,10 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
                 ],
               ),
               SizedBox(height: 8.h),
-              Text(text, style: AppTextStyle.f500s16),
+              Text(text, style: DeviceHelper.isTablet(context) ? AppTextStyle.f500s12 : AppTextStyle.f500s16),
               Text(
                 "Secondary Text",
-                style: AppTextStyle.f500s14.copyWith(color: AppColor.grey77),
+                style: DeviceHelper.isTablet(context) ? AppTextStyle.f500s10.copyWith(color: AppColor.grey77) : AppTextStyle.f500s14.copyWith(color: AppColor.grey77),
               ),
             ],
           ),

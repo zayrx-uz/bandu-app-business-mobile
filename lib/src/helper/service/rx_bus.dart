@@ -48,7 +48,6 @@ class RxBus {
   static Stream<T> register<T>({required String tag}) {
     Bus _eventBus;
     if (_list.isNotEmpty) {
-      // ignore: avoid_function_literals_in_foreach_calls
       _list.forEach((bus) {
         if (bus.tag == tag) {
           _eventBus = bus;
