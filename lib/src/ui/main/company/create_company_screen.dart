@@ -12,7 +12,9 @@ import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:bandu_business/src/widget/auth/set_image_widget.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:bandu_business/src/widget/main/create_company/open24.dart';
 import 'package:bandu_business/src/widget/main/create_company/select_category_widget.dart';
+import 'package:bandu_business/src/widget/main/create_company/week_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,24 +33,19 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   int selectedCategoryId = -1;
   bool isOpen24 = false;
   List<int> resourceCategoryIds = [];
-  var workingHours = WorkingHours(
-    monday: Day(open: "09:00", close: "18:00", closed: false),
-    tuesday: Day(open: "09:00", close: "18:00", closed: false),
-    wednesday: Day(open: "09:00", close: "18:00", closed: false),
-    thursday: Day(open: "09:00", close: "18:00", closed: false),
-    friday: Day(open: "09:00", close: "18:00", closed: false),
-    saturday: Day(open: "09:00", close: "18:00", closed: false),
-    sunday: Day(open: "09:00", close: "18:00", closed: false),
-  );
+
   List<CategoryData>? categoryData;
   double? selectedLat;
   double? selectedLon;
   String selectedAddress = "";
   XFile? img;
 
+  Map<String, dynamic> day = {};
+
   // Preview map controller
   YandexMapController? _previewController;
   List<MapObject> previewMarkers = [];
+  bool open24 = false;
 
   @override
   void initState() {
@@ -98,7 +95,11 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TopBarWidget(isAppName: false, text: "Create Company"),
+              TopBarWidget(
+                isAppName: false,
+                text: "Create Company",
+                isBack: true,
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -120,6 +121,20 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                           },
                           item: categoryData!,
                         ),
+                      SizedBox(height: 20.h),
+                      Open24Item(
+                        onChange: (v) {
+                          open24 = v;
+                          setState(() {});
+                        },
+                      ),
+                      SizedBox(height: 20.h),
+                      if(!open24)WeekItem(
+                        onChange: (v) {
+                          day = v;
+                          setState(() {});
+                        },
+                      ),
                       SizedBox(height: 12.h),
                       SizedBox(height: 20.h),
                       _buildMapPreview(),
@@ -149,8 +164,44 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                     ),
                     categoryIds: [selectedCategoryId],
                     resourceCategoryIds: resourceCategoryIds,
-                    isOpen247: isOpen24,
-                    workingHours: workingHours,
+                    isOpen247: open24,
+                    workingHours: open24 ? null : WorkingHours(
+                      monday: Day(
+                        open: day["monday"]["open"] ,
+                        close: day["monday"]["close"] ,
+                        closed: day["monday"]["closed"] ?? false,
+                      ),
+                      tuesday: Day(
+                        open: day["tuesday"]["open"],
+                        close: day["tuesday"]["close"],
+                        closed: day["tuesday"]["closed"] ?? false,
+                      ),
+                      wednesday: Day(
+                        open: day["wednesday"]["open"],
+                        close: day["wednesday"]["close"],
+                        closed: day["wednesday"]["closed"] ?? false,
+                      ),
+                      thursday: Day(
+                        open: day["thursday"]["open"] ,
+                        close: day["thursday"]["close"] ,
+                        closed: day["thursday"]["closed"] ?? false,
+                      ),
+                      friday: Day(
+                        open: day["friday"]["open"] ,
+                        close: day["friday"]["close"] ,
+                        closed: day["friday"]["closed"] ?? false,
+                      ),
+                      saturday: Day(
+                        open: day["saturday"]["open"],
+                        close: day["saturday"]["close"] ,
+                        closed: day["saturday"]["closed"] ?? false,
+                      ),
+                      sunday: Day(
+                        open: day["sunday"]["open"] ,
+                        close: day["sunday"]["close"] ,
+                        closed: day["sunday"]["closed"] ?? false,
+                      ),
+                    ),
                     images: [
                       ImageCreateModel(url: img!.path, index: 1, isMain: true),
                     ],

@@ -13,7 +13,7 @@ class CreateCompanyModel {
   List<int> categoryIds;
   List<int> resourceCategoryIds;
   bool isOpen247;
-  WorkingHours workingHours;
+  WorkingHours? workingHours;
   List<ImageCreateModel> images;
 
   CreateCompanyModel({
@@ -34,7 +34,7 @@ class CreateCompanyModel {
       resourceCategoryIds.map((x) => x),
     ),
     "isOpen247": isOpen247,
-    "workingHours": workingHours.toJson(),
+    "workingHours": workingHours != null ? workingHours!.toJson() : {},
     "images": List<dynamic>.from(images.map((x) => x.toJson())),
   };
 }
