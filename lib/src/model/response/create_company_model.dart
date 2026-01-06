@@ -49,6 +49,29 @@ class UpdateCompanyModel extends CreateCompanyModel {
     super.serviceTypeId,
   });
 
+  @override
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{
+      "name": name,
+      "serviceTypeId": serviceTypeId ?? 1,
+      "location": location.toJson(),
+      "categoryIds": categoryIds.isNotEmpty
+          ? List<dynamic>.from(categoryIds.map((x) => x))
+          : [],
+      "resourceCategoryIds": resourceCategoryIds.isNotEmpty
+          ? List<dynamic>.from(resourceCategoryIds.map((x) => x))
+          : [],
+      "isOpen247": isOpen247,
+      "images": List<dynamic>.from(images.map((x) => x.toJson())),
+    };
+    
+    if (workingHours != null) {
+      json["workingHours"] = workingHours!.toJson();
+    }
+    
+    return json;
+  }
+
   factory UpdateCompanyModel.fromCompanyData(CompanyData data) {
     return UpdateCompanyModel(
       name: data.name,

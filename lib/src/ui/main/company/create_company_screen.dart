@@ -65,6 +65,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
     nameController.text = company.name;
     selectedCategoryId = company.categories.isNotEmpty ? company.categories[0].id : -1;
     open24 = company.isOpen247;
+    isOpen24 = company.isOpen247;
     selectedLat = company.location.latitude;
     selectedLon = company.location.longitude;
     selectedAddress = company.location.address;
@@ -128,16 +129,18 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
           "closed": company.workingHours.friday.closed,
         },
         "saturday": {
-          "open": company.workingHours.saturday.closed ? null : null,
-          "close": company.workingHours.saturday.closed ? null : null,
+          "open": null,
+          "close": null,
           "closed": company.workingHours.saturday.closed,
         },
         "sunday": {
-          "open": company.workingHours.sunday.closed ? null : null,
-          "close": company.workingHours.sunday.closed ? null : null,
+          "open": null,
+          "close": null,
           "closed": company.workingHours.sunday.closed,
         },
       };
+    } else {
+      day = {};
     }
     setState(() {});
   }
@@ -226,6 +229,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                         value: open24,
                         onChange: (v) {
                           open24 = v;
+                          isOpen24 = v;
                           setState(() {});
                         },
                       ),
@@ -258,6 +262,51 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                     );
                     return;
                   }
+                  final List<int> categoryIdsList = selectedCategoryId != -1
+                      ? [selectedCategoryId]
+                      : <int>[];
+                  
+                  create_model.WorkingHours? workingHoursValue;
+                  if (!open24 && day.isNotEmpty) {
+                    workingHoursValue = create_model.WorkingHours(
+                      monday: create_model.Day(
+                        open: day["monday"]?["open"],
+                        close: day["monday"]?["close"],
+                        closed: day["monday"]?["closed"] ?? false,
+                      ),
+                      tuesday: create_model.Day(
+                        open: day["tuesday"]?["open"],
+                        close: day["tuesday"]?["close"],
+                        closed: day["tuesday"]?["closed"] ?? false,
+                      ),
+                      wednesday: create_model.Day(
+                        open: day["wednesday"]?["open"],
+                        close: day["wednesday"]?["close"],
+                        closed: day["wednesday"]?["closed"] ?? false,
+                      ),
+                      thursday: create_model.Day(
+                        open: day["thursday"]?["open"],
+                        close: day["thursday"]?["close"],
+                        closed: day["thursday"]?["closed"] ?? false,
+                      ),
+                      friday: create_model.Day(
+                        open: day["friday"]?["open"],
+                        close: day["friday"]?["close"],
+                        closed: day["friday"]?["closed"] ?? false,
+                      ),
+                      saturday: create_model.Day(
+                        open: day["saturday"]?["open"],
+                        close: day["saturday"]?["close"],
+                        closed: day["saturday"]?["closed"] ?? false,
+                      ),
+                      sunday: create_model.Day(
+                        open: day["sunday"]?["open"],
+                        close: day["sunday"]?["close"],
+                        closed: day["sunday"]?["closed"] ?? false,
+                      ),
+                    );
+                  }
+
                   final updateModel = create_model.UpdateCompanyModel(
                     name: nameController.text,
                     location: create_model.Location(
@@ -265,49 +314,11 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                       latitude: selectedLat!,
                       longitude: selectedLon!,
                     ),
-                    categoryIds: [selectedCategoryId],
+                    categoryIds: categoryIdsList,
                     resourceCategoryIds: resourceCategoryIds,
                     isOpen247: open24,
                     serviceTypeId: 1,
-                    workingHours: open24
-                        ? null
-                        : create_model.WorkingHours(
-                            monday: create_model.Day(
-                              open: day["monday"]?["open"],
-                              close: day["monday"]?["close"],
-                              closed: day["monday"]?["closed"] ?? false,
-                            ),
-                            tuesday: create_model.Day(
-                              open: day["tuesday"]?["open"],
-                              close: day["tuesday"]?["close"],
-                              closed: day["tuesday"]?["closed"] ?? false,
-                            ),
-                            wednesday: create_model.Day(
-                              open: day["wednesday"]?["open"],
-                              close: day["wednesday"]?["close"],
-                              closed: day["wednesday"]?["closed"] ?? false,
-                            ),
-                            thursday: create_model.Day(
-                              open: day["thursday"]?["open"],
-                              close: day["thursday"]?["close"],
-                              closed: day["thursday"]?["closed"] ?? false,
-                            ),
-                            friday: create_model.Day(
-                              open: day["friday"]?["open"],
-                              close: day["friday"]?["close"],
-                              closed: day["friday"]?["closed"] ?? false,
-                            ),
-                            saturday: create_model.Day(
-                              open: day["saturday"]?["open"],
-                              close: day["saturday"]?["close"],
-                              closed: day["saturday"]?["closed"] ?? false,
-                            ),
-                            sunday: create_model.Day(
-                              open: day["sunday"]?["open"],
-                              close: day["sunday"]?["close"],
-                              closed: day["sunday"]?["closed"] ?? false,
-                            ),
-                          ),
+                    workingHours: workingHoursValue,
                     images: img != null
                         ? [
                             create_model.ImageCreateModel(

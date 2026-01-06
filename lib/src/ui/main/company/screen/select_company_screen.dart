@@ -67,7 +67,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
           });
         } else if (state is DeleteCompanySuccessState) {
           deletingId = null;
-          getData();
+          // getData();
         } else if (state is UpdateCompanyLoadingState) {
           updatingId = state.companyId;
           setState(() {});
@@ -80,9 +80,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
           updatingId = null;
           setState(() {});
         }
-        if (state is GetCompanyLoadingState) {
-          data = null;
-          setState(() {});
+        if (state is SaveCompanySuccessState) {
+          getData();
         }
 
       },
@@ -98,7 +97,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                   text: "Select company",
                   isBack: widget.canPop,
                 ),
-                if (data == null || state is GetCompanyLoadingState)
+                if (data == null)
                   const Expanded(
                     child: Center(
                       child: CircularProgressIndicator.adaptive(),
