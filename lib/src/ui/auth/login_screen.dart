@@ -63,11 +63,13 @@ class _LoginScreenState extends State<LoginScreen> {
           listener: (context, state) {
             if (state is LoginSuccessState) {
               Navigator.popUntil(context, (route) => route.isFirst);
-              AppService.replacePage(
+              AppService.changePage(
                 context,
                 BlocProvider(
                   create: (_) => HomeBloc(homeRepository: HomeRepository()),
-                  child: SelectCompanyScreen(),
+                  child: SelectCompanyScreen(
+                    canPop: true,
+                  ),
                 ),
               );
             } else if (state is AuthErrorState) {

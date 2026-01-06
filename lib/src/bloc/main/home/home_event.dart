@@ -123,6 +123,27 @@ class SetPlaceEvent extends HomeEvent {
   List<Object?> get props => [name, number];
 }
 
+
+class UpdatePlaceEvent extends HomeEvent {
+  final int number;
+  final int id;
+
+  UpdatePlaceEvent({required this.number , required this.id});
+
+  @override
+  List<Object?> get props => [ number];
+}
+
+
+class DeletePlaceEvent extends HomeEvent {
+  final int id;
+
+  DeletePlaceEvent({required this.id});
+
+  @override
+  List<Object?> get props => [ id];
+}
+
 class GetStatisticEvent extends HomeEvent {
   final DateTime date;
   final String period;
@@ -145,6 +166,25 @@ class SaveCompanyEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [data];
+}
+
+class UpdateCompanyEvent extends HomeEvent {
+  final int companyId;
+  final UpdateCompanyModel data;
+
+  UpdateCompanyEvent({required this.companyId, required this.data});
+
+  @override
+  List<Object?> get props => [companyId, data];
+}
+
+class DeleteCompanyEvent extends HomeEvent {
+  final int companyId;
+
+  DeleteCompanyEvent({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
 }
 
 class SaveEmployeeEvent extends HomeEvent {

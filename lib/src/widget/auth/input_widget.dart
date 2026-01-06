@@ -46,6 +46,7 @@ class InputWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    cursorColor: Colors.grey,
                     textCapitalization: TextCapitalization.sentences,
                     controller: controller,
                     inputFormatters: format,

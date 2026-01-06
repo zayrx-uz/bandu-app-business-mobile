@@ -124,6 +124,42 @@ class SaveCompanyLoadingState extends HomeState {}
 
 class SaveCompanySuccessState extends HomeState {}
 
+class UpdateCompanyLoadingState extends HomeState {
+  final int companyId;
+
+  UpdateCompanyLoadingState({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
+class UpdateCompanySuccessState extends HomeState {
+  final int companyId;
+
+  UpdateCompanySuccessState({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
+class DeleteCompanyLoadingState extends HomeState {
+  final int companyId;
+
+  DeleteCompanyLoadingState({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
+class DeleteCompanySuccessState extends HomeState {
+  final int companyId;
+
+  DeleteCompanySuccessState({required this.companyId});
+
+  @override
+  List<Object?> get props => [companyId];
+}
+
 class GetPlaceLoadingState extends HomeState {}
 
 class SaveEmployeeLoadingState extends HomeState {}
@@ -176,6 +212,15 @@ class BookingSuccessState extends HomeState {}
 class SetPlaceLoadingState extends HomeState {}
 
 class SetPlaceSuccessState extends HomeState {}
+
+
+class UpdatePlaceLoadingState extends HomeState {}
+
+class UpdatePlaceSuccessState extends HomeState {}
+
+class DeletePlaceLoadingState extends HomeState {}
+
+class DeletePlaceSuccessState extends HomeState {}
 
 class ConfirmBookLoadingState extends HomeState {}
 class ConfirmBookSuccessState extends HomeState {}

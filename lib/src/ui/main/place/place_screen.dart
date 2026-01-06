@@ -1,12 +1,15 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/model/api/main/place/place_business_model.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/place/screen/add_place_screen.dart';
+import 'package:bandu_business/src/ui/main/place/screen/edit_people_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
+import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +36,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
   void getData() {
     BlocProvider.of<HomeBloc>(
       context,
-    ).add(GetPlaceBusinessEvent(companyId: HelperFunctions.getCompanyId()));
+    ).add(GetPlaceBusinessEvent(companyId: HelperFunctions.getCompanyId() ?? 0));
   }
 
   @override
@@ -77,12 +80,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
               else
                 Expanded(
                   child: Center(
-                    child: Text(
-                      "No places available. Please add a place.",
-                      style: AppTextStyle.f400s16.copyWith(
-                        color: AppColor.greyA7,
-                      ),
-                    ),
+                    child : EmptyWidget(text: "No places available. Please add a place" , icon: AppIcons.chair,)
                   ),
                 ),
             ],
@@ -122,7 +120,22 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
   Widget item(PlaceBusinessItemData item) {
     return CupertinoButton(
-      onPressed: () {},
+      onPressed: () {
+        CupertinoScaffold.showCupertinoModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return BlocProvider(
+              create: (_) => HomeBloc(homeRepository: HomeRepository()),
+              child:  EditPlaceScreen(
+                id: item.id,
+                number: item.capacity,
+              ),
+            );
+          },
+        ).then((on) {
+          getData();
+        });
+      },
       padding: EdgeInsets.zero,
       child: Container(
         width: 100.w,

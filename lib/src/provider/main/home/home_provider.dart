@@ -21,6 +21,16 @@ class HomeProvider extends ApiProvider {
     return await postRequest(ApiHelper.saveCompany, data.toJson());
   }
 
+  ///update company
+  Future<HttpResult> updateCompany(int id, UpdateCompanyModel data) async {
+    return await patchRequest("${ApiHelper.getCompany}/$id", data.toJson());
+  }
+
+  ///delete company
+  Future<HttpResult> deleteCompany(int id) async {
+    return await deleteRequest("${ApiHelper.getCompany}/$id");
+  }
+
   ///get company by category
   Future<HttpResult> getCompanyByCategory(
     int page,
@@ -80,6 +90,21 @@ class HomeProvider extends ApiProvider {
       "capacity": number,
     };
     return await postRequest(ApiHelper.place, body);
+  }
+
+
+  ///update place
+  Future<HttpResult> updatePlace(int number , int id) async {
+    var body = {
+      "capacity": number,
+    };
+    return await patchRequest("${ApiHelper.place}/$id", body);
+  }
+
+
+  ///delete place
+  Future<HttpResult> deletePlace(int id) async {
+    return await deleteRequest("${ApiHelper.place}/$id");
   }
 
   ///booking

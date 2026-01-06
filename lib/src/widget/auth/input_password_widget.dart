@@ -49,6 +49,7 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
               children: [
                 Expanded(
                   child: TextField(
+                    cursorColor: Colors.grey,
                     controller: widget.controller,
                     obscureText: isView,
                     style: AppTextStyle.f500s16.copyWith(
@@ -69,7 +70,7 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
                       isView = !isView;
                     });
                   },
-                  child: AppSvgAsset(AppIcons.eyeOff),
+                  child: AppSvgAsset(isView ? AppIcons.eyeOff : AppIcons.eye),
                 ),
               ],
             ),

@@ -8,6 +8,13 @@ abstract class AbstractHomeRepository {
 
   Future<HttpResult> saveCompany({required CreateCompanyModel data});
 
+  Future<HttpResult> updateCompany({
+    required int companyId,
+    required UpdateCompanyModel data,
+  });
+
+  Future<HttpResult> deleteCompany({required int companyId});
+
   Future<HttpResult> getCompanyByCategoryId({
     required int page,
     required int categoryId,
@@ -19,6 +26,15 @@ abstract class AbstractHomeRepository {
   Future<HttpResult> getPlace({required int companyId});
 
   Future<HttpResult> setPlace({required String name, required int number});
+
+  Future<HttpResult> updatePlace({
+    required int number,
+    required int id,
+  });
+
+  Future<HttpResult> deletePlace({
+    required int id,
+  });
 
   Future<HttpResult> place({required int companyId});
 

@@ -73,4 +73,6 @@ class AppIcons {
   static const String manager = 'assets/icons/manager.svg';
   static const String owner = 'assets/icons/owner.svg';
   static const String worker = 'assets/icons/worker.svg';
+  static const String eye = 'assets/icons/eye.svg';
+  static const String chair = 'assets/icons/chair.svg';
 }

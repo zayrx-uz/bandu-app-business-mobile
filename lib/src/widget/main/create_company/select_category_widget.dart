@@ -10,11 +10,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class SelectCategoryWidget extends StatelessWidget {
   final Function(int) onSelect;
   final List<CategoryData> item;
+  final int? selectedId;
 
   const SelectCategoryWidget({
     super.key,
     required this.onSelect,
     required this.item,
+    this.selectedId,
   });
 
   @override
@@ -31,7 +33,13 @@ class SelectCategoryWidget extends StatelessWidget {
             excludeSelected: false,
             hideSelectedFieldWhenExpanded: true,
             headerBuilder: (context, a, b) {
-              return Text(a.name, style: AppTextStyle.f400s16);
+              final displayItem = selectedId != null
+                  ? item.firstWhere(
+                      (e) => e.id == selectedId,
+                      orElse: () => a,
+                    )
+                  : a;
+              return Text(displayItem.name, style: AppTextStyle.f400s16);
             },
             canCloseOutsideBounds: false,
             decoration: CustomDropdownDecoration(

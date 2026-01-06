@@ -47,6 +47,7 @@ dependencies:
   flutter_local_notifications: ^19.5.0
   v: ^0.0.0-origin.0.1
   rename: ^3.1.0
+  flutter_slidable: ^4.0.3
 
 dev_dependencies:
   flutter_test:

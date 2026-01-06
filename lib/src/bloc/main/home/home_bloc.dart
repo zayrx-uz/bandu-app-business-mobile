@@ -18,6 +18,7 @@ import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 part 'home_event.dart';
 
@@ -42,9 +43,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetPlaceBusinessEvent>(_onGetPlaceBusiness);
     on<BookingEvent>(_onBooking);
     on<SetPlaceEvent>(_onSetPlace);
+    on<UpdatePlaceEvent>(_updatePlace);
+    on<DeletePlaceEvent>(_deletePlace);
     on<GetStatisticEvent>(_onGetStatistic);
     on<GetEmployeeEvent>(_onGetEmployee);
     on<SaveCompanyEvent>(_onSaveCompany);
+    on<UpdateCompanyEvent>(_onUpdateCompany);
+    on<DeleteCompanyEvent>(_onDeleteCompany);
     on<SaveEmployeeEvent>(_onSaveEmployee);
     on<GetQrCodeEvent>(_onGetQrCode);
     on<GetQrBookCodeEvent>(_onGetQrBookCode);
@@ -160,14 +165,50 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+  // void _getImage(GetImageEvent event, Emitter<HomeState> emit) async {
+  //   final pick = ImagePicker();
+  //   try {
+  //     if (event.isSelfie) {
+  //       final img = await pick.pickImage(source: ImageSource.camera);
+  //       if (img != null) {
+  //         emit(GetImageSuccessState(img: img));
+  //       }
+  //     } else {
+  //       final img = await pick.pickImage(source: ImageSource.gallery);
+  //       if (img != null) {
+  //         emit(GetImageSuccessState(img: img));
+  //       }
+  //     }
+  //   } catch (e) {
+  //     emit(HomeErrorState(message: e.toString()));
+  //   }
+  // }
+
   void _getImage(GetImageEvent event, Emitter<HomeState> emit) async {
     final pick = ImagePicker();
+
     try {
       if (event.isSelfie) {
-        final img = await pick.pickImage(source: ImageSource.camera);
-        if (img != null) {
-          emit(GetImageSuccessState(img: img));
+        var status = await Permission.camera.status;
+
+        if (status.isDenied) {
+          status = await Permission.camera.request();
         }
+
+        if (status.isPermanentlyDenied) {
+          await openAppSettings();
+          return;
+        }
+
+        if (status.isGranted) {
+          final img = await pick.pickImage(source: ImageSource.camera);
+          if (img != null) {
+            emit(GetImageSuccessState(img: img));
+          }
+        } else {
+          emit(HomeErrorState(message: "Kamera ruxsati berilmadi"));
+        }
+
       } else {
         final img = await pick.pickImage(source: ImageSource.gallery);
         if (img != null) {
@@ -178,6 +219,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeErrorState(message: e.toString()));
     }
   }
+
 
   void _onGetMe(GetMeEvent event, Emitter<HomeState> emit) async {
     emit(GetMeLoadingState());
@@ -288,6 +330,41 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+
+  void _updatePlace(UpdatePlaceEvent event, Emitter<HomeState> emit) async {
+    emit(UpdatePlaceLoadingState());
+    try {
+      final result = await homeRepository.updatePlace(
+        number: event.number,
+        id: event.id
+      );
+      if (result.isSuccess) {
+        emit(UpdatePlaceSuccessState());
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+
+  void _deletePlace(DeletePlaceEvent event, Emitter<HomeState> emit) async {
+    emit(DeletePlaceLoadingState());
+    try {
+      final result = await homeRepository.deletePlace(
+        id: event.id
+      );
+      if (result.isSuccess) {
+        emit(DeletePlaceSuccessState());
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
   void _onGetStatistic(GetStatisticEvent event, Emitter<HomeState> emit) async {
     emit(GetStatisticLoadingState());
     try {
@@ -342,6 +419,65 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.saveCompany(data: data);
       if (result.isSuccess) {
         emit(SaveCompanySuccessState());
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onUpdateCompany(
+    UpdateCompanyEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(UpdateCompanyLoadingState(companyId: event.companyId));
+    try {
+      var data = event.data;
+      for (int i = 0; i < data.images.length; i++) {
+        final img = data.images[i];
+        if (!img.url.startsWith("http")) {
+          final response = await homeRepository.uploadImage(filePath: img.url);
+          if (response.isSuccess) {
+            data.images[i] = ImageCreateModel(
+              url: response.result['data']['data']['url'],
+              index: img.index,
+              isMain: img.isMain,
+            );
+          } else {
+            emit(HomeErrorState(message: HelperFunctions.errorText(response.result)));
+            return;
+          }
+        }
+      }
+
+      final result = await homeRepository.updateCompany(
+        companyId: event.companyId,
+        data: data,
+      );
+      if (result.isSuccess) {
+        emit(UpdateCompanySuccessState(companyId: event.companyId));
+        add(GetCompanyEvent());
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onDeleteCompany(
+    DeleteCompanyEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(DeleteCompanyLoadingState(companyId: event.companyId));
+    try {
+      final result = await homeRepository.deleteCompany(
+        companyId: event.companyId,
+      );
+      if (result.isSuccess) {
+        emit(DeleteCompanySuccessState(companyId: event.companyId));
+        add(GetCompanyEvent());
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }

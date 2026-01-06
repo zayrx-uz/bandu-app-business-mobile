@@ -36,6 +36,8 @@ class HelperFunctions {
   static String errorText(dynamic dt) {
     try {
       if (dt is String) {
+        print(dt);
+        print("Man u kelgan responce error");
         return dt;
       } else if (dt is Map<String, dynamic>) {
         if (dt.containsKey('message')) {
@@ -97,7 +99,7 @@ class HelperFunctions {
     }
   }
 
-  static int getCompanyId() {
+  static int? getCompanyId() {
     return CacheService.getInt("select_company") ?? -1;
   }
 

@@ -37,7 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _splashChange(SplashChangeEvent event, Emitter<AuthState> emit) async {
     await Future.delayed(const Duration(seconds: 2));
     if (CacheService.getToken() != '') {
-      if (HelperFunctions.getCompanyId() == -1) {
+      if (HelperFunctions.getCompanyId() == -1 || HelperFunctions.getCompanyId() == null) {
         emit(SplashChangeState(page: SelectCompanyScreen()));
       } else {
         emit(SplashChangeState(page: MainScreen()));

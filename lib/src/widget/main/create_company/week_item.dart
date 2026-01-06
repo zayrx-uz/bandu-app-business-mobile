@@ -7,8 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class WeekItem extends StatefulWidget {
-  const WeekItem({super.key, required this.onChange});
+  const WeekItem({
+    super.key,
+    required this.onChange,
+    this.initialData,
+  });
   final ValueChanged<Map<String, dynamic>> onChange;
+  final Map<String, dynamic>? initialData;
 
   @override
   State<WeekItem> createState() => _WeekItemState();
@@ -22,14 +27,25 @@ class _WeekItemState extends State<WeekItem> {
   @override
   void initState() {
     super.initState();
-    schedule = {
-      for (var day in dayEn)
-        day: {
-          "open": null,
-          "close": null,
-          "closed": true,
-        }
-    };
+    if (widget.initialData != null && widget.initialData!.isNotEmpty) {
+      schedule = Map<String, Map<String, dynamic>>.from(
+        widget.initialData!.map(
+          (key, value) => MapEntry(
+            key,
+            Map<String, dynamic>.from(value as Map),
+          ),
+        ),
+      );
+    } else {
+      schedule = {
+        for (var day in dayEn)
+          day: {
+            "open": null,
+            "close": null,
+            "closed": true,
+          }
+      };
+    }
   }
 
   bool _isValidTimeRange(String open, String close) {

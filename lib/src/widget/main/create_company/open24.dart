@@ -5,15 +5,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Open24Item extends StatefulWidget {
-  const Open24Item({super.key, required this.onChange});
+  const Open24Item({
+    super.key,
+    required this.onChange,
+    this.value = false,
+  });
   final ValueChanged<bool> onChange;
+  final bool value;
 
   @override
   State<Open24Item> createState() => _Open24ItemState();
 }
 
 class _Open24ItemState extends State<Open24Item> {
-  bool value = false;
+  late bool value;
+
+  @override
+  void initState() {
+    super.initState();
+    value = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(Open24Item oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      value = widget.value;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

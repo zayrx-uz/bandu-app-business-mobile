@@ -6,6 +6,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/employer/screen/add_employee_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
+import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/employer/employer_item_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,12 +71,7 @@ class _EmployerScreenState extends State<EmployerScreen> {
               else
                 Expanded(
                   child: Center(
-                    child: Text(
-                      "No employees found",
-                      style: AppTextStyle.f400s16.copyWith(
-                        color: AppColor.greyA7,
-                      ),
-                    ),
+                      child : EmptyWidget(text: "No places available. Please add a place" , icon: AppIcons.employe,)
                   ),
                 ),
             ],

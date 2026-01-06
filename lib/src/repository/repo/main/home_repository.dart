@@ -75,6 +75,23 @@ class HomeRepository implements AbstractHomeRepository {
     return await homeProvider.setPlace(name, number);
   }
 
+
+  @override
+  Future<HttpResult> updatePlace({
+    required int number,
+    required int id,
+  }) async {
+    return await homeProvider.updatePlace(number, id);
+  }
+
+
+  @override
+  Future<HttpResult> deletePlace({
+    required int id,
+  }) async {
+    return await homeProvider.deletePlace(id);
+  }
+
   @override
   Future<HttpResult> getStatistic({
     required DateTime date,
@@ -91,6 +108,19 @@ class HomeRepository implements AbstractHomeRepository {
   @override
   Future<HttpResult> saveCompany({required CreateCompanyModel data}) async {
     return await homeProvider.saveCompany(data);
+  }
+
+  @override
+  Future<HttpResult> updateCompany({
+    required int companyId,
+    required UpdateCompanyModel data,
+  }) async {
+    return await homeProvider.updateCompany(companyId, data);
+  }
+
+  @override
+  Future<HttpResult> deleteCompany({required int companyId}) async {
+    return await homeProvider.deleteCompany(companyId);
   }
 
   @override

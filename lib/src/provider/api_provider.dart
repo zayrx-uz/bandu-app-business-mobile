@@ -135,6 +135,10 @@ class ApiProvider {
     final status = response.statusCode;
     final body = utf8.decode(response.bodyBytes);
 
+
+    print("Mana u backdan kelgan responce $status}" );
+
+
     if (status >= 200 && status < 300) {
       return HttpResult(
         isSuccess: true,
@@ -142,11 +146,11 @@ class ApiProvider {
         result: json.decode(body),
       );
     }
-    if (status <= 500) {
+    if (status >= 500) {
       return HttpResult(
         isSuccess: false,
         status: 500,
-        result: "Server xatoligi",
+        result: "Server bilan bog'liq muammo",
       );
     }
 

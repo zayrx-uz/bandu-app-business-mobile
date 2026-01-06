@@ -49,6 +49,8 @@ class CompanyData {
   final String name;
   final Location location;
   final List<Category> categories;
+  final List<int>? resourceCategoryIds;
+  final int? serviceTypeId;
   final bool isOpen247;
   final String logo;
   final WorkingHours workingHours;
@@ -59,6 +61,8 @@ class CompanyData {
     required this.name,
     required this.location,
     required this.categories,
+    required this.resourceCategoryIds,
+    required this.serviceTypeId,
     required this.isOpen247,
     required this.logo,
     required this.workingHours,
@@ -76,6 +80,10 @@ class CompanyData {
           ? []
           : List<Category>.from(
           json["categories"].map((x) => Category.fromJson(x))),
+      resourceCategoryIds: json["resourceCategoryIds"] == null
+          ? []
+          : List<int>.from(json["resourceCategoryIds"].map((x) => x)),
+      serviceTypeId: json["serviceTypeId"],
       isOpen247: json["isOpen247"] ?? false,
       logo: json["logo"] ?? "",
       workingHours: json["workingHours"] == null

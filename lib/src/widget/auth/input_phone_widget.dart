@@ -52,6 +52,7 @@ class InputPhoneWidget extends StatelessWidget {
                 SizedBox(width: 16.w),
                 Expanded(
                   child: TextField(
+                    cursorColor: Colors.grey,
                     controller: controller,
                     keyboardType: TextInputType.number,
                     style: AppTextStyle.f500s16.copyWith(
