@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -103,7 +104,7 @@ class _WeekItemState extends State<WeekItem> {
                         widget.onChange(Map<String, dynamic>.from(schedule));
                         Navigator.pop(context);
                       } else {
-                        AppService.errorToast(context, "Yopilish vaqti ochilish vaqtidan keyin bo'lishi kerak!");
+                        AppService.errorToast(context, "Closing time must be after opening time!");
                       }
                     } else {
                       if (isOpenTime) {
@@ -115,7 +116,7 @@ class _WeekItemState extends State<WeekItem> {
                     }
                   });
                 },
-                text: "Saqlash",
+                text: "Save",
               ),
             ),
             SizedBox(height: 20.h),
@@ -132,7 +133,7 @@ class _WeekItemState extends State<WeekItem> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(width: 1.w, color: Colors.grey.withOpacity(0.4)),
+        border: Border.all(width: 1.w, color: Colors.grey.withValues(alpha: 0.4)),
       ),
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 10.h),
@@ -142,7 +143,9 @@ class _WeekItemState extends State<WeekItem> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Ish kunlari", style: AppTextStyle.f500s16),
+              Text("Working days", style: AppTextStyle.f500s16.copyWith(
+                fontSize:  isTablet(context) ? 12.sp : 16.sp
+              )),
               CupertinoSwitch(
                 value: isWorkingDaysEnabled,
                 onChanged: (v) => setState(() => isWorkingDaysEnabled = v),
@@ -174,18 +177,20 @@ class _WeekItemState extends State<WeekItem> {
                             onTap: () => setState(() => expandedStates[index] = !isExpanded),
                             child: Row(
                               children: [
-                                Text(displayDay, style: AppTextStyle.f600s16),
+                                Text(displayDay, style: AppTextStyle.f600s16.copyWith(
+                                  fontSize: isTablet(context) ? 12.sp : 16.sp
+                                )),
                                 AnimatedRotation(
                                   duration: const Duration(milliseconds: 200),
                                   turns: isExpanded ? 0.5 : 0,
-                                  child: Icon(Icons.arrow_drop_down, color: Colors.black, size: 25.sp),
+                                  child: Icon(Icons.arrow_drop_down, color: Colors.black, size: isTablet(context) ? 18.sp : 25.sp),
                                 ),
                                 const Spacer(),
                                 if (isCompleted)
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
                                     decoration: BoxDecoration(
-                                      color: Colors.green.withOpacity(0.1),
+                                      color: Colors.green.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(4.r),
                                     ),
                                     child: Text(
@@ -213,15 +218,15 @@ class _WeekItemState extends State<WeekItem> {
                                           child: Container(
                                             padding: EdgeInsets.all(10.w),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.15),
+                                              color: Colors.grey.withValues(alpha: 0.15),
                                               borderRadius: BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
-                                              schedule[dataKey]!["open"] ?? "Ochilish vaqti",
+                                              schedule[dataKey]!["open"] ?? "Opening time",
                                               style: TextStyle(
                                                 color: schedule[dataKey]!["open"] == null ? Colors.grey : Colors.black,
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: 14.sp,
+                                                fontSize: isTablet(context) ? 10.sp : 14.sp,
                                               ),
                                             ),
                                           ),
@@ -234,15 +239,15 @@ class _WeekItemState extends State<WeekItem> {
                                           child: Container(
                                             padding: EdgeInsets.all(10.w),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.15),
+                                              color: Colors.grey.withValues(alpha: 0.15),
                                               borderRadius: BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
-                                              schedule[dataKey]!["close"] ?? "Yopilish vaqti",
+                                              schedule[dataKey]!["close"] ?? "Closing time",
                                               style: TextStyle(
                                                 color: schedule[dataKey]!["close"] == null ? Colors.grey : Colors.black,
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: 14.sp,
+                                                fontSize: isTablet(context) ? 10.sp : 14.sp,
                                               ),
                                             ),
                                           ),
@@ -269,5 +274,5 @@ class _WeekItemState extends State<WeekItem> {
   }
 }
 
-List<String> days = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
+List<String> days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 List<String> dayEn = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];

@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +86,7 @@ class AppButton extends StatelessWidget {
                         style:
                             style ??
                             AppTextStyle.f600s16.copyWith(
+                              fontSize: isTablet(context) ? 12.sp : 16.sp,
                               color: txtColor ?? AppColor.white,
                             ),
                       ),

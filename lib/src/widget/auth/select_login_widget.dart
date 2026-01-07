@@ -25,8 +25,6 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
 
   @override
   Widget build(BuildContext context) {
-    bool tablet = DeviceHelper.isTablet(context);
-
     return Container(
 
       padding: EdgeInsets.symmetric(horizontal: 16.w),

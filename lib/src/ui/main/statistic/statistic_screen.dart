@@ -1,6 +1,5 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
-import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/model/api/main/statistic/statistic_model.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -13,7 +12,6 @@ import 'package:bandu_business/src/widget/main/statistic/statistic_item_widget.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class StatisticScreen extends StatefulWidget {
   const StatisticScreen({super.key});
@@ -65,25 +63,25 @@ class _StatisticScreenState extends State<StatisticScreen> {
                       SizedBox(height: 20.h),
                       StatisticItemWidget(
                         icon: AppIcons.coins,
-                        title: "Kunlik Tushum",
+                        title: "Daily Revenue",
                         desc: "${data!.totalRevenue.priceFormat()} UZS",
                       ),
                       SizedBox(height: 12.h),
                       StatisticItemWidget(
                         icon: AppIcons.users,
-                        title: "Kelayotgan mijozlar",
+                        title: "Incoming Customers",
                         desc: data!.totalCustomers.toString(),
                       ),
                       SizedBox(height: 12.h),
                       StatisticItemWidget(
                         icon: AppIcons.shop,
-                        title: "Band joylar",
+                        title: "Occupied Places",
                         desc: "0",
                       ),
                       SizedBox(height: 12.h),
                       StatisticItemWidget(
                         icon: AppIcons.shop,
-                        title: "Bo’sh joylar",
+                        title: "Available Places",
                         desc: "0",
                       ),
                       SizedBox(height: 12.h),
@@ -130,7 +128,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
                                     SizedBox(width: 16.w),
                                     Expanded(
                                       child: Text(
-                                        "Yange Mijozlar",
+                                        "New Customers",
                                         style: AppTextStyle.f500s16
                                             .copyWith(
                                           color: AppColor.grey58,

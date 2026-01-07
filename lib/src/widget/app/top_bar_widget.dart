@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/back_button.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,9 @@ class TopBarWidget extends StatelessWidget {
           if (isAppName)
             TopAppName()
           else
-            Text(text, style: AppTextStyle.f600s20),
+            Text(text, style: AppTextStyle.f600s20.copyWith(
+              fontSize: isTablet(context) ? 14.sp : 20.sp
+            )),
           Spacer(),
           if (right != null) right!,
           if (isBack) SizedBox(width: 56.h),

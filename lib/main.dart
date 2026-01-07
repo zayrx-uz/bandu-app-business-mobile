@@ -11,6 +11,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+// TODO: Uncomment when PaymentBloc is created
+// import 'package:bandu_business/src/bloc/payment/payment_bloc.dart';
+// import 'package:bandu_business/src/repository/repo/payment/payment_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,8 +52,16 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
               appBarTheme: AppBarTheme(surfaceTintColor: Colors.transparent),
             ),
-            home: BlocProvider(
-              create: (_) => AuthBloc(authRepository: AuthRepository()),
+            home: MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) => AuthBloc(authRepository: AuthRepository()),
+                ),
+                // TODO: Uncomment and adjust when PaymentBloc is created
+                // BlocProvider(
+                //   create: (_) => PaymentBloc(paymentRepository: PaymentRepository()),
+                // ),
+              ],
               child: const SplashScreen(),
             ),
           ),

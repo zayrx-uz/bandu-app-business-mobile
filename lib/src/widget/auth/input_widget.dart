@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,7 +31,7 @@ class InputWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: AppTextStyle.f500s16.copyWith(color: AppColor.black09),
+            style: AppTextStyle.f500s16.copyWith(color: AppColor.black09 , fontSize: isTablet(context) ? 12.sp : 16.sp),
           ),
           SizedBox(height: 8.h),
           Container(
@@ -52,12 +53,14 @@ class InputWidget extends StatelessWidget {
                     inputFormatters: format,
                     style: AppTextStyle.f500s16.copyWith(
                       color: AppColor.black09,
+                      fontSize:  isTablet(context) ? 12.sp : 16.sp
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: hint,
                       hintStyle: AppTextStyle.f500s16.copyWith(
                         color: AppColor.grey77,
+                        fontSize: isTablet(context) ? 12.sp : 16.sp
                       ),
                     ),
                   ),

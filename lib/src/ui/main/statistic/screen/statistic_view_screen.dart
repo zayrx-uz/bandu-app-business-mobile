@@ -83,7 +83,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text("Pul Oqimi", style: AppTextStyle.f600s18),
+                        child: Text("Cash Flow", style: AppTextStyle.f600s18),
                       ),
                       AppIconButton(
                         icon: AppIcons.close,
@@ -117,7 +117,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                       // SizedBox(width: 4),
                       // Text("-3.5%", style: TextStyle(color: Colors.red)),
                       // SizedBox(width: 8),
-                      Text("Oxirgi yangilangan: ${DateTime.now().toDDMMYYY()}"),
+                      Text("Last updated: ${DateTime.now().toDDMMYYY()}"),
                     ],
                   ),
                 ),
@@ -234,7 +234,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                                     getTooltipItem:
                                         (group, groupIndex, rod, rodIndex) {
                                           return BarTooltipItem(
-                                            "Kirim\n",
+                                            "Revenue\n",
                                             AppTextStyle.f500s16,
                                             children: [
                                               TextSpan(

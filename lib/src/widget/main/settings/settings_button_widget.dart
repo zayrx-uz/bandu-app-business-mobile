@@ -5,6 +5,8 @@ import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../ui/onboard/onboard_screen.dart';
+
 class SettingsButtonWidget extends StatelessWidget {
   final String icon;
   final String text;
@@ -50,10 +52,12 @@ class SettingsButtonWidget extends StatelessWidget {
                   color: isLogout ? AppColor.redED : AppColor.greyF4,
                 ),
               ),
-              child: Center(child: AppSvgAsset(icon)),
+              child: Center(child: AppSvgAsset(icon , width: isTablet(context) ? 16.sp : 20.sp,color : isLogout ? AppColor.redED : AppColor.black)),
             ),
             SizedBox(width: 12.w),
-            Expanded(child: Text(text, style: AppTextStyle.f500s16)),
+            Expanded(child: Text(text, style: AppTextStyle.f500s16.copyWith(
+               fontSize:  isTablet(context) ? 12.sp : 16.sp
+            ))),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

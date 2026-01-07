@@ -1,6 +1,7 @@
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,13 +20,13 @@ class InputPhoneWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      margin: EdgeInsets.symmetric(horizontal: isTablet(context) ? 30.w : 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "Phone Number",
-            style: AppTextStyle.f500s16.copyWith(color: AppColor.black09),
+            style: AppTextStyle.f500s16.copyWith(color: AppColor.black09 , fontSize: isTablet(context) ? 12.sp : 16.sp),
           ),
           SizedBox(height: 8.h),
           Container(
@@ -43,7 +44,7 @@ class InputPhoneWidget extends StatelessWidget {
                 SizedBox(width: 4.w),
                 Text(
                   "+998",
-                  style: AppTextStyle.f600s16.copyWith(color: AppColor.black09),
+                  style: AppTextStyle.f600s16.copyWith(color: AppColor.black09 , fontSize: isTablet(context) ? 12.sp : 16.sp),
                 ),
                 SizedBox(width: 4.w),
                 Icon(Icons.keyboard_arrow_down_outlined, size: 16.h),
@@ -57,6 +58,7 @@ class InputPhoneWidget extends StatelessWidget {
                     keyboardType: TextInputType.number,
                     style: AppTextStyle.f500s16.copyWith(
                       color: AppColor.black09,
+                      fontSize:  isTablet(context) ? 12.sp : 16.sp
                     ),
                     inputFormatters: <TextInputFormatter>[uzPhoneMask],
                     decoration: InputDecoration(

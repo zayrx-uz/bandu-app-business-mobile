@@ -3,6 +3,7 @@ import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
@@ -73,7 +74,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
           children: [
             /// HEADER
             Padding(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(isTablet(context) ? 6.w : 12.w),
               child: Row(
                 children: [
                   CustomNetworkImage(
@@ -90,12 +91,15 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                         Text(
                           data.fullName,
                           maxLines: 1,
-                          style: AppTextStyle.f500s16,
+                          style: AppTextStyle.f500s16.copyWith(
+                            fontSize:  isTablet(context) ? 12.sp : 16.sp
+                          ),
                         ),
                         Text(
                           data.role.toUpperCase(),
                           style: AppTextStyle.f400s14.copyWith(
                             color: AppColor.grey58,
+                            fontSize:   isTablet(context) ? 10.sp : 14.sp
                           ),
                         ),
                       ],
@@ -128,7 +132,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                       data.authProviders.first.phoneNumber.phoneFormat(),
                     ),
 
-                    SizedBox(height: 12.h),
+                    SizedBox(height: isTablet(context) ? 8.h : 12.h),
 
                     /// CONTACT STATUS
                     Padding(
@@ -139,6 +143,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                             "Contact status",
                             style: AppTextStyle.f400s16.copyWith(
                               color: AppColor.grey58,
+                              fontSize:  isTablet(context) ? 12.sp : 16.sp
                             ),
                           ),
                           SizedBox(width: 32.w),
@@ -155,6 +160,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                               data.role,
                               style: AppTextStyle.f500s14.copyWith(
                                 color: AppColor.white,
+                                 fontSize:  isTablet(context) ? 10.sp : 14.sp
                               ),
                             ),
                           ),
@@ -220,10 +226,12 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
         children: [
           Text(
             label,
-            style: AppTextStyle.f400s16.copyWith(color: AppColor.grey58),
+            style: AppTextStyle.f400s16.copyWith(color: AppColor.grey58 ,fontSize:   isTablet(context) ? 12.sp : 16.sp),
           ),
           SizedBox(width: 32.w),
-          Text(value, style: AppTextStyle.f400s16),
+          Text(value, style: AppTextStyle.f400s16.copyWith(
+            fontSize:  isTablet(context) ? 12.sp : 16.sp
+          )),
         ],
       ),
     );

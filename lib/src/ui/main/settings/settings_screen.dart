@@ -9,6 +9,7 @@ import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:bandu_business/src/widget/main/settings/profile_widget.dart';
@@ -53,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             ProfileWidget(),
             Transform.translate(
-              offset: Offset(0, -50.h),
+              offset: Offset(0, isTablet(context) ? -20 : -50.h),
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(16.w),
@@ -65,18 +66,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("General", style: AppTextStyle.f600s20),
+                    Text("General", style: AppTextStyle.f600s20.copyWith(
+                      fontSize:  isTablet(context) ? 12.sp : 20.sp
+                    )),
                     SizedBox(height: 16.h),
-                    SettingsButtonWidget(
-                      icon: AppIcons.money,
-                      text: "My Cards",
-                      onTap: () {
-                        CenterDialog.soonDialog(
-                          context,
-                          "My cards will be added soon.",
-                        );
-                      },
-                    ),
+                    // SettingsButtonWidget(
+                    //   icon: AppIcons.money,
+                    //   text: "My Cards",
+                    //   onTap: () {
+                    //     CenterDialog.soonDialog(
+                    //       context,
+                    //       "My cards will be added soon.",
+                    //     );
+                    //   },
+                    // ),
                     SettingsButtonWidget(
                       icon: AppIcons.menu,
                       text: "Select company",
@@ -91,13 +94,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         );
                       },
                     ),
-                    SettingsButtonWidget(
-                      icon: AppIcons.globe,
-                      text: "Change Language",
-                      onTap: () {
-                        BottomDialog.langDialog(context);
-                      },
-                    ),
+                    // SettingsButtonWidget(
+                    //   icon: AppIcons.globe,
+                    //   text: "Change Language",
+                    //   onTap: () {
+                    //     BottomDialog.langDialog(context);
+                    //   },
+                    // ),
                     SettingsButtonWidget(
                       icon: AppIcons.help,
                       text: "Help",
@@ -123,7 +126,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Support", style: AppTextStyle.f600s20),
+                    Text("Support", style: AppTextStyle.f600s20.copyWith(
+                       fontSize:  isTablet(context) ? 12.sp : 20.sp
+                    )),
                     SizedBox(height: 16.h),
                     SettingsButtonWidget(
                       icon: AppIcons.terms,
@@ -168,7 +173,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Logout", style: AppTextStyle.f600s20),
+                    Text("Logout", style: AppTextStyle.f600s20.copyWith(
+                       fontSize:  isTablet(context) ? 12.sp :20.sp
+                    )),
                     SizedBox(height: 16.h),
                     SettingsButtonWidget(
                       icon: AppIcons.logout,
@@ -177,6 +184,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       margin: EdgeInsets.zero,
                       onTap: () {
                         CenterDialog.logoutDialog(context);
+                      },
+                    ),
+                    SizedBox(height: 10.h),
+                    SettingsButtonWidget(
+                      icon: AppIcons.delete,
+                      text: "Delete Account",
+                      isLogout: true,
+                      margin: EdgeInsets.zero,
+                      onTap: () {
+                        CenterDialog.deleteAccountDialog(context);
                       },
                     ),
                   ],

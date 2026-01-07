@@ -1,5 +1,5 @@
-import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -49,7 +49,7 @@ class _Open24ItemState extends State<Open24Item> {
           borderRadius: BorderRadius.circular(10.r),
           border: Border.all(
             width: 1.w,
-            color : Colors.grey.withOpacity(0.4)
+            color : Colors.grey.withValues(alpha: 0.4)
           )
         ),
         margin: EdgeInsets.symmetric(horizontal: 16.w),
@@ -58,8 +58,10 @@ class _Open24ItemState extends State<Open24Item> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "24/7 faoliyat yuritadimi",
-              style: AppTextStyle.f500s16
+              "Open 24/7",
+              style: AppTextStyle.f500s16.copyWith(
+                fontSize: isTablet(context) ? 12.sp : 16.sp
+              )
             ),
             CupertinoSwitch(
               value: value,

@@ -22,24 +22,27 @@ class _OnboardScreenState extends State<OnboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(backgroundColor: AppColor.white, title: TopAppName()),
+      // appBar: AppBar(backgroundColor: AppColor.white, title: TopAppName()),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            SizedBox(height: isTablet(context) ? 30.h : 40.h,),
+            TopAppName(),
             Image.asset(
               AppImages.onb,
-              height: 378.h,
-              width: MediaQuery.of(context).size.width,
+              height: 358.h,
               fit : BoxFit.cover
             ),
             SizedBox(height: 12.h),
-            Text("Exclusive Services", style: AppTextStyle.f600s24),
+            Text("Exclusive Services", style: AppTextStyle.f600s24.copyWith(
+              fontSize: isTablet(context) ? 18.sp : 24.sp
+            )),
             SizedBox(height: 8.h),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Text(
                 "Redeem points for exciting vouchers, discounts, and special offers from top brands.",
-                style: AppTextStyle.f400s16.copyWith(color: AppColor.greyA7),
+                style: AppTextStyle.f400s16.copyWith(color: AppColor.greyA7 , fontSize: isTablet(context) ? 12.sp : 16.sp),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -47,8 +50,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
             AppButton(
               onTap: () {
                 BottomDialog.selectLogin(context);
-
               },
+              margin: isTablet(context) ? EdgeInsets.symmetric(horizontal: 50.w) : EdgeInsets.symmetric(horizontal: 20.w),
               text: "Login",
             ),
             SizedBox(height: 12.h),
@@ -57,9 +60,13 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 AppService.changePage(context, RegisterScreen());
               },
               text: "Register",
-              style: AppTextStyle.f600s16,
+              style: AppTextStyle.f600s16.copyWith(
+                 fontSize:  isTablet(context) ? 12.sp : 16.sp
+              ),
               isGradient: false,
               backColor: AppColor.white,
+
+              margin: isTablet(context) ? EdgeInsets.symmetric(horizontal: 50.w) : EdgeInsets.symmetric(horizontal: 20.w),
               border: Border.all(width: 1.h, color: AppColor.greyE5),
             ),
             SizedBox(height: 24.h),
@@ -70,4 +77,12 @@ class _OnboardScreenState extends State<OnboardScreen> {
       ),
     );
   }
+}
+
+
+
+bool isTablet(BuildContext context) {
+  double width = MediaQuery.of(context).size.width;
+
+  return width >= 600;
 }

@@ -5,6 +5,7 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CenterDialog {
   static void logoutDialog(BuildContext context) {
@@ -12,13 +13,17 @@ class CenterDialog {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text("Log Out"),
-          content: Text("Are you sure you want to log out?"),
+          title: Text("Log Out" , style  : TextStyle(
+              fontSize : isTablet(context) ? 12.sp : 16.sp
+          ),),
+          content: Text("Are you sure you want to log out?" , style  : TextStyle(
+              fontSize : isTablet(context) ? 8.sp : 12.sp
+          ),),
           actions: [
             CupertinoButton(
               child: Text(
                 "Cancel",
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00),
+                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00 , fontSize : isTablet(context) ? 12.sp : 16.sp),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -27,7 +32,57 @@ class CenterDialog {
             CupertinoButton(
               child: Text(
                 "Log Out",
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.red00),
+                style: AppTextStyle.f600s16.copyWith(color: AppColor.red00 , fontSize : isTablet(context) ? 12.sp : 16.sp),
+              ),
+              onPressed: () {
+                CacheService.clear();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                AppService.replacePage(context, OnboardScreen());
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void deleteAccountDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text(
+            "Delete Account",
+            style: TextStyle(
+              fontSize: isTablet(context) ? 12.sp : 16.sp,
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to delete your account? This action is permanent and all your data will be lost.",
+            style: TextStyle(
+              fontSize: isTablet(context) ? 8.sp : 12.sp,
+            ),
+          ),
+          actions: [
+            CupertinoButton(
+              child: Text(
+                "Cancel",
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.blue00,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "Delete",
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.red00,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
               ),
               onPressed: () {
                 CacheService.clear();
@@ -46,13 +101,17 @@ class CenterDialog {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text("Soon"),
-          content: Text(text),
+          title: Text("Soon" , style: TextStyle(
+            fontSize : isTablet(context) ? 12.sp : 16.sp
+          ),),
+          content: Text(text , style: TextStyle(
+             fontSize:  isTablet(context) ? 8.sp : 12.sp
+          ),),
           actions: [
             CupertinoButton(
               child: Text(
                 "Ok",
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00),
+                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00 , fontSize : isTablet(context) ? 12.sp : 16.sp),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -120,14 +179,14 @@ class CenterDialog {
         return CupertinoAlertDialog(
           title: Text(
             "Error",
-            style: AppTextStyle.f600s16.copyWith(color: AppColor.red00),
+            style: AppTextStyle.f600s16.copyWith(color: AppColor.red00 , fontSize: isTablet(context) ? 8.sp : 16.sp),
           ),
           content: Text(text, style: AppTextStyle.f400s16),
           actions: [
             CupertinoButton(
               child: Text(
                 "Ok",
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00),
+                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00 , fontSize:  isTablet(context) ? 12.sp : 16.sp),
               ),
               onPressed: () {
                 Navigator.pop(context);

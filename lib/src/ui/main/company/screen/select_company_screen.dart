@@ -10,6 +10,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/company/create_company_screen.dart';
 import 'package:bandu_business/src/ui/main/main_screen.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
@@ -116,7 +117,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                         ),
                         SizedBox(height: 10.h),
                         Text(
-                          "Malumotlar topilmadi",
+                          "No data found",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 20.sp,
@@ -125,7 +126,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                         ),
                         SizedBox(height: 10.h),
                         Text(
-                          "Kompaniya qo'shing",
+                          "Add a company",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 12.sp,
@@ -207,8 +208,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                                 else ...[
                                                   Icon(Icons.edit, color: Colors.white, size: 22.sp),
                                                   Text(
-                                                    "Tahrirlash",
-                                                    style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                                                    "Edit",
+                                                    style: TextStyle(color: Colors.white, fontSize: isTablet(context) ? 6.sp : 10.sp),
                                                   ),
                                                 ],
                                               ],
@@ -254,8 +255,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                                 else ...[
                                                   Icon(Icons.delete_outline, color: Colors.white, size: 22.sp),
                                                   Text(
-                                                    "O'chirish",
-                                                    style: TextStyle(color: Colors.white, fontSize: 10.sp),
+                                                    "Delete",
+                                                    style: TextStyle(color: Colors.white, fontSize: isTablet(context) ? 6.sp : 10.sp),
                                                   ),
                                                 ],
                                               ],
@@ -271,9 +272,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                       },
                                       padding: EdgeInsets.zero,
                                       child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 16.w,
-                                          vertical: 16.h,
+                                        padding: EdgeInsets.all(
+                                            isTablet(context) ? 10.w : 16.w
                                         ),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(12.r),
@@ -288,7 +288,9 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                             Expanded(
                                               child: Text(
                                                 data![index].name,
-                                                style: AppTextStyle.f500s16,
+                                                style: AppTextStyle.f500s16.copyWith(
+                                                  fontSize: isTablet(context) ? 12.sp : 16.sp
+                                                ),
                                               ),
                                             ),
                                             Container(
@@ -328,7 +330,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                           AppService.replacePage(context, const MainScreen());
                         }
                       },
-                      text: "Selected",
+                      text: "Select company",
                     ),
                   ),
               ],

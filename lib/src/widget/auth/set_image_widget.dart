@@ -4,6 +4,7 @@ import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart' as home;
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:bounce/bounce.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +125,9 @@ class SetImageWidget extends StatelessWidget {
               ),
             ],
           ),
-          child: Center(child: Text(text, style: AppTextStyle.f600s14)),
+          child: Center(child: Text(text, style: AppTextStyle.f600s14.copyWith(
+            fontSize: isTablet(context) ? 10.sp : 14.sp
+          ))),
         ),
       ),
     );

@@ -181,7 +181,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                               );
                             }
                           },
-                          text: "Tahrirlash",
+                          text: "Edit",
                           loading: state is UpdatePlaceLoadingState,
                           txtColor:
                           number != 0 ? AppColor.white : AppColor.greyA7,
