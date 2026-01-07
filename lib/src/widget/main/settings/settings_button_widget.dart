@@ -40,6 +40,7 @@ class SettingsButtonWidget extends StatelessWidget {
           border: Border.all(width: 1.h, color: AppColor.greyF4),
         ),
         child: Row(
+
           children: [
             Container(
               height: 36.h,
