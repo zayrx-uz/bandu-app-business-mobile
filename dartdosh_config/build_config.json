@@ -5,7 +5,7 @@
     "development": "flutter build apk --debug --flavor development"
   },
   "ipa": {
-    "production": "flutter build ipa --release",
+    "production": "flutter build ipa",
     "staging": "flutter build ipa --release --flavor staging",
     "development": "flutter build ipa --debug --flavor development"
   },
