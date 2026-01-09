@@ -15,6 +15,7 @@ import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:bandu_business/src/widget/main/create_company/open24.dart';
 import 'package:bandu_business/src/widget/main/create_company/select_category_widget.dart';
 import 'package:bandu_business/src/widget/main/create_company/week_item.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -176,12 +177,12 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
             AppService.successToast(
               context,
               widget.companyId != null
-                  ? "Company updated successfully"
-                  : "Company created successfully",
+                  ? "companyUpdatedSuccessfully".tr()
+                  : "companyCreatedSuccessfully".tr(),
             );
             Navigator.pop(context);
           } else if (state is UpdateCompanySuccessState) {
-            AppService.successToast(context, "Company updated successfully");
+            AppService.successToast(context, "companyUpdatedSuccessfully".tr());
             Navigator.pop(context);
           } else if (state is HomeErrorState) {
             CenterDialog.errorDialog(context, state.message);
@@ -195,7 +196,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
             children: [
               TopBarWidget(
                 isAppName: false,
-                text: widget.companyId != null ? "Update Company" : "Create Company",
+                text: widget.companyId != null ? "updateCompany".tr() : "createCompany".tr(),
                 isBack: true,
               ),
               Expanded(
@@ -211,8 +212,8 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                       SizedBox(height: 20.h),
                       InputWidget(
                         controller: nameController,
-                        title: "Company name",
-                        hint: "Company name",
+                        title: "companyName".tr(),
+                        hint: "companyName".tr(),
                       ),
                       SizedBox(height: 12.h),
                       if (categoryData != null)
@@ -258,7 +259,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                       (img == null && _networkImageUrl == null)) {
                     AppService.errorToast(
                       context,
-                      "Please enter all the fields",
+                      "pleaseEnterAllFields".tr(),
                     );
                     return;
                   }
@@ -352,7 +353,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                   }
                 },
                 loading: loading,
-                text: widget.companyId != null ? "Update" : "Save",
+                text: widget.companyId != null ? "update".tr() : "save".tr(),
               ),
               SizedBox(height: 24.h),
             ],
@@ -455,8 +456,8 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
             color: AppColor.white.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(12.r),
           ),
-          child: const Text(
-            "Tap to select location",
+          child: Text(
+            "tapToSelectLocation".tr(),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),

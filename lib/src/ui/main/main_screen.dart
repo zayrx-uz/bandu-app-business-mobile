@@ -166,5 +166,10 @@ class _MainScreenState extends State<MainScreen> {
         ),
       );
     });
+    RxBus.register(tag: "language_changed").listen((d) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 }

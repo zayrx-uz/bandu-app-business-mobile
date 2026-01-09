@@ -1,6 +1,7 @@
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 import 'package:geocoding/geocoding.dart';
@@ -78,7 +79,7 @@ class _MapScreenState extends State<MapScreen> {
               children: [
                 TopBarWidget(
                   isAppName: false,
-                  text: "Select location",
+                  text: "selectLocation".tr(),
                   isBack: true,
                 ),
               ],
@@ -104,7 +105,7 @@ class _MapScreenState extends State<MapScreen> {
                 ],
               ),
               child: Text(
-                isMoving ? "Loading..." : selectedAddress,
+                isMoving ? "loading".tr() : selectedAddress,
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -121,7 +122,7 @@ class _MapScreenState extends State<MapScreen> {
                 widget.onSelect(selectedLat, selectedLon, selectedAddress);
                 Navigator.pop(context);
               },
-              text: "Save",
+              text: "save".tr(),
             ),
           ),
         ],
@@ -157,10 +158,10 @@ class _MapScreenState extends State<MapScreen> {
         selectedAddress =
             "${p.street ?? ""}, ${p.locality ?? ""}, ${p.country ?? ""}";
       } else {
-        selectedAddress = "Address not found";
+        selectedAddress = "addressNotFound".tr();
       }
     } catch (_) {
-      selectedAddress = "Address not found";
+      selectedAddress = "addressNotFound".tr();
     }
 
     setState(() {});

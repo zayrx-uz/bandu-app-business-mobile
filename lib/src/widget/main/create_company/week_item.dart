@@ -2,6 +2,7 @@ import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -104,7 +105,7 @@ class _WeekItemState extends State<WeekItem> {
                         widget.onChange(Map<String, dynamic>.from(schedule));
                         Navigator.pop(context);
                       } else {
-                        AppService.errorToast(context, "Closing time must be after opening time!");
+                        AppService.errorToast(context, "closingTimeMustBeAfterOpeningTime".tr());
                       }
                     } else {
                       if (isOpenTime) {
@@ -116,7 +117,7 @@ class _WeekItemState extends State<WeekItem> {
                     }
                   });
                 },
-                text: "Save",
+                text: "save".tr(),
               ),
             ),
             SizedBox(height: 20.h),
@@ -143,7 +144,7 @@ class _WeekItemState extends State<WeekItem> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Working days", style: AppTextStyle.f500s16.copyWith(
+              Text("workingDays".tr(), style: AppTextStyle.f500s16.copyWith(
                 fontSize:  isTablet(context) ? 12.sp : 16.sp
               )),
               CupertinoSwitch(
@@ -161,8 +162,9 @@ class _WeekItemState extends State<WeekItem> {
               child: Column(
                 children: [
                   SizedBox(height: 15.h),
-                  ...List.generate(days.length, (index) {
-                    String displayDay = days[index];
+                  ...List.generate(dayEn.length, (index) {
+                    String displayDay = _getDayName(index);
+
                     String dataKey = dayEn[index];
                     bool isExpanded = expandedStates[index];
                     bool isCompleted = schedule[dataKey]!["closed"] == false;
@@ -222,7 +224,7 @@ class _WeekItemState extends State<WeekItem> {
                                               borderRadius: BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
-                                              schedule[dataKey]!["open"] ?? "Opening time",
+                                              schedule[dataKey]!["open"] ?? "openingTime".tr(),
                                               style: TextStyle(
                                                 color: schedule[dataKey]!["open"] == null ? Colors.grey : Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -243,7 +245,7 @@ class _WeekItemState extends State<WeekItem> {
                                               borderRadius: BorderRadius.circular(7.r),
                                             ),
                                             child: Text(
-                                              schedule[dataKey]!["close"] ?? "Closing time",
+                                              schedule[dataKey]!["close"] ?? "closingTime".tr(),
                                               style: TextStyle(
                                                 color: schedule[dataKey]!["close"] == null ? Colors.grey : Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -272,7 +274,27 @@ class _WeekItemState extends State<WeekItem> {
       ),
     );
   }
+
+  String _getDayName(int index) {
+    switch (index) {
+      case 0:
+        return "monday".tr();
+      case 1:
+        return "tuesday".tr();
+      case 2:
+        return "wednesday".tr();
+      case 3:
+        return "thursday".tr();
+      case 4:
+        return "friday".tr();
+      case 5:
+        return "saturday".tr();
+      case 6:
+        return "sunday".tr();
+      default:
+        return "";
+    }
+  }
 }
 
-List<String> days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 List<String> dayEn = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];

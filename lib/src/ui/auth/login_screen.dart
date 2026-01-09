@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               },
                               child: Text(
-                                "Forgot password ? ",
+                                "forgotPasswordQuestion".tr(),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14.sp,

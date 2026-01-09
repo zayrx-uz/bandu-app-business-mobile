@@ -1,4 +1,5 @@
 import 'package:bandu_business/src/helper/service/cache_service.dart';
+import 'package:bandu_business/src/helper/service/rx_bus.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
@@ -13,8 +14,13 @@ class BottomDialog {
     showModalBottomSheet(
       context: context,
       builder: (dialogContext) {
-        String currentLang = CacheService.getString('language');
-        if (currentLang.isEmpty) currentLang = 'ru';
+        final currentLocale = EasyLocalization.of(parentContext)?.locale ?? const Locale('ru', 'RU');
+        String currentLang = 'ru';
+        if (currentLocale.languageCode == 'en') {
+          currentLang = 'en';
+        } else if (currentLocale.languageCode == 'uz') {
+          currentLang = 'uz';
+        }
 
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
@@ -56,6 +62,7 @@ class BottomDialog {
                             CacheService.saveString('language', "en");
                             if (EasyLocalization.of(parentContext) != null) {
                               parentContext.setLocale(const Locale("en", "EN"));
+                              RxBus.post(tag: "language_changed", 1);
                             }
                             setState(() {
                               currentLang = "en";
@@ -104,6 +111,7 @@ class BottomDialog {
                             CacheService.saveString('language', "ru");
                             if (EasyLocalization.of(parentContext) != null) {
                               parentContext.setLocale(const Locale("ru", "RU"));
+                              RxBus.post(tag: "language_changed", 1);
                             }
                             setState(() {
                               currentLang = "ru";
@@ -152,6 +160,7 @@ class BottomDialog {
                             CacheService.saveString('language', "uz");
                             if (EasyLocalization.of(parentContext) != null) {
                               parentContext.setLocale(const Locale("uz", "UZ"));
+                              RxBus.post(tag: "language_changed", 1);
                             }
                             setState(() {
                               currentLang = "uz";

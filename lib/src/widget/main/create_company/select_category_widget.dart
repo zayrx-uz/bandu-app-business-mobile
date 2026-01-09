@@ -5,6 +5,7 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -27,12 +28,12 @@ class SelectCategoryWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Select Category", style: AppTextStyle.f500s16.copyWith(
+          Text("selectCategory".tr(), style: AppTextStyle.f500s16.copyWith(
             fontSize:  isTablet(context) ? 12.sp : 16.sp
           )),
           SizedBox(height: 8.h),
           DropdownFlutter<CategoryData>(
-            hintText: 'Select role',
+            hintText: "selectCategory".tr(),
 
             excludeSelected: false,
             hideSelectedFieldWhenExpanded: true,

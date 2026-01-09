@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,7 +59,7 @@ class _Open24ItemState extends State<Open24Item> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Open 24/7",
+              "open247".tr(),
               style: AppTextStyle.f500s16.copyWith(
                 fontSize: isTablet(context) ? 12.sp : 16.sp
               )
