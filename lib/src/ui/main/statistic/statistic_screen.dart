@@ -9,6 +9,7 @@ import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/statistic/statistic_item_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -49,39 +50,47 @@ class _StatisticScreenState extends State<StatisticScreen> {
           body: Column(
             children: [
               TopBarWidget(),
-              if(state is GetStatisticSuccessState)
-              data == null
-                  ? Center(
-                      child: CircularProgressIndicator.adaptive(
-                        backgroundColor: AppColor.black,
-                      ),
-                    )
-                  : Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
+              if (state is GetStatisticLoadingState && data == null)
+                Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator.adaptive(
+                      backgroundColor: AppColor.black,
+                    ),
+                  ),
+                )
+              else if (state is GetStatisticSuccessState && data != null)
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      getData();
+                      await Future.delayed(Duration(milliseconds: 500));
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Column(
                     children: [
                       SizedBox(height: 20.h),
                       StatisticItemWidget(
                         icon: AppIcons.coins,
-                        title: "Daily Revenue",
+                        title: "dailyRevenue".tr(),
                         desc: "${data!.totalRevenue.priceFormat()} UZS",
                       ),
                       SizedBox(height: 12.h),
                       StatisticItemWidget(
                         icon: AppIcons.users,
-                        title: "Incoming Customers",
+                        title: "incomingCustomers".tr(),
                         desc: data!.totalCustomers.toString(),
                       ),
                       SizedBox(height: 12.h),
                       StatisticItemWidget(
                         icon: AppIcons.shop,
-                        title: "Occupied Places",
+                        title: "occupiedPlaces".tr(),
                         desc: "0",
                       ),
                       SizedBox(height: 12.h),
                       StatisticItemWidget(
                         icon: AppIcons.shop,
-                        title: "Available Places",
+                        title: "availablePlaces".tr(),
                         desc: "0",
                       ),
                       SizedBox(height: 12.h),
@@ -128,7 +137,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
                                     SizedBox(width: 16.w),
                                     Expanded(
                                       child: Text(
-                                        "New Customers",
+                                        "newCustomers".tr(),
                                         style: AppTextStyle.f500s16
                                             .copyWith(
                                           color: AppColor.grey58,
@@ -154,14 +163,14 @@ class _StatisticScreenState extends State<StatisticScreen> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      "Full Name",
+                                      "fullName".tr(),
                                       style: AppTextStyle.f500s14.copyWith(
                                         color: AppColor.grey58,
                                       ),
                                     ),
                                     SizedBox(width: 64.w),
                                     Text(
-                                      "Phone Number",
+                                      "phoneNumber".tr(),
                                       style: AppTextStyle.f500s14.copyWith(
                                         color: AppColor.grey58,
                                       ),
@@ -212,13 +221,14 @@ class _StatisticScreenState extends State<StatisticScreen> {
                           ),
                         ),
 
-                      SizedBox(height: 20.h),
-                    ],
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-
-              if(state is HomeErrorState) Expanded(
+              )
+              else if (state is HomeErrorState)
+                Expanded(
                 child : Center(
                   child : EmptyWidget(text: state.message)
                 )

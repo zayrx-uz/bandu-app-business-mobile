@@ -32,6 +32,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     ///otp event
     on<OtpEvent>(_otp);
+
+    ///forgot password event
+    on<ForgotPasswordEvent>(_forgotPassword);
+
+    ///verify reset code event
+    on<VerifyResetCodeEvent>(_verifyResetCode);
+
+    ///reset password event
+    on<ResetPasswordEvent>(_resetPassword);
   }
 
   void _splashChange(SplashChangeEvent event, Emitter<AuthState> emit) async {
@@ -125,6 +134,60 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         LoginModel data = LoginModel.fromJson(result.result);
         HelperFunctions.saveLoginData(data);
         emit(OtpSuccessState());
+      } else {
+        emit(AuthErrorState(message: result.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+
+
+
+  void _forgotPassword(ForgotPasswordEvent event, Emitter<AuthState> emit) async {
+    emit(ForgotPasswordLoadingState());
+    try {
+      final result = await authRepository.forgotPassword(phoneNumber: event.phoneNumber);
+      if (result.isSuccess) {
+        final otpToken = result.result["data"]["data"]["otpToken"];
+        emit(ForgotPasswordSuccessState(otpToken: otpToken));
+      } else {
+        emit(AuthErrorState(message: result.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+  void _verifyResetCode(VerifyResetCodeEvent event, Emitter<AuthState> emit) async {
+    emit(VerifyResetCodeLoadingState());
+    try {
+      final result = await authRepository.verifyResetCode(
+        phoneNumber: event.phoneNumber,
+        code: event.code,
+        otpToken: event.otpToken,
+      );
+      if (result.isSuccess) {
+        final resetToken = result.result["data"]["data"]["resetToken"];
+        emit(VerifyResetCodeSuccessState(resetToken: resetToken));
+      } else {
+        emit(AuthErrorState(message: result.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+  void _resetPassword(ResetPasswordEvent event, Emitter<AuthState> emit) async {
+    emit(ResetPasswordLoadingState());
+    try {
+      final result = await authRepository.resetPassword(
+        resetToken: event.resetToken,
+        newPassword: event.newPassword,
+      );
+      if (result.isSuccess) {
+        emit(ResetPasswordSuccessState());
       } else {
         emit(AuthErrorState(message: result.result['message']));
       }

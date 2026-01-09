@@ -10,6 +10,7 @@ import 'package:bandu_business/src/ui/main/place/screen/edit_people_screen.dart'
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,9 +34,9 @@ class _PlaceScreenState extends State<PlaceScreen> {
   }
 
   void getData() {
-    BlocProvider.of<HomeBloc>(
-      context,
-    ).add(GetPlaceBusinessEvent(companyId: HelperFunctions.getCompanyId() ?? 0));
+    BlocProvider.of<HomeBloc>(context).add(
+      GetPlaceBusinessEvent(companyId: HelperFunctions.getCompanyId() ?? 0),
+    );
   }
 
   @override
@@ -49,7 +50,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
           }
         },
         builder: (context, state) {
-          if (data == null) {
+          if (state is GetPlaceBusinessLoadingState && data == null) {
             return Center(
               child: CircularProgressIndicator.adaptive(
                 backgroundColor: AppColor.black,
@@ -60,11 +61,17 @@ class _PlaceScreenState extends State<PlaceScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TopBarWidget(),
-              if (data!.isNotEmpty)
+              if (data != null && data!.isNotEmpty)
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 24.h),
-                    child: Container(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      getData();
+                      await Future.delayed(Duration(milliseconds: 500));
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(vertical: 24.h),
+                      child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Wrap(
                         spacing: 16.w,
@@ -72,14 +79,27 @@ class _PlaceScreenState extends State<PlaceScreen> {
                         children: [
                           for (int i = 0; i < data!.length; i++) item(data![i]),
                         ],
+                        ),
                       ),
                     ),
                   ),
                 )
-              else
+              else if (data != null && data!.isEmpty)
                 Expanded(
-                  child: Center(
-                    child : EmptyWidget(text: "No places available. Please add a place" , icon: AppIcons.chair,)
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      getData();
+                      await Future.delayed(Duration(milliseconds: 500));
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Center(
+                        child: EmptyWidget(
+                          text: "noPlacesAvailable".tr(),
+                          icon: AppIcons.chair,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
             ],
@@ -125,7 +145,8 @@ class _PlaceScreenState extends State<PlaceScreen> {
           builder: (context) {
             return BlocProvider(
               create: (_) => HomeBloc(homeRepository: HomeRepository()),
-              child:  EditPlaceScreen(
+              child: EditPlaceScreen(
+                name: item.name,
                 id: item.id,
                 number: item.capacity,
               ),
@@ -164,40 +185,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
             SizedBox(height: 6.h),
             AppSvgAsset(AppIcons.placeSelect),
             SizedBox(height: 4.h),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Container(
-            //       padding: EdgeInsets.symmetric(
-            //         horizontal: 16.w,
-            //         vertical: 2.h,
-            //       ),
-            //       decoration: BoxDecoration(
-            //         color: selected.contains(item.id)
-            //             ? AppColor.yellowDB
-            //             : AppColor.greyF4,
-            //         border: Border.all(
-            //           width: 0.5.w,
-            //           color: selected.contains(item.id)
-            //               ? AppColor.yellowFF
-            //               : AppColor.greyE5,
-            //         ),
-            //         borderRadius: BorderRadius.only(
-            //           topLeft: Radius.circular(6.r),
-            //           topRight: Radius.circular(6.r),
-            //         ),
-            //       ),
-            //       child: Text(
-            //         "13:00",
-            //         style: AppTextStyle.f500s12.copyWith(
-            //           color: selected.contains(item.id)
-            //               ? AppColor.black
-            //               : AppColor.greyA7,
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
           ],
         ),
       ),

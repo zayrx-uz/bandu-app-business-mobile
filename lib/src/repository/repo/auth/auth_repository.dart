@@ -22,6 +22,29 @@ class AuthRepository implements AbstractAuthRepository {
     return await authProvider.otp(otpToken, code);
   }
 
+
+  @override
+  Future<HttpResult> forgotPassword({required String phoneNumber}) async {
+    return await authProvider.forgotPassword(phoneNumber);
+  }
+
+  @override
+  Future<HttpResult> verifyResetCode({
+    required String phoneNumber,
+    required String code,
+    required String otpToken,
+  }) async {
+    return await authProvider.verifyResetCode(phoneNumber, code, otpToken);
+  }
+
+  @override
+  Future<HttpResult> resetPassword({
+    required String resetToken,
+    required String newPassword,
+  }) async {
+    return await authProvider.resetPassword(resetToken, newPassword);
+  }
+
   @override
   Future<HttpResult> register({
     required String phone,

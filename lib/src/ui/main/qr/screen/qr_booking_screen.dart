@@ -8,6 +8,7 @@ import 'package:bandu_business/src/ui/main/qr/screen/receipt_item_widget.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,7 +43,7 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
         } else if (state is ConfirmBookSuccessState) {
           CenterDialog.successDialog(
             context,
-            "Booking confirmed successfully",
+            "bookingConfirmedSuccessfully".tr(),
             () {
               Navigator.pop(context);
             },
@@ -70,7 +71,7 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text("Book Info", style: AppTextStyle.f600s18),
+                        child: Text("bookInfo".tr(), style: AppTextStyle.f600s18),
                       ),
                       AppIconButton(
                         icon: AppIcons.close,
@@ -92,29 +93,29 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
                   child: Column(
                     children: [
                       ReceiptItemWidget(
-                        title: "Company",
+                        title: "company".tr(),
                         data: data!.company.name,
                       ),
                       ReceiptItemWidget(
-                        title: "Booking Time",
+                        title: "bookingTime".tr(),
                         data:
                             "${data!.bookingTime.toHHMM()} ${data!.bookingTime.toDDMMYYY()}",
                       ),
                       for (int i = 0; i < data!.places.length; i++)
                         ReceiptItemWidget(
-                          title: "Place ${i + 1}",
+                          title: "${"place".tr()} ${i + 1}",
                           data: data!.places[i].name,
                         ),
                       ReceiptItemWidget(
-                        title: "Number of People",
+                        title: "numberOfPeople".tr(),
                         data: data!.numbersOfPeople.toString(),
                       ),
                       ReceiptItemWidget(
-                        title: "Total Price",
+                        title: "totalPrice".tr(),
                         data: data!.totalPrice.priceFormat(),
                       ),
                       ReceiptItemWidget(
-                        title: "Status",
+                        title: "status".tr(),
                         data: data!.status.capitalizeFirstLetter(),
                         dataColor: data!.status == "pending"
                             ? AppColor.yellowFF
@@ -132,7 +133,7 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
                       ).add(ConfirmBookEvent(bookId: data!.id));
                     },
                     loading: loading,
-                    text: "Confirm booking",
+                    text: "confirmBooking".tr(),
                   ),
                 SizedBox(height: 24.h),
               ],

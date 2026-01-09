@@ -47,10 +47,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<DeletePlaceEvent>(_deletePlace);
     on<GetStatisticEvent>(_onGetStatistic);
     on<GetEmployeeEvent>(_onGetEmployee);
+    on<DeleteEmployeeEvent>(_onDeleteEmployee);
     on<SaveCompanyEvent>(_onSaveCompany);
     on<UpdateCompanyEvent>(_onUpdateCompany);
     on<DeleteCompanyEvent>(_onDeleteCompany);
     on<SaveEmployeeEvent>(_onSaveEmployee);
+    on<UpdateEmployeeEvent>(_onUpdateEmployee);
     on<GetQrCodeEvent>(_onGetQrCode);
     on<GetQrBookCodeEvent>(_onGetQrBookCode);
     on<ConfirmBookEvent>(_onConfirmBook);
@@ -240,7 +242,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(UserUpdateLoadingState());
     try {
       var data = event.data;
-      if (data.profilePicture[0] != "h") {
+      if (data.profilePicture.isNotEmpty &&
+          !data.profilePicture.startsWith("http")) {
         final response = await homeRepository.uploadImage(
           filePath: data.profilePicture,
         );
@@ -253,11 +256,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           return;
         }
       }
-      final result = await homeRepository.updateUserInfo(data: event.data);
+      final result = await homeRepository.updateUserInfo(data: data);
       if (result.isSuccess) {
         final dt = LoginModel.fromJson(result.result);
         HelperFunctions.saveLoginData(dt);
         emit(UserUpdateSuccessState());
+        final getMeResult = await homeRepository.getMe();
+        if (getMeResult.isSuccess) {
+          final meData = LoginModel.fromJson(getMeResult.result);
+          emit(GetMeSuccessState(data: meData.data));
+        }
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -398,6 +406,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+
+  void _onDeleteEmployee(DeleteEmployeeEvent event, Emitter<HomeState> emit) async {
+    emit(DeleteEmployeeLoadingState());
+    try {
+      final result = await homeRepository.deleteEmployee(id: event.id);
+      if (result.isSuccess) {
+        emit(DeleteEmployeeSuccessState());
+      } else {
+        emit(HomeErrorState(message: result.error.toString()));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: e.toString()));
+    }
+  }
+
   void _onSaveCompany(SaveCompanyEvent event, Emitter<HomeState> emit) async {
     emit(SaveCompanyLoadingState());
     try {
@@ -497,6 +520,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       if (result.isSuccess) {
         emit(SaveEmployeeSuccessState());
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+
+  void _onUpdateEmployee(UpdateEmployeeEvent event, Emitter<HomeState> emit) async {
+    emit(UpdateEmployeeLoadingState());
+    try {
+      final result = await homeRepository.updateEmployee(
+        name: event.name,
+        phone: event.phone,
+        id: event.id,
+        role: event.role,
+      );
+      if (result.isSuccess) {
+        emit(UpdateEmployeeSuccessState());
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }

@@ -1,11 +1,11 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
-import 'package:bandu_business/src/widget/auth/input_password_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_phone_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:bandu_business/src/widget/auth/select_role_widget.dart';
@@ -15,25 +15,55 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class AddEmployeeScreen extends StatefulWidget {
-  const AddEmployeeScreen({super.key});
+class UpdateEmployeeScreen extends StatefulWidget {
+  const UpdateEmployeeScreen({super.key, required this.data});
+  final EmployeeItemData data;
 
   @override
-  State<AddEmployeeScreen> createState() => _AddEmployeeScreenState();
+  State<UpdateEmployeeScreen> createState() => _UpdateEmployeeScreenState();
 }
 
-class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
+class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String role = "";
 
+  // @override
+  // void initState() {
+  //   nameController.text = widget.data.fullName;
+  //   phoneController.text = widget.data.authProviders.first.phoneNumber.substring(3 , widget.data.authProviders.first.phoneNumber.length);
+  //   role = widget.data.role;
+  //   super.initState();
+  // }
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    nameController.text = widget.data.fullName;
+    role = widget.data.role;
+
+    // 1. Raqamni olish (+998 ni kesish)
+    String rawPhone = widget.data.authProviders.first.phoneNumber;
+    if (rawPhone.startsWith("+998")) {
+      rawPhone = rawPhone.substring(4);
+    } else if (rawPhone.startsWith("998")) {
+      rawPhone = rawPhone.substring(3);
+    }
+
+    // 2. MUHIM: Global maskani tozalab, yangi qiymatni formatlab beramiz
+    // Bu maskani controllerga o'rnatishdan oldin uning ichki holatini yangilaydi
+    phoneController.text = uzPhoneMask.maskText(rawPhone);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
-        if (state is SaveEmployeeSuccessState) {
-          AppService.successToast(context, "employeeAdded".tr());
+        if (state is UpdateEmployeeSuccessState) {
+          AppService.successToast(context, "employeeUpdated".tr());
           Navigator.pop(context);
         } else if (state is HomeErrorState) {
           CenterDialog.errorDialog(context, state.message);
@@ -60,7 +90,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "addEmployee".tr(),
+                                  "updateEmployee".tr(),
                                   style: AppTextStyle.f600s18,
                                 ),
                               ),
@@ -88,8 +118,6 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                         SizedBox(height: 12.h),
                         InputPhoneWidget(controller: phoneController),
                         SizedBox(height: 12.h),
-                        InputPasswordWidget(controller: passwordController),
-                        SizedBox(height: 12.h),
                         SelectRoleWidget(
                           role: (d) {
                             role = d;
@@ -103,8 +131,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                     onTap: () {
                       if (nameController.text.isEmpty ||
                           role == "" ||
-                          passwordController.text.isEmpty ||
-                          phoneController.text.isEmpty) {
+                           phoneController.text.isEmpty) {
                         CenterDialog.errorDialog(
                           context,
                           "pleaseFillAllFields".tr(),
@@ -112,10 +139,10 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                         return;
                       } else {
                         BlocProvider.of<HomeBloc>(context).add(
-                          SaveEmployeeEvent(
+                          UpdateEmployeeEvent(
                             name: nameController.text,
                             phone: "998${phoneController.text}",
-                            password: passwordController.text,
+                            id: widget.data.id,
                             role: role.replaceAll(" ", "_").toUpperCase(),
                           ),
                         );

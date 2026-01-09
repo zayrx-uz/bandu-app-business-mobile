@@ -41,24 +41,23 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 
-	<!-- Photo Library -->
+
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Bandu Business needs access to your photo library so you can select and upload business photos such as service images, profile pictures, or portfolio photos.</string>
 
-	<!-- Camera -->
+
 	<key>NSCameraUsageDescription</key>
 	<string>Bandu Business uses the camera so you can take photos of your services or products and upload them directly to your business profile.</string>
 
-	<!-- Location (When In Use) -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location is used to show your business location on the map and help customers find nearby services while you are using the app.</string>
 
-	<!-- Location (Always) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to show your current position on the map and help you find nearby services.</string>
+
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Your location may be used to keep your business location updated on the map and improve service discovery even when the app is running in the background.</string>
 
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Your location is used to display your business on the map and help customers discover nearby services, both while using the app and in the background.</string>
+	<string>We use your location to keep showing your position on the map and provide navigation updates even when the app is in the background.</string>
 
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

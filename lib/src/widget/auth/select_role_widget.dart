@@ -3,6 +3,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,10 +19,10 @@ class SelectRoleWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Company Role", style: AppTextStyle.f500s16),
+          Text("companyRole".tr(), style: AppTextStyle.f500s16),
           SizedBox(height: 6.h),
           DropdownFlutter<String>(
-            hintText: 'Select role',
+            hintText: "selectRole".tr(),
             excludeSelected: false,
             hideSelectedFieldWhenExpanded: true,
             canCloseOutsideBounds: false,
@@ -33,7 +34,7 @@ class SelectRoleWidget extends StatelessWidget {
               closedBorder: Border.all(width: 1.h, color: AppColor.greyE5),
               headerStyle: AppTextStyle.f500s16,
             ),
-            items: ['Business Owner', 'Moderator', 'Manager', 'Worker'],
+            items: ["businessOwner".tr(), "moderator".tr(), "manager".tr(), "worker".tr()],
             listItemBuilder: (a, b, s, d) {
               return Container(
                 color: Colors.transparent,

@@ -46,6 +46,8 @@ abstract class AbstractHomeRepository {
 
   Future<HttpResult> getEmployee();
 
+  Future<HttpResult> deleteEmployee({required int id});
+
   Future<HttpResult> getResourceCategory();
 
   Future<HttpResult> getQrCode({required String url});
@@ -57,6 +59,13 @@ abstract class AbstractHomeRepository {
     required String phone,
     required String password,
     required String role,
+  });
+
+  Future<HttpResult> updateEmployee({
+    required String name,
+    required String phone,
+    required String role,
+    required int id,
   });
 
   Future<HttpResult> uploadImage({required String filePath});

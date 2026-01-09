@@ -1,6 +1,7 @@
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,20 +17,20 @@ class PrivacyWidget extends StatelessWidget {
         text: TextSpan(
           children: [
             TextSpan(
-              text: "By Login or Register, you agree to our",
+              text: "byLoginOrRegister".tr(),
               style: AppTextStyle.f400s12.copyWith(color: AppColor.grey71 , fontSize:  isTablet(context) ? 8.sp : 12.sp),
             ),
             TextSpan(
-              text: " Service Agreement ",
+              text: "serviceAgreement".tr(),
               recognizer: TapGestureRecognizer()..onTap = () {},
               style: AppTextStyle.f400s12.copyWith(color: AppColor.black09 , fontSize: isTablet(context) ? 8.sp : 12.sp),
             ),
             TextSpan(
-              text: "and ",
+              text: "and".tr(),
               style: AppTextStyle.f400s12.copyWith(color: AppColor.grey71 , fontSize: isTablet(context) ? 8.sp : 12.sp),
             ),
             TextSpan(
-              text: "Terms and Conditions.",
+              text: "termsAndConditions".tr(),
               recognizer: TapGestureRecognizer()..onTap = () {},
               style: AppTextStyle.f400s12.copyWith(
                 color: AppColor.black09,

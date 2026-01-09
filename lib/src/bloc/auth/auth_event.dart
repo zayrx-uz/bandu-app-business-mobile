@@ -59,3 +59,43 @@ class OtpEvent extends AuthEvent {
 }
 
 class SplashChangeEvent extends AuthEvent {}
+
+
+
+
+class ForgotPasswordEvent extends AuthEvent {
+  final String phoneNumber;
+
+  ForgotPasswordEvent({required this.phoneNumber});
+
+  @override
+  List<Object?> get props => [phoneNumber];
+}
+
+class VerifyResetCodeEvent extends AuthEvent {
+  final String phoneNumber;
+  final String code;
+  final String otpToken;
+
+  VerifyResetCodeEvent({
+    required this.phoneNumber,
+    required this.code,
+    required this.otpToken,
+  });
+
+  @override
+  List<Object?> get props => [phoneNumber, code, otpToken];
+}
+
+class ResetPasswordEvent extends AuthEvent {
+  final String resetToken;
+  final String newPassword;
+
+  ResetPasswordEvent({
+    required this.resetToken,
+    required this.newPassword,
+  });
+
+  @override
+  List<Object?> get props => [resetToken, newPassword];
+}

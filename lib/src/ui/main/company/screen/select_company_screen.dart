@@ -14,6 +14,7 @@ import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +75,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
           setState(() {});
         } else if (state is UpdateCompanySuccessState) {
           updatingId = null;
-          AppService.successToast(context, "Company updated");
+          AppService.successToast(context, "companyUpdated".tr());
           getData();
         } else if (state is HomeErrorState) {
           deletingId = null;
@@ -95,7 +96,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
               children: [
                 TopBarWidget(
                   isAppName: false,
-                  text: "Select company",
+                  text: "selectCompany".tr(),
                   isBack: widget.canPop,
                 ),
                 if (data == null)
@@ -117,7 +118,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                         ),
                         SizedBox(height: 10.h),
                         Text(
-                          "No data found",
+                          "noDataFound".tr(),
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 20.sp,
@@ -126,7 +127,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                         ),
                         SizedBox(height: 10.h),
                         Text(
-                          "Add a company",
+                          "addCompany".tr(),
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 12.sp,
@@ -208,7 +209,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                                 else ...[
                                                   Icon(Icons.edit, color: Colors.white, size: 22.sp),
                                                   Text(
-                                                    "Edit",
+                                                    "edit".tr(),
                                                     style: TextStyle(color: Colors.white, fontSize: isTablet(context) ? 6.sp : 10.sp),
                                                   ),
                                                 ],
@@ -255,7 +256,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                                 else ...[
                                                   Icon(Icons.delete_outline, color: Colors.white, size: 22.sp),
                                                   Text(
-                                                    "Delete",
+                                                    "delete".tr(),
                                                     style: TextStyle(color: Colors.white, fontSize: isTablet(context) ? 6.sp : 10.sp),
                                                   ),
                                                 ],
@@ -330,7 +331,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                           AppService.replacePage(context, const MainScreen());
                         }
                       },
-                      text: "Select company",
+                      text: "selectCompany".tr(),
                     ),
                   ),
               ],

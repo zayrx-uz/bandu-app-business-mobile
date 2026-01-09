@@ -48,6 +48,7 @@ dependencies:
   v: ^0.0.0-origin.0.1
   rename: ^3.1.0
   flutter_slidable: ^4.0.3
+  easy_localization: ^3.0.8
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,7 @@ flutter:
     - assets/fonts/
     - assets/fonts/spring/
     - assets/images/
+    - assets/translations/
 
   fonts:
     - family: Fontspring-DEMO

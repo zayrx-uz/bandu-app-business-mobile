@@ -53,6 +53,31 @@ class AuthProvider extends ApiProvider {
     return await postRequest(ApiHelper.otp, body);
   }
 
+  ///forgot password
+  Future<HttpResult> forgotPassword(String phoneNumber) async {
+    final body = {'phoneNumber': phoneNumber};
+    return await postRequest(ApiHelper.forgotPassword, body);
+  }
+
+  ///verify reset code
+  Future<HttpResult> verifyResetCode(String phoneNumber, String code, String otpToken) async {
+    final body = {
+      'phoneNumber': phoneNumber,
+      'code': code,
+      'otpToken': otpToken,
+    };
+    return await postRequest(ApiHelper.verifyResetCode, body);
+  }
+
+  ///reset password
+  Future<HttpResult> resetPassword(String resetToken, String newPassword) async {
+    final body = {
+      'resetToken': resetToken,
+      'newPassword': newPassword,
+    };
+    return await postRequest(ApiHelper.resetPassword, body);
+  }
+
   ///media
   Future<HttpResult> uploadImage(String filePath) async {
     var request = http.MultipartRequest('POST', Uri.parse(ApiHelper.media));

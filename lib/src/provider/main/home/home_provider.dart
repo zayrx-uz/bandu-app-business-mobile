@@ -119,6 +119,13 @@ class HomeProvider extends ApiProvider {
     );
   }
 
+  ///remove employee
+  Future<HttpResult> deleteEmployee({required int id }) async {
+    return await deleteRequest(
+      "${ApiHelper.getCompany}/${HelperFunctions.getCompanyId()}/members/$id",
+    );
+  }
+
   ///get qr code
   Future<HttpResult> getQrCode(String url) async {
     return await getRequest(url);
@@ -150,6 +157,23 @@ class HomeProvider extends ApiProvider {
       "companyId": HelperFunctions.getCompanyId(),
     };
     return await postRequest(ApiHelper.getEmployee, body);
+  }
+
+
+  ///update employee
+  Future<HttpResult> updateEmployee(
+    String name,
+    String phone,
+    int id,
+    String role,
+
+  ) async {
+    var body = {
+      "fullName": name,
+      "phoneNumber": phone.replaceAll(" ", ""),
+      "role": role,
+    };
+    return await patchRequest("${ApiHelper.saveCompany}/${HelperFunctions.getCompanyId()}/members/$id", body);
   }
 
   ///get statistic

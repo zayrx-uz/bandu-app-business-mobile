@@ -17,5 +17,18 @@ abstract class AbstractAuthRepository {
 
   Future<HttpResult> otp({required String otpToken, required String code});
 
+  Future<HttpResult> forgotPassword({required String phoneNumber});
+
+  Future<HttpResult> verifyResetCode({
+    required String phoneNumber,
+    required String code,
+    required String otpToken,
+  });
+
+  Future<HttpResult> resetPassword({
+    required String resetToken,
+    required String newPassword,
+  });
+
   Future<HttpResult> uploadImage({required String filePath});
 }

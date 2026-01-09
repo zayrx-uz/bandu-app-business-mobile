@@ -8,15 +8,17 @@ import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EditPlaceScreen extends StatefulWidget {
-  const EditPlaceScreen({super.key, required this.id, required this.number});
+  const EditPlaceScreen({super.key, required this.id, required this.number, required this.name});
   final int id;
   final int number;
+  final String name;
 
   @override
   State<EditPlaceScreen> createState() => _EditPlaceScreenState();
@@ -27,13 +29,13 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
   int number = 0;
   String? selectedItem;
   var n = [1, 2, 4, 6, 8, 12];
-  List<String> item = [
-    "1 People",
-    "2 People",
-    "4 People",
-    "6 People",
-    "8 People",
-    "12 People",
+  List<String> get item => [
+    "1 ${"people".tr()}",
+    "2 ${"people".tr()}",
+    "4 ${"people".tr()}",
+    "6 ${"people".tr()}",
+    "8 ${"people".tr()}",
+    "12 ${"people".tr()}",
   ];
   TextEditingController nameController = TextEditingController();
 
@@ -61,12 +63,12 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
       },
       listener: (context, state) {
         if (state is UpdatePlaceSuccessState) {
-          AppService.successToast(context, "Place updated");
+          AppService.successToast(context, "placeUpdated".tr());
           Navigator.pop(context);
         }
 
         if (state is DeletePlaceSuccessState) {
-          AppService.successToast(context, "Place deleted");
+          AppService.successToast(context, "placeDeleted".tr());
           Navigator.pop(context);
         }
         if(state is HomeErrorState){
@@ -89,7 +91,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text("Add Place", style: AppTextStyle.f600s18),
+                          child: Text("${"editPlace".tr()} (${widget.name})", style: AppTextStyle.f600s18),
                         ),
                         AppIconButton(
                           icon: AppIcons.close,
@@ -105,7 +107,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(left: 16.w),
                     child: Text(
-                      "Number of People",
+                      "numberOfPeople".tr(),
                       style: AppTextStyle.f500s16.copyWith(
                         color: AppColor.black09,
                       ),
@@ -115,7 +117,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 16.w),
                     child: DropdownFlutter<String>(
-                      hintText: 'Enter Number',
+                      hintText: "enterNumber".tr(),
                       initialItem: selectedItem,
                       excludeSelected: false,
                       hideSelectedFieldWhenExpanded: true,
@@ -181,7 +183,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                               );
                             }
                           },
-                          text: "Edit",
+                          text: "edit".tr(),
                           loading: state is UpdatePlaceLoadingState,
                           txtColor:
                           number != 0 ? AppColor.white : AppColor.greyA7,

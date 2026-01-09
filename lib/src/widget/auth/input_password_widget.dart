@@ -5,12 +5,15 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bounce/bounce.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InputPasswordWidget extends StatefulWidget {
   final String? title;
   final String? hint;
+  final String? trailingMessage;
+
 
   final TextEditingController controller;
 
@@ -18,7 +21,7 @@ class InputPasswordWidget extends StatefulWidget {
     super.key,
     this.title,
     required this.controller,
-    this.hint,
+    this.hint, this.trailingMessage,
   });
 
   @override
@@ -35,11 +38,29 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.title ?? "Password", style: AppTextStyle.f500s16.copyWith(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.title ?? "password".tr(),
+                      style: AppTextStyle.f500s16.copyWith(
+                          fontSize : isTablet(context) ? 12.sp : 16.sp
+                      ),
+                    ),
+                  ),
 
-             fontSize:
-             isTablet(context) ? 12.sp : 16.sp
-          )),
+                ],
+              ),
+              if (widget.trailingMessage != null)
+                Text(
+                  widget.trailingMessage!,
+                  style: AppTextStyle.f400s12.copyWith(color: AppColor.redED),
+                ),
+            ],
+          ),
           SizedBox(height: 8.h),
           Container(
             height: 48.h,
@@ -63,7 +84,7 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: widget.hint ?? "Enter Password",
+                      hintText: widget.hint ?? "enterPassword".tr(),
                       hintStyle: AppTextStyle.f400s16.copyWith(
                         color: AppColor.grey77,
                         fontSize:   isTablet(context) ? 12.sp : 16.sp

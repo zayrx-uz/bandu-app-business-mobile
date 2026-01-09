@@ -5,6 +5,7 @@ import 'package:bandu_business/src/model/api/main/statistic/statistic_model.dart
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,7 +84,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text("Cash Flow", style: AppTextStyle.f600s18),
+                        child: Text("cashFlow".tr(), style: AppTextStyle.f600s18),
                       ),
                       AppIconButton(
                         icon: AppIcons.close,
@@ -117,7 +118,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                       // SizedBox(width: 4),
                       // Text("-3.5%", style: TextStyle(color: Colors.red)),
                       // SizedBox(width: 8),
-                      Text("Last updated: ${DateTime.now().toDDMMYYY()}"),
+                      Text("${"lastUpdated".tr()}: ${DateTime.now().toDDMMYYY()}"),
                     ],
                   ),
                 ),
@@ -138,7 +139,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                             height: (280.h - 40.h) / 4,
                             child: Center(
                               child: Text(
-                                "${5 - i - 1} Mln",
+                                "${5 - i - 1} ${"mln".tr()}",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.black,
@@ -234,7 +235,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                                     getTooltipItem:
                                         (group, groupIndex, rod, rodIndex) {
                                           return BarTooltipItem(
-                                            "Revenue\n",
+                                            "${"revenue".tr()}\n",
                                             AppTextStyle.f500s16,
                                             children: [
                                               TextSpan(

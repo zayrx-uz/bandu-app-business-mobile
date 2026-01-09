@@ -2,6 +2,7 @@ import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,18 +23,18 @@ class SelectGenderWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Gender", style: AppTextStyle.f500s16),
+          Text("gender".tr(), style: AppTextStyle.f500s16),
           SizedBox(height: 6.h),
           Row(
             children: [
-              selectButton(context, AppIcons.male, "Male", isMale, () {
+              selectButton(context, AppIcons.male, "male".tr(), isMale, () {
                 onTap(true);
               }),
               SizedBox(width: 8.w),
               selectButton(
                 context,
                 AppIcons.female,
-                "Female",
+                "female".tr(),
                 isMale != null ? !isMale! : null,
                 () {
                   onTap(false);

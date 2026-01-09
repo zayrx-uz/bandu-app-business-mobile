@@ -14,6 +14,7 @@ import 'package:bandu_business/src/ui/main/settings/settings_screen.dart';
 import 'package:bandu_business/src/ui/main/statistic/statistic_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,7 +72,10 @@ class _MainScreenState extends State<MainScreen> {
                   create: (_) => HomeBloc(homeRepository: HomeRepository()),
                   child: EmployerScreen(),
                 ),
-                SettingsScreen(),
+                BlocProvider(
+                  create: (_) => HomeBloc(homeRepository: HomeRepository()),
+                  child: SettingsScreen(),
+                ),
               ][select],
               bottomNavigationBar: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -87,8 +91,8 @@ class _MainScreenState extends State<MainScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        buttons("Home", 0),
-                        buttons("Places", 1),
+                        buttons("home".tr(), 0),
+                        buttons("places".tr(), 1),
                         CupertinoButton(
                           padding: EdgeInsets.zero,
                           onPressed: () {
@@ -104,8 +108,8 @@ class _MainScreenState extends State<MainScreen> {
                             child: Center(child: AppSvgAsset(AppIcons.scan)),
                           ),
                         ),
-                        buttons("Employer", 2),
-                        buttons("Settings", 3),
+                        buttons("employer".tr(), 2),
+                        buttons("settings".tr(), 3),
                       ],
                     ),
                   ),

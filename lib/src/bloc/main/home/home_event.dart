@@ -159,6 +159,15 @@ class GetEmployeeEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class DeleteEmployeeEvent extends HomeEvent {
+  final int id;
+
+  DeleteEmployeeEvent(this.id);
+
+  @override
+  List<Object?> get props => [];
+}
+
 class SaveCompanyEvent extends HomeEvent {
   final CreateCompanyModel data;
 
@@ -202,6 +211,24 @@ class SaveEmployeeEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [name, phone, password, role];
+}
+
+
+class UpdateEmployeeEvent extends HomeEvent {
+  final String name;
+  final String phone;
+  final String role;
+  final int id;
+
+  UpdateEmployeeEvent({
+    required this.name,
+    required this.phone,
+    required this.role,
+    required this.id,
+  });
+
+  @override
+  List<Object?> get props => [name, phone, role];
 }
 
 class GetQrCodeEvent extends HomeEvent {

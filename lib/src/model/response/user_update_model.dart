@@ -1,27 +1,57 @@
 class UserUpdateModel {
   String fullName;
-  String birthDate;
-  bool gender;
+  String? firstName;
+  String? lastName;
+  String? birthDate;
+  String? gender;
   String profilePicture;
   String phoneNumber;
-  String password;
+  String? password;
 
   UserUpdateModel({
     required this.fullName,
-    required this.birthDate,
-    required this.gender,
+    this.firstName,
+    this.lastName,
+    this.birthDate,
+    this.gender,
     required this.profilePicture,
     required this.phoneNumber,
-    required this.password,
+    this.password,
   });
 
-  Map<String, dynamic> toJson() => {
-    "fullName": fullName,
-    "birthDate":
-        "${birthDate.split("/").last}-${birthDate.substring(3, 5)}-${birthDate.split("/").first}",
-    "gender": gender ? "MALE" : "FEMALE",
-    "profilePicture": profilePicture,
-    "phoneNumber": phoneNumber,
-    "password": password,
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {
+      "fullName": fullName,
+      "profilePicture": profilePicture,
+      "phoneNumber": phoneNumber,
+    };
+
+    if (firstName != null && firstName!.isNotEmpty) {
+      json["firstName"] = firstName;
+    }
+
+    if (lastName != null && lastName!.isNotEmpty) {
+      json["lastName"] = lastName;
+    }
+
+    if (birthDate != null && birthDate!.isNotEmpty) {
+      try {
+        final parts = birthDate!.split("/");
+        if (parts.length == 3) {
+          json["birthDate"] =
+              "${parts[2]}-${parts[1]}-${parts[0].padLeft(2, '0')}";
+        }
+      } catch (_) {}
+    }
+
+    if (gender != null && gender!.isNotEmpty) {
+      json["gender"] = gender;
+    }
+
+    if (password != null && password!.isNotEmpty) {
+      json["password"] = password;
+    }
+
+    return json;
+  }
 }

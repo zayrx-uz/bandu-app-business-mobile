@@ -7,6 +7,7 @@ import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/privacy_widget.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
 import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,14 +35,14 @@ class _OnboardScreenState extends State<OnboardScreen> {
               fit : BoxFit.cover
             ),
             SizedBox(height: 12.h),
-            Text("Exclusive Services", style: AppTextStyle.f600s24.copyWith(
+            Text("exclusiveServices".tr(), style: AppTextStyle.f600s24.copyWith(
               fontSize: isTablet(context) ? 18.sp : 24.sp
             )),
             SizedBox(height: 8.h),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Text(
-                "Redeem points for exciting vouchers, discounts, and special offers from top brands.",
+                "redeemPointsDescription".tr(),
                 style: AppTextStyle.f400s16.copyWith(color: AppColor.greyA7 , fontSize: isTablet(context) ? 12.sp : 16.sp),
                 textAlign: TextAlign.center,
               ),
@@ -52,14 +53,14 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 BottomDialog.selectLogin(context);
               },
               margin: isTablet(context) ? EdgeInsets.symmetric(horizontal: 50.w) : EdgeInsets.symmetric(horizontal: 20.w),
-              text: "Login",
+              text: "login".tr(),
             ),
             SizedBox(height: 12.h),
             AppButton(
               onTap: () {
                 AppService.changePage(context, RegisterScreen());
               },
-              text: "Register",
+              text: "register".tr(),
               style: AppTextStyle.f600s16.copyWith(
                  fontSize:  isTablet(context) ? 12.sp : 16.sp
               ),

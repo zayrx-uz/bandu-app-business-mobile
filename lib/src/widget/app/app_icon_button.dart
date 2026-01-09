@@ -1,12 +1,14 @@
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppIconButton extends StatelessWidget {
   final String icon;
   final double? height, width, borderRadius;
   final Color? backColor, iconColor;
+  final bool? loading;
   final Function() onTap;
 
   const AppIconButton({
@@ -18,6 +20,8 @@ class AppIconButton extends StatelessWidget {
     this.borderRadius,
     this.backColor,
     this.iconColor,
+    this.loading,
+
   });
 
   @override
@@ -41,7 +45,7 @@ class AppIconButton extends StatelessWidget {
           ],
         ),
         child: Center(
-          child: AppSvgAsset(icon, color: iconColor ?? AppColor.black),
+          child: loading != null && loading! ? CircularProgressIndicator.adaptive() : AppSvgAsset(icon, color: iconColor ?? AppColor.black),
         ),
       ),
     );

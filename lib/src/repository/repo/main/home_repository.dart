@@ -105,6 +105,12 @@ class HomeRepository implements AbstractHomeRepository {
     return await homeProvider.getEmployee();
   }
 
+
+  @override
+  Future<HttpResult> deleteEmployee({required int id}) async {
+    return await homeProvider.deleteEmployee(id: id);
+  }
+
   @override
   Future<HttpResult> saveCompany({required CreateCompanyModel data}) async {
     return await homeProvider.saveCompany(data);
@@ -131,6 +137,16 @@ class HomeRepository implements AbstractHomeRepository {
     required String role,
   }) async {
     return await homeProvider.savEmploye(name, phone, password, role);
+  }
+
+  @override
+  Future<HttpResult> updateEmployee({
+    required String name,
+    required String phone,
+    required String role,
+    required int id,
+  }) async {
+    return await homeProvider.updateEmployee(name, phone,id , role);
   }
 
   @override

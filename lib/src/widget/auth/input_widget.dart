@@ -12,6 +12,8 @@ class InputWidget extends StatelessWidget {
   final TextEditingController controller;
   final String? rightIcon;
   final List<TextInputFormatter>? format;
+  final VoidCallback? onRightIconTap;
+  final bool readOnly;
 
   const InputWidget({
     super.key,
@@ -20,6 +22,8 @@ class InputWidget extends StatelessWidget {
     required this.hint,
     this.rightIcon,
     this.format,
+    this.onRightIconTap,
+    this.readOnly = false,
   });
 
   @override
@@ -51,6 +55,7 @@ class InputWidget extends StatelessWidget {
                     textCapitalization: TextCapitalization.sentences,
                     controller: controller,
                     inputFormatters: format,
+                    readOnly: readOnly,
                     style: AppTextStyle.f500s16.copyWith(
                       color: AppColor.black09,
                       fontSize:  isTablet(context) ? 12.sp : 16.sp
@@ -67,7 +72,10 @@ class InputWidget extends StatelessWidget {
                 ),
                 if (rightIcon != null) ...[
                   SizedBox(width: 8.w),
-                  AppSvgAsset(rightIcon!, height: 20.h, width: 20.h),
+                  GestureDetector(
+                    onTap: onRightIconTap,
+                    child: AppSvgAsset(rightIcon!, height: 20.h, width: 20.h),
+                  ),
                 ],
               ],
             ),

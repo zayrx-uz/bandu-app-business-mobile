@@ -166,6 +166,11 @@ class SaveEmployeeLoadingState extends HomeState {}
 
 class SaveEmployeeSuccessState extends HomeState {}
 
+
+class UpdateEmployeeLoadingState extends HomeState {}
+
+class UpdateEmployeeSuccessState extends HomeState {}
+
 class GetQRCodeLoadingState extends HomeState {}
 
 class GetQRCodeSuccessState extends HomeState {
@@ -257,6 +262,12 @@ class GetEmployeeSuccessState extends HomeState {
   @override
   List<Object?> get props => [data];
 }
+
+
+class DeleteEmployeeLoadingState extends HomeState {}
+
+class DeleteEmployeeSuccessState extends HomeState {}
+
 
 class HomeErrorState extends HomeState {
   final String message;

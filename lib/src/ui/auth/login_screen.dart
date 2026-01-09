@@ -4,6 +4,7 @@ import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/auth/forgot_password_screen.dart';
 import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
@@ -11,6 +12,7 @@ import 'package:bandu_business/src/widget/app/back_button.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
 import 'package:bandu_business/src/widget/auth/input_password_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_phone_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -94,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 12.h),
                         Padding(
                           padding: EdgeInsets.only(left: isTablet(context) ? 30.w : 16.w),
-                          child: Text("Login", style: AppTextStyle.f600s24.copyWith(
+                          child: Text("login".tr(), style: AppTextStyle.f600s24.copyWith(
                             fontSize: isTablet(context) ? 18.sp : 24.sp
                           )),
                         ),
@@ -102,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Padding(
                           padding: EdgeInsets.only(left: isTablet(context) ? 30.w : 16.w),
                           child: Text(
-                            "Enter your email and password to log in.",
+                            "enterEmailPassword".tr(),
                             style: AppTextStyle.f400s16.copyWith(
                               color: AppColor.grey58,
                               fontSize: isTablet(context) ? 12.sp : 16.sp
@@ -114,6 +116,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 12.h),
                         InputPasswordWidget(controller: passwordController),
                         SizedBox(height: 8.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                    const ForgotPasswordScreen(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Forgot password ? ",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         if (errorText != null)
                           Container(
                             margin: EdgeInsets.only(left: 16.w),
@@ -126,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         const Spacer(),
                         AppButton(
-                          text: "Login",
+                          text: "login".tr(),
                           onTap: () {
                             if (isActive) {
                               bloc.add(

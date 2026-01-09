@@ -12,6 +12,7 @@ import 'package:bandu_business/src/widget/auth/input_phone_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:bandu_business/src/widget/auth/select_role_widget.dart';
 import 'package:bandu_business/src/widget/auth/set_image_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -96,13 +97,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(height: 12.h),
                   Padding(
                     padding: EdgeInsets.only(left: 16.w),
-                    child: Text("Register", style: AppTextStyle.f600s24),
+                    child: Text("register".tr(), style: AppTextStyle.f600s24),
                   ),
                   SizedBox(height: 8.h),
                   Padding(
                     padding: EdgeInsets.only(left: 16.w),
                     child: Text(
-                      "Start creating your Bandu account.",
+                      "startCreatingAccount".tr(),
                       style: AppTextStyle.f400s16.copyWith(
                         color: AppColor.grey58,
                       ),
@@ -120,8 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(height: 12.h),
                   InputWidget(
                     controller: nameController,
-                    title: "Full Name",
-                    hint: "Ex. Alisher Dostonov",
+                    title: "fullName".tr(),
+                    hint: "fullNameHint".tr(),
                   ),
                   SizedBox(height: 12.h),
                   InputPhoneWidget(controller: phoneController),
@@ -130,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(height: 12.h),
                   InputPasswordWidget(
                     controller: confirmController,
-                    title: "Confirm Password",
+                    title: "confirmPassword".tr(),
                   ),
                   if (errorText != null)
                     Container(
@@ -144,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   SizedBox(height: 32.h),
                   AppButton(
-                    text: "Register",
+                    text: "register".tr(),
                     isGradient: isActive,
                     loading: loading,
                     backColor: isActive ? null : AppColor.greyE5,

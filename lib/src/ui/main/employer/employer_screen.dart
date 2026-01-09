@@ -8,6 +8,7 @@ import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/employer/employer_item_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,7 +46,7 @@ class _EmployerScreenState extends State<EmployerScreen> {
           }
         },
         builder: (context, state) {
-          if (data == null) {
+          if (state is GetEmployeeLoadingState && data == null) {
             return Center(
               child: CircularProgressIndicator.adaptive(
                 backgroundColor: AppColor.black,
@@ -55,22 +56,41 @@ class _EmployerScreenState extends State<EmployerScreen> {
           return Column(
             children: [
               TopBarWidget(),
-              if (data!.isNotEmpty)
+              if (data != null && data!.isNotEmpty)
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 20.h),
-                    child: Column(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      getData();
+                      await Future.delayed(Duration(milliseconds: 500));
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      child: Column(
                       children: [
                         for (int i = 0; i < data!.length; i++)
                           EmployerItemWidget(data: data![i]),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 )
-              else
+              else if (data != null && data!.isEmpty)
                 Expanded(
-                  child: Center(
-                      child : EmptyWidget(text: "No places available. Please add a place" , icon: AppIcons.employe,)
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      getData();
+                      await Future.delayed(Duration(milliseconds: 500));
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Center(
+                        child: EmptyWidget(
+                          text: "noEmployeesAvailable".tr(),
+                          icon: AppIcons.employe,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
             ],

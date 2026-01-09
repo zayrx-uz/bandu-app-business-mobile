@@ -5,6 +5,7 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -60,7 +61,7 @@ class _QrDetailScreenState extends State<QrDetailScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          "Detailed Info",
+                          "detailedInfo".tr(),
                           style: AppTextStyle.f600s18,
                         ),
                       ),

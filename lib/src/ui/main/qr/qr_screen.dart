@@ -6,6 +6,7 @@ import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/ui/main/qr/screen/qr_booking_screen.dart';
 import 'package:bandu_business/src/ui/main/qr/screen/qr_detail_screen.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,7 +70,7 @@ class _QrScreenState extends State<QrScreen> {
                     right: 0,
                     child: Center(
                       child: Text(
-                        "Scan QR Code",
+                        "scanQrCode".tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -85,7 +86,7 @@ class _QrScreenState extends State<QrScreen> {
                     right: 0,
                     child: Center(
                       child: Text(
-                        "Align the QR inside the frame",
+                        "alignQrInsideFrame".tr(),
                         style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ),
@@ -109,7 +110,7 @@ class _QrScreenState extends State<QrScreen> {
                             border: Border.all(color: Colors.white24),
                           ),
                           child: Text(
-                            "Close Scanner",
+                            "closeScanner".tr(),
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -163,7 +164,7 @@ class _QrScreenState extends State<QrScreen> {
             ),
           );
         } else {
-          CenterDialog.errorDialog(context, "Qr code not supported");
+          CenterDialog.errorDialog(context, "qrCodeNotSupported".tr());
         }
 
         _bottomSheetOpened = false;

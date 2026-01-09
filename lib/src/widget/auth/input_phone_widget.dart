@@ -2,6 +2,7 @@ import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,13 +20,18 @@ class InputPhoneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localMask = MaskTextInputFormatter(
+      mask: '## ### ## ##',
+      filter: {'#': RegExp(r'\d')},
+      initialText: controller.text,
+    );
     return Container(
       margin: EdgeInsets.symmetric(horizontal: isTablet(context) ? 30.w : 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Phone Number",
+            "phoneNumber".tr(),
             style: AppTextStyle.f500s16.copyWith(color: AppColor.black09 , fontSize: isTablet(context) ? 12.sp : 16.sp),
           ),
           SizedBox(height: 8.h),
@@ -60,7 +66,7 @@ class InputPhoneWidget extends StatelessWidget {
                       color: AppColor.black09,
                       fontSize:  isTablet(context) ? 12.sp : 16.sp
                     ),
-                    inputFormatters: <TextInputFormatter>[uzPhoneMask],
+                    inputFormatters: [localMask],
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "-- --- -- --",

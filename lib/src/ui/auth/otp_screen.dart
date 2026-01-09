@@ -8,6 +8,7 @@ import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/back_button.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -68,13 +69,13 @@ class _OtpScreenState extends State<OtpScreen> {
                 SizedBox(height: 12.h),
                 Padding(
                   padding: EdgeInsets.only(left: 16.w),
-                  child: Text("Enter OTP Code", style: AppTextStyle.f600s24),
+                  child: Text("enterOtpCode".tr(), style: AppTextStyle.f600s24),
                 ),
                 SizedBox(height: 8.h),
                 Padding(
                   padding: EdgeInsets.only(left: 16.w),
                   child: Text(
-                    "Enter the 6-digit OTP code that we sent to",
+                    "enterOtpDescription".tr(),
                     style: AppTextStyle.f400s16.copyWith(
                       color: AppColor.grey58,
                     ),
@@ -148,7 +149,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     );
                   },
                   loading: loading,
-                  text: "Continue",
+                  text: "continue".tr(),
                 ),
                 SizedBox(height: 24.h),
               ],

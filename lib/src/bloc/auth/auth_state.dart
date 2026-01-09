@@ -54,3 +54,31 @@ class RegisterSuccessState extends AuthState {
 class OtpLoadingState extends AuthState {}
 
 class OtpSuccessState extends AuthState {}
+
+
+
+class ForgotPasswordLoadingState extends AuthState {}
+
+class ForgotPasswordSuccessState extends AuthState {
+  final String otpToken;
+
+  ForgotPasswordSuccessState({required this.otpToken});
+
+  @override
+  List<Object?> get props => [otpToken];
+}
+
+class VerifyResetCodeLoadingState extends AuthState {}
+
+class VerifyResetCodeSuccessState extends AuthState {
+  final String resetToken;
+
+  VerifyResetCodeSuccessState({required this.resetToken});
+
+  @override
+  List<Object?> get props => [resetToken];
+}
+
+class ResetPasswordLoadingState extends AuthState {}
+
+class ResetPasswordSuccessState extends AuthState {}

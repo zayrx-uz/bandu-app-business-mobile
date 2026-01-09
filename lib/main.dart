@@ -1,23 +1,42 @@
 import 'dart:io';
-
 import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
 import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/ui/splash/splash_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-// TODO: Uncomment when PaymentBloc is created
-// import 'package:bandu_business/src/bloc/payment/payment_bloc.dart';
-// import 'package:bandu_business/src/repository/repo/payment/payment_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheService.init();
+  
+  String savedLang = CacheService.getString('language');
+  Locale startLocale = const Locale('ru', 'RU');
+  
+  if (savedLang.isEmpty) {
+    CacheService.saveString('language', 'ru');
+    startLocale = const Locale('ru', 'RU');
+  } else {
+    if (savedLang.toLowerCase() == 'en') {
+      startLocale = const Locale('en', 'EN');
+    } else if (savedLang.toLowerCase() == 'ru') {
+      startLocale = const Locale('ru', 'RU');
+    } else if (savedLang.toLowerCase() == 'uz') {
+      startLocale = const Locale('uz', 'UZ');
+    } else {
+      CacheService.saveString('language', 'ru');
+      startLocale = const Locale('ru', 'RU');
+    }
+  }
+  
+  await EasyLocalization.ensureInitialized();
+  
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -25,7 +44,20 @@ void main() async {
 
   await Firebase.initializeApp();
   await FirebaseHelper.initNotification();
-  runApp(const MyApp());
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en', 'EN'),
+        Locale('ru', 'RU'),
+        Locale('uz', 'UZ'),
+      ],
+      path: 'assets/translations',
+      startLocale: startLocale,
+      fallbackLocale: const Locale('ru', 'RU'),
+      saveLocale: true,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -46,6 +78,9 @@ class MyApp extends StatelessWidget {
           child: MaterialApp(
             title: 'Bandu Business',
             debugShowCheckedModeBanner: false,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
             theme: ThemeData(
               platform: TargetPlatform.iOS,
               fontFamily: GoogleFonts.inter().fontFamily,
@@ -57,10 +92,6 @@ class MyApp extends StatelessWidget {
                 BlocProvider(
                   create: (_) => AuthBloc(authRepository: AuthRepository()),
                 ),
-                // TODO: Uncomment and adjust when PaymentBloc is created
-                // BlocProvider(
-                //   create: (_) => PaymentBloc(paymentRepository: PaymentRepository()),
-                // ),
               ],
               child: const SplashScreen(),
             ),

@@ -8,6 +8,7 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/auth/login_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -50,12 +51,12 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
           SizedBox(height: 20.h),
           Row(
             children: [
-              itemButton(AppIcons.owner, "Owner", index == 0, () {
+              itemButton(AppIcons.owner, "owner".tr(), index == 0, () {
                 index = 0;
                 setState(() {});
               }),
               SizedBox(width: 12.w),
-              itemButton(AppIcons.manager, "Manager", index == 1, () {
+              itemButton(AppIcons.manager, "manager".tr(), index == 1, () {
                 index = 1;
                 setState(() {});
               }),
@@ -64,7 +65,7 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
           SizedBox(height: 12.h),
           Row(
             children: [
-              itemButton(AppIcons.worker, "Worker", index == 2, () {
+              itemButton(AppIcons.worker, "worker".tr(), index == 2, () {
                 index = 2;
                 setState(() {});
               }),
@@ -147,7 +148,7 @@ class _SelectLoginWidgetState extends State<SelectLoginWidget> {
               SizedBox(height: 8.h),
               Text(text, style: DeviceHelper.isTablet(context) ? AppTextStyle.f500s12 : AppTextStyle.f500s16),
               Text(
-                "Secondary Text",
+                "secondaryText".tr(),
                 style: DeviceHelper.isTablet(context) ? AppTextStyle.f500s10.copyWith(color: AppColor.grey77) : AppTextStyle.f500s14.copyWith(color: AppColor.grey77),
               ),
             ],

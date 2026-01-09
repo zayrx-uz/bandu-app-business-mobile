@@ -8,6 +8,7 @@ import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,13 +24,13 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
   bool isActive = false;
   int number = 0;
   var n = [1, 2, 4, 6, 8, 12];
-  List<String> item = [
-    "1 People",
-    "2 People",
-    "4 People",
-    "6 People",
-    "8 People",
-    "12 People",
+  List<String> get item => [
+    "1 ${"people".tr()}",
+    "2 ${"people".tr()}",
+    "4 ${"people".tr()}",
+    "6 ${"people".tr()}",
+    "8 ${"people".tr()}",
+    "12 ${"people".tr()}",
   ];
   TextEditingController nameController = TextEditingController();
 
@@ -49,7 +50,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
         if (state is SetPlaceSuccessState) {
-          AppService.successToast(context, "Place created");
+          AppService.successToast(context, "placeCreated".tr());
           Navigator.pop(context);
         }
       },
@@ -69,7 +70,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text("Add Place", style: AppTextStyle.f600s18),
+                          child: Text("addPlace".tr(), style: AppTextStyle.f600s18),
                         ),
                         AppIconButton(
                           icon: AppIcons.close,
@@ -89,15 +90,15 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                   SizedBox(height: 20.h),
                   InputWidget(
                     controller: nameController,
-                    title: "Place name",
-                    hint: "Place name",
+                    title: "placeName".tr(),
+                    hint: "placeName".tr(),
                   ),
                   SizedBox(height: 12.h),
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(left: 16.w),
                     child: Text(
-                      "Number of People",
+                      "numberOfPeople".tr(),
                       style: AppTextStyle.f500s16.copyWith(
                         color: AppColor.black09,
                       ),
@@ -107,7 +108,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 16.w),
                     child: DropdownFlutter<String>(
-                      hintText: 'Enter Number',
+                      hintText: "enterNumber".tr(),
                       excludeSelected: false,
                       hideSelectedFieldWhenExpanded: true,
                       canCloseOutsideBounds: false,
@@ -172,7 +173,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     },
                     isGradient: isActive,
                     backColor: AppColor.greyE5,
-                    text: "Add Place",
+                    text: "addPlace".tr(),
                     leftIcon: AppIcons.plus,
                     loading: state is SetPlaceLoadingState,
                     txtColor: isActive ? AppColor.white : AppColor.greyA7,
