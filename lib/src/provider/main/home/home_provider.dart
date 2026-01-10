@@ -7,6 +7,7 @@ import 'package:bandu_business/src/model/response/user_update_model.dart';
 import 'package:bandu_business/src/provider/api_provider.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class HomeProvider extends ApiProvider {
   ///get company
@@ -132,8 +133,91 @@ class HomeProvider extends ApiProvider {
   }
 
   ///get resource category
-  Future<HttpResult> getResourceCategory() async {
-    return await getRequest(ApiHelper.getResourceCategory);
+  Future<HttpResult> getResourceCategory({required int companyId}) async {
+    return await getRequest("${ApiHelper.getResourceCategory}/company/$companyId");
+  }
+
+  ///create resource category
+  Future<HttpResult> createResourceCategory({
+    required String name,
+    String? description,
+    int? parentId,
+    required int companyId,
+    Map<String, dynamic>? metadata,
+  }) async {
+    var body = {
+      "name": name,
+      "companyId": companyId,
+    };
+    if (description != null && description.isNotEmpty) {
+      body["description"] = description;
+    }
+    if (parentId != null) {
+      body["parentId"] = parentId;
+    }
+    if (metadata != null) {
+      body["metadata"] = metadata;
+    }
+    return await postRequest(ApiHelper.createResourceCategory, body);
+  }
+
+  ///delete resource category
+  Future<HttpResult> deleteResourceCategory({required int id}) async {
+    return await deleteRequest("${ApiHelper.deleteResourceCategory}$id");
+  }
+
+  ///upload resource image
+  Future<HttpResult> uploadResourceImage(String filePath) async {
+    var request = http.MultipartRequest('POST', Uri.parse(ApiHelper.uploadResourceImage));
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        "file",
+        filePath,
+        contentType: MediaType('image', filePath.split(".").last),
+      ),
+    );
+
+    return await postMultiRequest(request);
+  }
+
+  ///create resource
+  Future<HttpResult> createResource({
+    required String name,
+    required int companyId,
+    required int price,
+    required int resourceCategoryId,
+    Map<String, dynamic>? metadata,
+    required bool isBookable,
+    required bool isTimeSlotBased,
+    required int timeSlotDurationMinutes,
+    required List<Map<String, dynamic>> images,
+  }) async {
+    var body = {
+      "name": name,
+      "companyId": companyId,
+      "price": price,
+      "resourceCategoryId": resourceCategoryId,
+      "isBookable": isBookable,
+      "isTimeSlotBased": isTimeSlotBased,
+      "timeSlotDurationMinutes": timeSlotDurationMinutes,
+      "images": images,
+    };
+    if (metadata != null) {
+      body["metadata"] = metadata;
+    }
+    return await postRequest(ApiHelper.createResource, body);
+  }
+
+  ///get resource
+  Future<HttpResult> getResource({required int id}) async {
+    return await getRequest("${ApiHelper.getResource}/company/$id");
+  }
+
+
+  ///delete resource
+  Future<HttpResult> deleteResource({required int id}) async {
+    return await deleteRequest("${ApiHelper.getResource}/$id");
   }
 
   ///confirm booking

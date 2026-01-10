@@ -237,5 +237,20 @@
   "thursday" : "Payshanba",
   "friday" : "Juma",
   "saturday" : "Shanba",
-  "sunday" : "Yakshanba"
+  "sunday" : "Yakshanba",
+  "resource" : "Resurs",
+  "createResource" : "Resurs yaratish",
+  "resourceName" : "Resurs nomi",
+  "resourceNameHint" : "Resurs nomi",
+  "price" : "Narx",
+  "priceHint" : "Narx",
+  "resourceTimeDate" : "Resurs vaqti",
+  "pleaseEnterResourceName" : "Iltimos, resurs nomini kiriting",
+  "pleaseSelectCategory" : "Iltimos, kategoriyani tanlang",
+  "pleaseEnterPrice" : "Iltimos, narxni kiriting",
+  "companyNotSelected" : "Kompaniya tanlanmagan",
+  "hours" : "soat",
+  "minutesShort" : "min",
+  "deleteResource" : "Resursni o'chirish",
+  "deleteResourceConfirm" : "Resursni o'chirmoqchimisiz"
 }

@@ -8,4 +8,5 @@ class AppImages{
   static const String checked = 'assets/images/checked.png';
   static const String myLocation = 'assets/images/my_location.png';
   static const String empty = 'assets/images/empty.png';
+  static const String box = 'assets/images/box.png';
 }

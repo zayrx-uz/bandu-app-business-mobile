@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
+import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/model/api/main/home/category_model.dart';
 import 'package:bandu_business/src/model/api/main/home/company_detail_model.dart';
@@ -59,7 +60,10 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
 
   void getData() {
     context.read<HomeBloc>().add(GetCategoryEvent());
-    context.read<HomeBloc>().add(GetResourceCategoryEvent());
+    final companyId = HelperFunctions.getCompanyId() ?? 0;
+    if (companyId > 0) {
+      context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+    }
   }
 
   void _loadCompanyData(CompanyDetailData company) {

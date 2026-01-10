@@ -1,3 +1,4 @@
+import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -6,6 +7,7 @@ import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CenterDialog {
@@ -90,6 +92,53 @@ class CenterDialog {
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 AppService.replacePage(context, OnboardScreen());
               },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  static void deleteResourceDialog(BuildContext context , {required String name , required int id , required VoidCallback onTapDelete}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text(
+            "deleteResource".tr(),
+            style: TextStyle(
+              fontSize: isTablet(context) ? 12.sp : 16.sp,
+            ),
+          ),
+          content: Text(
+            "${"deleteResourceConfirm".tr()} ($name)?",
+            style: TextStyle(
+              fontSize: isTablet(context) ? 8.sp : 12.sp,
+            ),
+          ),
+          actions: [
+            CupertinoButton(
+              child: Text(
+                "cancel".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.blue00,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "delete".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.red00,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: onTapDelete,
             ),
           ],
         );

@@ -259,8 +259,86 @@ class ConfirmBookEvent extends HomeEvent {
 }
 
 class GetResourceCategoryEvent extends HomeEvent {
+  final int companyId;
+
+  GetResourceCategoryEvent({required this.companyId});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [companyId];
+}
+
+class CreateResourceCategoryEvent extends HomeEvent {
+  final String name;
+  final String? description;
+  final int? parentId;
+  final int companyId;
+  final Map<String, dynamic>? metadata;
+
+  CreateResourceCategoryEvent({
+    required this.name,
+    this.description,
+    this.parentId,
+    required this.companyId,
+    this.metadata,
+  });
+
+  @override
+  List<Object?> get props => [name, description, parentId, companyId, metadata];
+}
+
+class DeleteResourceCategoryEvent extends HomeEvent {
+  final int id;
+
+  DeleteResourceCategoryEvent({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class UploadResourceImageEvent extends HomeEvent {
+  final String filePath;
+
+  UploadResourceImageEvent({required this.filePath});
+
+  @override
+  List<Object?> get props => [filePath];
+}
+
+class CreateResourceEvent extends HomeEvent {
+  final String name;
+  final int companyId;
+  final int price;
+  final int resourceCategoryId;
+  final Map<String, dynamic>? metadata;
+  final bool isBookable;
+  final bool isTimeSlotBased;
+  final int timeSlotDurationMinutes;
+  final List<Map<String, dynamic>> images;
+
+  CreateResourceEvent({
+    required this.name,
+    required this.companyId,
+    required this.price,
+    required this.resourceCategoryId,
+    this.metadata,
+    required this.isBookable,
+    required this.isTimeSlotBased,
+    required this.timeSlotDurationMinutes,
+    required this.images,
+  });
+
+  @override
+  List<Object?> get props => [
+        name,
+        companyId,
+        price,
+        resourceCategoryId,
+        metadata,
+        isBookable,
+        isTimeSlotBased,
+        timeSlotDurationMinutes,
+        images,
+      ];
 }
 
 class ResourceSearchEvent extends HomeEvent {
@@ -270,4 +348,24 @@ class ResourceSearchEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [search];
+}
+
+
+class GetResourceEvent extends HomeEvent {
+  final int id;
+
+  GetResourceEvent({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}
+
+
+class DeleteResourceEvent extends HomeEvent {
+  final int id;
+
+  DeleteResourceEvent({required this.id});
+
+  @override
+  List<Object?> get props => [id];
 }

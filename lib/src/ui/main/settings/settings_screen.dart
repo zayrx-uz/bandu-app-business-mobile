@@ -9,6 +9,7 @@ import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
+import 'package:bandu_business/src/ui/main/settings/resource/resource_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
@@ -111,6 +112,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       margin: EdgeInsets.zero,
                       onTap: () {
                         launchUrl(Uri.parse(help));
+                      },
+                    ),
+                    SettingsButtonWidget(
+                      icon: AppIcons.money,
+                      text: "Resource",
+                      onTap: () {
+                        AppService.changePage(
+                          context,
+                          BlocProvider(
+                            create: (_) =>
+                                HomeBloc(homeRepository: HomeRepository()),
+                            child: ResourceScreen(),
+                          ),
+                        );
                       },
                     ),
                   ],

@@ -129,9 +129,9 @@ class Resource {
 
   factory Resource.fromJson(Map<String, dynamic> json) => Resource(
     id: json["id"] ?? 0,
-    name: json["name"] ?? "",
+    name: json["name"]?.toString() ?? "",
     price: json["price"] ?? 0,
-    metadata: json["metadata"] ?? "",
+    metadata: json["metadata"]?.toString() ?? "",
     isBookable: json["isBookable"] ?? false,
     isTimeSlotBased: json["isTimeSlotBased"] ?? false,
     timeSlotDurationMinutes: json["timeSlotDurationMinutes"] ?? 0,

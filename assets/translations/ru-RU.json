@@ -237,5 +237,22 @@
   "thursday" : "Четверг",
   "friday" : "Пятница",
   "saturday" : "Суббота",
-  "sunday" : "Воскресенье"
+  "sunday" : "Воскресенье",
+  "resource" : "Ресурс",
+  "createResource" : "Создать ресурс",
+  "resourceName" : "Название ресурса",
+  "resourceNameHint" : "Название ресурса",
+  "price" : "Цена",
+  "priceHint" : "Цена",
+  "resourceTimeDate" : "Время ресурса",
+  "pleaseEnterResourceName" : "Пожалуйста, введите название ресурса",
+  "pleaseSelectCategory" : "Пожалуйста, выберите категорию",
+  "pleaseEnterPrice" : "Пожалуйста, введите цену",
+  "companyNotSelected" : "Компания не выбрана",
+  "hours" : "час",
+  "minutesShort" : "мин",
+  "deleteResource" : "Удалить ресурс",
+  "deleteResourceConfirm" : "Вы уверены, что хотите удалить этот ресурс"
 }
+
+

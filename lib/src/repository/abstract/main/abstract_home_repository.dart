@@ -48,7 +48,35 @@ abstract class AbstractHomeRepository {
 
   Future<HttpResult> deleteEmployee({required int id});
 
-  Future<HttpResult> getResourceCategory();
+  Future<HttpResult> getResourceCategory({required int companyId});
+
+  Future<HttpResult> createResourceCategory({
+    required String name,
+    String? description,
+    int? parentId,
+    required int companyId,
+    Map<String, dynamic>? metadata,
+  });
+
+  Future<HttpResult> deleteResourceCategory({required int id});
+
+  Future<HttpResult> uploadResourceImage({required String filePath});
+
+  Future<HttpResult> createResource({
+    required String name,
+    required int companyId,
+    required int price,
+    required int resourceCategoryId,
+    Map<String, dynamic>? metadata,
+    required bool isBookable,
+    required bool isTimeSlotBased,
+    required int timeSlotDurationMinutes,
+    required List<Map<String, dynamic>> images,
+  });
+
+  Future<HttpResult> getResource({required int id});
+
+  Future<HttpResult> deleteResource({required int id});
 
   Future<HttpResult> getQrCode({required String url});
 

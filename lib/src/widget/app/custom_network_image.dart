@@ -20,7 +20,7 @@ class CustomNetworkImage extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius ?? 0),
       child: CachedNetworkImage(
-        imageUrl: imageUrl.replaceAll("?auto=format&fit=crop&w=1200&q=80", ""),
+        imageUrl: imageUrl,
         height: height,
         width: width,
         fit: fit ?? BoxFit.cover,

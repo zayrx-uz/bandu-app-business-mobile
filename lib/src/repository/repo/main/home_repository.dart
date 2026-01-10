@@ -160,7 +160,69 @@ class HomeRepository implements AbstractHomeRepository {
   }
 
   @override
-  Future<HttpResult> getResourceCategory() async{
-    return await homeProvider.getResourceCategory();
+  Future<HttpResult> getResourceCategory({required int companyId}) async {
+    return await homeProvider.getResourceCategory(companyId: companyId);
+  }
+
+  @override
+  Future<HttpResult> createResourceCategory({
+    required String name,
+    String? description,
+    int? parentId,
+    required int companyId,
+    Map<String, dynamic>? metadata,
+  }) async {
+    return await homeProvider.createResourceCategory(
+      name: name,
+      description: description,
+      parentId: parentId,
+      companyId: companyId,
+      metadata: metadata,
+    );
+  }
+
+  @override
+  Future<HttpResult> deleteResourceCategory({required int id}) async {
+    return await homeProvider.deleteResourceCategory(id: id);
+  }
+
+  @override
+  Future<HttpResult> uploadResourceImage({required String filePath}) async {
+    return await homeProvider.uploadResourceImage(filePath);
+  }
+
+  @override
+  Future<HttpResult> createResource({
+    required String name,
+    required int companyId,
+    required int price,
+    required int resourceCategoryId,
+    Map<String, dynamic>? metadata,
+    required bool isBookable,
+    required bool isTimeSlotBased,
+    required int timeSlotDurationMinutes,
+    required List<Map<String, dynamic>> images,
+  }) async {
+    return await homeProvider.createResource(
+      name: name,
+      companyId: companyId,
+      price: price,
+      resourceCategoryId: resourceCategoryId,
+      metadata: metadata,
+      isBookable: isBookable,
+      isTimeSlotBased: isTimeSlotBased,
+      timeSlotDurationMinutes: timeSlotDurationMinutes,
+      images: images,
+    );
+  }
+
+  @override
+  Future<HttpResult> getResource({required int id}) async {
+    return await homeProvider.getResource(id: id);
+  }
+
+  @override
+  Future<HttpResult> deleteResource({required int id}) async {
+    return await homeProvider.deleteResource(id: id);
   }
 }

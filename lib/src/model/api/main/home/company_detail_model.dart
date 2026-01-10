@@ -211,20 +211,20 @@ class Resource {
 
   factory Resource.fromJson(Map<String, dynamic> json) => Resource(
     id: json["id"] ?? 0,
-    name: json["name"] ?? "",
+    name: json["name"]?.toString() ?? "",
     price: json["price"] ?? 0,
-    metadata: json["metadata"] == null
+    metadata: json["metadata"] == null || json["metadata"] is! Map<String, dynamic>
         ? ResourceMetadata.fromJson({})
-        : ResourceMetadata.fromJson(json["metadata"]),
+        : ResourceMetadata.fromJson(json["metadata"] as Map<String, dynamic>),
     isBookable: json["isBookable"] ?? false,
     isTimeSlotBased: json["isTimeSlotBased"] ?? false,
     timeSlotDurationMinutes: json["timeSlotDurationMinutes"] ?? 0,
-    category: json["resourceCategory"] == null
+    category: json["resourceCategory"] == null || json["resourceCategory"] is! Map<String, dynamic>
         ? ResourceCategory.fromJson({})
-        : ResourceCategory.fromJson(json["resourceCategory"]),
-    images: json["images"] == null
+        : ResourceCategory.fromJson(json["resourceCategory"] as Map<String, dynamic>),
+    images: json["images"] == null || json["images"] is! List
         ? List<Image>.from({})
-        : List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
+        : List<Image>.from((json["images"] as List).map((x) => Image.fromJson(x))),
   );
 }
 
@@ -235,7 +235,10 @@ class ResourceCategory {
   ResourceCategory({required this.id, required this.name});
 
   factory ResourceCategory.fromJson(Map<String, dynamic> json) =>
-      ResourceCategory(id: json["id"] ?? 0, name: json["name"] ?? "");
+      ResourceCategory(
+        id: json["id"] ?? 0, 
+        name: json["name"]?.toString() ?? "",
+      );
 }
 
 class Image {
@@ -259,9 +262,9 @@ class Image {
 
   factory Image.fromJson(Map<String, dynamic> json) => Image(
     id: json["id"] ?? 0,
-    url: json["url"] ?? "",
-    filename: json["filename"] ?? "",
-    mimeType: json["mimeType"] ?? "",
+    url: json["url"]?.toString() ?? "",
+    filename: json["filename"]?.toString() ?? "",
+    mimeType: json["mimeType"]?.toString() ?? "",
     size: json["size"] ?? 0,
     index: json["index"] ?? 0,
     isMain: json["isMain"] ?? false,

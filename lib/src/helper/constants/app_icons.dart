@@ -77,4 +77,5 @@ class AppIcons {
   static const String chair = 'assets/icons/chair.svg';
   static const String delete = 'assets/icons/delete.svg';
   static const String edit2 = 'assets/icons/edit2.svg';
+  static const String clock = 'assets/icons/clock.svg';
 }

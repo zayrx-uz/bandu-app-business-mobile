@@ -8,7 +8,7 @@ class ApiHelper {
 
   static const baseUrl = devUrl;
 
-  static const uploadUrl = "https://app.bandu.uz";
+  static const uploadUrl = devUrl;
 
   static const register = "${baseUrl}api/otp-based-auth/register";
   static const login = "${baseUrl}api/otp-based-auth/login";
@@ -29,5 +29,10 @@ class ApiHelper {
   static const getEmployee = "${baseUrl}api/employee";
   static const getStatistic = "${baseUrl}api/dashboard/statistics";
   static const getResourceCategory = "${baseUrl}api/resource-category";
+  static const getResource = "${baseUrl}api/resource";
+  static const createResource = "${baseUrl}api/resource";
+  static const uploadResourceImage = "${baseUrl}api/upload/image/resource";
+  static const createResourceCategory = "${baseUrl}api/resource-category";
+  static const deleteResourceCategory = "${baseUrl}api/resource-category/";
   static const confirmBook = "${baseUrl}api/booking/";
 }

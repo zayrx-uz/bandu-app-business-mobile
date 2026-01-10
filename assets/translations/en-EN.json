@@ -237,5 +237,20 @@
   "thursday" : "Thursday",
   "friday" : "Friday",
   "saturday" : "Saturday",
-  "sunday" : "Sunday"
+  "sunday" : "Sunday",
+  "resource" : "Resource",
+  "createResource" : "Create Resource",
+  "resourceName" : "Resource Name",
+  "resourceNameHint" : "Resource Name",
+  "price" : "Price",
+  "priceHint" : "Price",
+  "resourceTimeDate" : "Resource Time",
+  "pleaseEnterResourceName" : "Please enter resource name",
+  "pleaseSelectCategory" : "Please select a category",
+  "pleaseEnterPrice" : "Please enter price",
+  "companyNotSelected" : "Company not selected",
+  "hours" : "hours",
+  "minutesShort" : "min",
+  "deleteResource" : "Delete Resource",
+  "deleteResourceConfirm" : "Are you sure you want to delete this resource"
 }

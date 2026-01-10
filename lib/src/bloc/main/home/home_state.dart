@@ -233,12 +233,96 @@ class ConfirmBookSuccessState extends HomeState {}
 class GetResourceCategoryLoadingState extends HomeState {}
 
 class GetResourceCategorySuccessState extends HomeState {
-  final List<ResourceCategoryData> data;
+  final List<resource_category.ResourceCategoryData> data;
 
   GetResourceCategorySuccessState({required this.data});
 
   @override
   List<Object?> get props => [data];
+}
+
+class CreateResourceCategoryLoadingState extends HomeState {}
+
+class CreateResourceCategorySuccessState extends HomeState {
+  final resource_category.ResourceCategoryData data;
+
+  CreateResourceCategorySuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class DeleteResourceCategoryLoadingState extends HomeState {
+  final int categoryId;
+
+  DeleteResourceCategoryLoadingState({required this.categoryId});
+
+  @override
+  List<Object?> get props => [categoryId];
+}
+
+class DeleteResourceCategorySuccessState extends HomeState {
+  final int categoryId;
+
+  DeleteResourceCategorySuccessState({required this.categoryId});
+
+  @override
+  List<Object?> get props => [categoryId];
+}
+
+class UploadResourceImageLoadingState extends HomeState {}
+
+class UploadResourceImageSuccessState extends HomeState {
+  final String url;
+  final String filename;
+  final String mimeType;
+  final int size;
+
+  UploadResourceImageSuccessState({
+    required this.url,
+    required this.filename,
+    required this.mimeType,
+    required this.size,
+  });
+
+  @override
+  List<Object?> get props => [url, filename, mimeType, size];
+}
+
+class CreateResourceLoadingState extends HomeState {}
+
+class CreateResourceSuccessState extends HomeState {}
+
+
+
+class GetResourceLoadingState extends HomeState {}
+
+class GetResourceSuccessState extends HomeState {
+  final resource_model.ResourceModel data;
+
+  GetResourceSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+
+class DeleteResourceLoadingState extends HomeState {
+  final int resourceId;
+
+  DeleteResourceLoadingState({required this.resourceId});
+
+  @override
+  List<Object?> get props => [resourceId];
+}
+
+class DeleteResourceSuccessState extends HomeState {
+  final int resourceId;
+
+  DeleteResourceSuccessState({required this.resourceId});
+
+  @override
+  List<Object?> get props => [resourceId];
 }
 
 class GetStatisticLoadingState extends HomeState {}

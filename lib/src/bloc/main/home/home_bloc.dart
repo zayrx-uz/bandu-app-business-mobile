@@ -1,15 +1,17 @@
 import 'package:bandu_business/src/helper/helper_functions.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/auth/login_model.dart';
 import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/model/api/main/home/category_model.dart';
 import 'package:bandu_business/src/model/api/main/home/company_detail_model.dart';
 import 'package:bandu_business/src/model/api/main/home/company_model.dart';
 import 'package:bandu_business/src/model/api/main/home/place_model.dart';
-import 'package:bandu_business/src/model/api/main/home/resource_category_model.dart';
+import 'package:bandu_business/src/model/api/main/home/resource_category_model.dart' as resource_category;
 import 'package:bandu_business/src/model/api/main/monitoring/monitoring_model.dart';
 import 'package:bandu_business/src/model/api/main/place/place_business_model.dart';
 import 'package:bandu_business/src/model/api/main/qr/book_model.dart';
 import 'package:bandu_business/src/model/api/main/qr/place_model.dart';
+import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart' as resource_model;
 import 'package:bandu_business/src/model/api/main/statistic/statistic_model.dart';
 import 'package:bandu_business/src/model/response/booking_send_model.dart';
 import 'package:bandu_business/src/model/response/create_company_model.dart';
@@ -57,6 +59,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetQrBookCodeEvent>(_onGetQrBookCode);
     on<ConfirmBookEvent>(_onConfirmBook);
     on<GetResourceCategoryEvent>(_onGetResourceCategory);
+    on<CreateResourceCategoryEvent>(_onCreateResourceCategory);
+    on<UploadResourceImageEvent>(_onUploadResourceImage);
+    on<CreateResourceEvent>(_onCreateResource);
+    on<GetResourceEvent>(_onGetResourceEvent);
+    on<DeleteResourceEvent>(_onDeleteResourceEvent);
+    on<DeleteResourceCategoryEvent>(_onDeleteResourceCategory);
   }
 
   void _onGetCompany(GetCompanyEvent event, Emitter<HomeState> emit) async {
@@ -203,16 +211,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
 
         if (status.isGranted) {
-          final img = await pick.pickImage(source: ImageSource.camera);
+          final img = await pick.pickImage(
+          source: ImageSource.camera,
+          imageQuality: 70,
+          maxWidth: 1920,
+          maxHeight: 1920,
+        );
           if (img != null) {
             emit(GetImageSuccessState(img: img));
           }
         } else {
           emit(HomeErrorState(message: "Kamera ruxsati berilmadi"));
         }
-
       } else {
-        final img = await pick.pickImage(source: ImageSource.gallery);
+        final img = await pick.pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 70,
+          maxWidth: 1920,
+          maxHeight: 1920,
+        );
         if (img != null) {
           emit(GetImageSuccessState(img: img));
         }
@@ -221,7 +238,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeErrorState(message: e.toString()));
     }
   }
-
 
   void _onGetMe(GetMeEvent event, Emitter<HomeState> emit) async {
     emit(GetMeLoadingState());
@@ -338,13 +354,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-
   void _updatePlace(UpdatePlaceEvent event, Emitter<HomeState> emit) async {
     emit(UpdatePlaceLoadingState());
     try {
       final result = await homeRepository.updatePlace(
         number: event.number,
-        id: event.id
+        id: event.id,
       );
       if (result.isSuccess) {
         emit(UpdatePlaceSuccessState());
@@ -356,13 +371,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-
   void _deletePlace(DeletePlaceEvent event, Emitter<HomeState> emit) async {
     emit(DeletePlaceLoadingState());
     try {
-      final result = await homeRepository.deletePlace(
-        id: event.id
-      );
+      final result = await homeRepository.deletePlace(id: event.id);
       if (result.isSuccess) {
         emit(DeletePlaceSuccessState());
       } else {
@@ -406,8 +418,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-
-  void _onDeleteEmployee(DeleteEmployeeEvent event, Emitter<HomeState> emit) async {
+  void _onDeleteEmployee(
+    DeleteEmployeeEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(DeleteEmployeeLoadingState());
     try {
       final result = await homeRepository.deleteEmployee(id: event.id);
@@ -468,7 +482,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               isMain: img.isMain,
             );
           } else {
-            emit(HomeErrorState(message: HelperFunctions.errorText(response.result)));
+            emit(
+              HomeErrorState(
+                message: HelperFunctions.errorText(response.result),
+              ),
+            );
             return;
           }
         }
@@ -528,8 +546,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-
-  void _onUpdateEmployee(UpdateEmployeeEvent event, Emitter<HomeState> emit) async {
+  void _onUpdateEmployee(
+    UpdateEmployeeEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(UpdateEmployeeLoadingState());
     try {
       final result = await homeRepository.updateEmployee(
@@ -601,15 +621,302 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(GetResourceCategoryLoadingState());
     try {
-      final result = await homeRepository.getResourceCategory();
+      final result = await homeRepository.getResourceCategory(companyId: event.companyId);
       if (result.isSuccess) {
-        final data = ResourceCategoryModel.fromJson(result.result).data;
-        emit(GetResourceCategorySuccessState(data: data.data));
+        if (result.result is Map<String, dynamic>) {
+          final data = resource_category.ResourceCategoryModel.fromJson(result.result as Map<String, dynamic>).data;
+          emit(GetResourceCategorySuccessState(data: data.data));
+        } else {
+          emit(GetResourceCategorySuccessState(data: <resource_category.ResourceCategoryData>[]));
+        }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onCreateResourceCategory(
+    CreateResourceCategoryEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final currentState = state;
+    List<resource_category.ResourceCategoryData>? currentCategories;
+    
+    if (currentState is GetResourceCategorySuccessState) {
+      currentCategories = List.from(currentState.data);
+    }
+    
+    final parentCategory = event.parentId != null
+        ? resource_category.Category(
+            id: event.parentId!,
+            name: "",
+          )
+        : null;
+    
+    final newCategory = resource_category.ResourceCategoryData(
+      id: 0,
+      name: event.name,
+      description: event.description,
+      parent: parentCategory,
+      children: [],
+      metadata: event.metadata,
+    );
+    
+    if (currentCategories != null) {
+      final updatedCategories = List<resource_category.ResourceCategoryData>.from(currentCategories);
+      if (event.parentId != null) {
+        final parentIndex = updatedCategories.indexWhere((c) => c.id == event.parentId);
+        if (parentIndex != -1) {
+          final parent = updatedCategories[parentIndex];
+          final parentChildren = List<resource_category.Category>.from(parent.children);
+          parentChildren.add(resource_category.Category(
+            id: 0,
+            name: event.name,
+            description: event.description,
+            metadata: event.metadata,
+          ));
+          updatedCategories[parentIndex] = resource_category.ResourceCategoryData(
+            id: parent.id,
+            name: parent.name,
+            description: parent.description,
+            parent: parent.parent,
+            children: parentChildren,
+            metadata: parent.metadata,
+          );
+        } else {
+          updatedCategories.add(newCategory);
+        }
+      } else {
+        updatedCategories.add(newCategory);
+      }
+      emit(GetResourceCategorySuccessState(data: updatedCategories));
+    }
+    
+    try {
+      final result = await homeRepository.createResourceCategory(
+        name: event.name,
+        description: event.description,
+        parentId: event.parentId,
+        companyId: event.companyId,
+        metadata: event.metadata,
+      );
+      
+      if (result.isSuccess) {
+        final refreshResult = await homeRepository.getResourceCategory(companyId: event.companyId);
+        if (refreshResult.isSuccess) {
+          if (refreshResult.result is Map<String, dynamic>) {
+            final data = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>).data;
+            emit(GetResourceCategorySuccessState(data: data.data));
+          } else {
+            if (currentCategories != null) {
+              emit(GetResourceCategorySuccessState(data: currentCategories));
+            }
+          }
+        } else {
+          if (currentCategories != null) {
+            emit(GetResourceCategorySuccessState(data: currentCategories));
+          }
+        }
+      } else {
+        if (currentCategories != null) {
+          final index = currentCategories.indexWhere((c) => c.id == 0 && c.name == event.name);
+          if (index != -1) {
+            currentCategories.removeAt(index);
+            emit(GetResourceCategorySuccessState(data: currentCategories));
+          }
+        }
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      if (currentCategories != null) {
+        final index = currentCategories.indexWhere((c) => c.id == 0 && c.name == event.name);
+        if (index != -1) {
+          currentCategories.removeAt(index);
+          emit(GetResourceCategorySuccessState(data: currentCategories));
+        }
+      }
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onUploadResourceImage(
+    UploadResourceImageEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(UploadResourceImageLoadingState());
+    try {
+      final result = await homeRepository.uploadResourceImage(filePath: event.filePath);
+      if (result.isSuccess) {
+        if (result.result is Map && 
+            result.result.containsKey('data') &&
+            result.result['data'] is Map &&
+            result.result['data'].containsKey('data')) {
+          final data = result.result['data']['data'];
+          emit(UploadResourceImageSuccessState(
+            url: data['url'] ?? '',
+            filename: data['filename'] ?? '',
+            mimeType: data['mimeType'] ?? '',
+            size: data['size'] ?? 0,
+          ));
+        } else {
+          emit(HomeErrorState(message: HelperFunctions.errorText("Invalid response format")));
+        }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onCreateResource(
+    CreateResourceEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(CreateResourceLoadingState());
+    try {
+      final result = await homeRepository.createResource(
+        name: event.name,
+        companyId: event.companyId,
+        price: event.price,
+        resourceCategoryId: event.resourceCategoryId,
+        metadata: event.metadata,
+        isBookable: event.isBookable,
+        isTimeSlotBased: event.isTimeSlotBased,
+        timeSlotDurationMinutes: event.timeSlotDurationMinutes,
+        images: event.images,
+      );
+      if (result.isSuccess) {
+        emit(CreateResourceSuccessState());
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetResourceEvent(
+    GetResourceEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetResourceLoadingState());
+    try {
+      int id = CacheService.getInt("select_company") ?? 0;
+      final result = await homeRepository.getResource(id: id);
+      if (result.isSuccess) {
+        final data = resource_model.ResourceModel.fromJson(result.result);
+        emit(GetResourceSuccessState(data: data));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
     } catch (e) {
       emit(HomeErrorState(message: e.toString()));
+    }
+  }
+
+  void _onDeleteResourceCategory(
+    DeleteResourceCategoryEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    try {
+      final currentState = state;
+      List<resource_category.ResourceCategoryData>? currentCategories;
+      
+      if (currentState is GetResourceCategorySuccessState) {
+        currentCategories = List.from(currentState.data);
+        currentCategories.removeWhere((cat) => cat.id == event.id);
+        
+        for (var cat in List.from(currentCategories)) {
+          if (cat.parent?.id == event.id) {
+            currentCategories.remove(cat);
+          }
+        }
+        
+        emit(DeleteResourceCategoryLoadingState(categoryId: event.id));
+        emit(GetResourceCategorySuccessState(data: currentCategories));
+      } else {
+        emit(DeleteResourceCategoryLoadingState(categoryId: event.id));
+      }
+
+      final result = await homeRepository.deleteResourceCategory(id: event.id);
+      if (result.isSuccess) {
+        final companyId = HelperFunctions.getCompanyId() ?? 0;
+        if (companyId > 0) {
+          final refreshResult = await homeRepository.getResourceCategory(companyId: companyId);
+          if (refreshResult.isSuccess && refreshResult.result is Map<String, dynamic>) {
+            final data = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>).data;
+            emit(GetResourceCategorySuccessState(data: data.data));
+          }
+        }
+        emit(DeleteResourceCategorySuccessState(categoryId: event.id));
+      } else {
+        if (currentCategories != null) {
+          final companyId = HelperFunctions.getCompanyId() ?? 0;
+          if (companyId > 0) {
+            final refreshResult = await homeRepository.getResourceCategory(companyId: companyId);
+            if (refreshResult.isSuccess && refreshResult.result is Map<String, dynamic>) {
+              final data = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>).data;
+              emit(GetResourceCategorySuccessState(data: data.data));
+            }
+          }
+        }
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onDeleteResourceEvent(
+    DeleteResourceEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    // Get current resource data to update optimistically
+    final currentState = state;
+    resource_model.ResourceModel? currentResourceData;
+    
+    if (currentState is GetResourceSuccessState) {
+      currentResourceData = currentState.data;
+    }
+    
+    emit(DeleteResourceLoadingState(resourceId: event.id));
+    try {
+      final result = await homeRepository.deleteResource(id: event.id);
+      if (result.isSuccess) {
+        // Optimistically update the resource list by removing deleted item
+        if (currentResourceData != null) {
+          final updatedData = resource_model.ResourceModel(
+            data: resource_model.Data(
+              data: currentResourceData.data.data
+                  .where((item) => item.id != event.id)
+                  .toList(),
+              message: currentResourceData.data.message,
+            ),
+          );
+          // Emit updated resource state - this keeps the UI showing the updated list
+          emit(GetResourceSuccessState(data: updatedData));
+        } else {
+          // If no current data, just emit success state
+          emit(DeleteResourceSuccessState(resourceId: event.id));
+        }
+      } else {
+        // On error, restore previous state
+        if (currentResourceData != null) {
+          emit(GetResourceSuccessState(data: currentResourceData));
+        } else {
+          emit(HomeErrorState(message: result.error.toString()));
+        }
+      }
+    } catch (e) {
+      // On error, restore previous state
+      if (currentResourceData != null) {
+        emit(GetResourceSuccessState(data: currentResourceData));
+      } else {
+        emit(HomeErrorState(message: e.toString()));
+      }
     }
   }
 }
