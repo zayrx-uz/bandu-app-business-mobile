@@ -252,5 +252,12 @@
   "hours" : "hours",
   "minutesShort" : "min",
   "deleteResource" : "Delete Resource",
-  "deleteResourceConfirm" : "Are you sure you want to delete this resource"
+  "deleteResourceConfirm" : "Are you sure you want to delete this resource",
+  "resourceCategory" : "Resource Category",
+  "searchOrSelect" : "Search or select...",
+  "addText" : "add",
+  "noDataFound" : "No data found",
+  "availability" : "Availability",
+  "available" : "Available",
+  "booked" : "Booked"
 }

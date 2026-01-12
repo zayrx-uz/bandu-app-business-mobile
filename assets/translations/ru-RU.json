@@ -252,7 +252,14 @@
   "hours" : "час",
   "minutesShort" : "мин",
   "deleteResource" : "Удалить ресурс",
-  "deleteResourceConfirm" : "Вы уверены, что хотите удалить этот ресурс"
+  "deleteResourceConfirm" : "Вы уверены, что хотите удалить этот ресурс",
+  "resourceCategory" : "Категория ресурса",
+  "searchOrSelect" : "Поиск или выберите...",
+  "addText" : "добавить",
+  "noDataFound" : "Данные не найдены",
+  "availability" : "Доступность",
+  "available" : "Доступно",
+  "booked" : "Забронировано"
 }
 
 

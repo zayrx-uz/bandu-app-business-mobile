@@ -3,12 +3,14 @@ import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart'
     hide Image;
+import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ResourceWidget extends StatelessWidget {
   const ResourceWidget({super.key, required this.data});
@@ -20,93 +22,75 @@ class ResourceWidget extends StatelessWidget {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {},
       builder: (context, state) {
-        // Check if this specific resource is being deleted
-        final isDeleting = state is DeleteResourceLoadingState && 
+        final isDeleting = state is DeleteResourceLoadingState &&
                           state.resourceId == data.id;
         
         return Container(
-          margin: EdgeInsets.only(bottom: 10.h),
-          padding: EdgeInsets.all(12.w),
+          margin: EdgeInsets.only(bottom: 16.h),
           width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.7),
-                offset: Offset(0, 0),
-                spreadRadius: 0,
-                blurRadius: 4,
-              ),
-            ],
-          ),
           child: Row(
             children: [
               data.images.isNotEmpty
                   ? CustomNetworkImage(
                       imageUrl: data.images.first.url,
                       borderRadius: 12.r,
-                      width: 72.w,
-                      height: 72.w,
+                      width: 56.w,
+                      height: 56.w,
                       fit: BoxFit.cover,
                     )
                   : Container(
-                      width: 72.w,
-                      height: 72.w,
+                      width: 56.w,
+                      height: 56.w,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: Colors.grey.withOpacity(0.0),
                         borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          width: 1.w,
+                          color : AppColor.cE5E7E5
+                        )
                       ),
-                      child: Icon(
-                        Icons.image,
-                        size: 36.w,
-                        color: Colors.grey[600],
-                      ),
+                      child: Center(child: SvgPicture.asset(AppIcons.food , width: 32.w,fit : BoxFit.cover))
                     ),
-              SizedBox(width: 12.w),
+              SizedBox(width: 16.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      data.name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          data.name,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(width: 18.w,),
+                        Text(
+                          data.resourceCategory != null ? data.resourceCategory!.name : "",
+                          style: TextStyle(
+                            color: AppColor.cA7AAA7,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
+                    SizedBox(height: 4.h,),
                     Text(
                       "${data.price.formatWithSpaces()} UZS",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: AppColor.yellowFFC,
                         fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
+                        letterSpacing: -1,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        AppIconButton(
-                          icon: AppIcons.trash,
-                          onTap: () {
-                            CenterDialog.deleteResourceDialog(
-                              context,
-                              id: data.id,
-                              name: data.name,
-                              onTapDelete: (){
-                                Navigator.pop(context);
-                                BlocProvider.of<HomeBloc>(context).add(DeleteResourceEvent(id: data.id));
-                              }
-                            );
-                          },
-                          loading: isDeleting,
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
+              SvgPicture.asset(AppIcons.threeDot , width: 20.w,fit : BoxFit.cover)
             ],
           ),
         );

@@ -4,6 +4,7 @@ import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/model/api/main/home/resource_category_model.dart' as resource_category;
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -396,7 +397,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                 Padding(
                   padding: EdgeInsets.only(bottom: 8.h),
                   child: Text(
-                    "Resource Category",
+                    "resourceCategory".tr(),
                     style: AppTextStyle.f500s16.copyWith(
                       color: AppColor.black09,
                       fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
@@ -437,7 +438,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                           fontWeight: FontWeight.w500,
                         ),
                         decoration: InputDecoration(
-                          hintText: "Qidirish yoki tanlang...",
+                          hintText: "searchOrSelect".tr(),
                           hintStyle: TextStyle(
                             color: Colors.grey,
                             fontSize: 16.sp,
@@ -631,7 +632,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          '"${searchControllers[levelIndex]!.text}" qo\'shish',
+                                          '"${searchControllers[levelIndex]!.text}" ${"addText".tr()}',
                                           style: TextStyle(
                                             color: AppColor.yellowFFC,
                                             fontWeight: FontWeight.w600,
@@ -690,7 +691,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          '"${searchControllers[levelIndex]!.text}" qo\'shish',
+                                          '"${searchControllers[levelIndex]!.text}" ${"addText".tr()}',
                                           style: TextStyle(
                                             color: AppColor.yellowFFC,
                                             fontWeight: FontWeight.w600,
@@ -722,7 +723,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                                 padding: EdgeInsets.all(16.w),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  "Ma'lumot topilmadi",
+                                  "noDataFound".tr(),
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     color: Colors.grey,

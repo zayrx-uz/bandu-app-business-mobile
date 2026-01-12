@@ -14,6 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ResourceScreen extends StatefulWidget {
   const ResourceScreen({super.key});
@@ -62,24 +63,43 @@ class _ResourceScreenState extends State<ResourceScreen> {
                   return const Center(child: CircularProgressIndicator.adaptive());
                 }
                 
-                // If we have data (either from current state or cached), show it
                 if (displayData != null) {
                   return RefreshIndicator(
                     color : AppColor.yellowFFC,
                     onRefresh: getData,
-                    child: ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                      itemCount: displayData.data.data.length,
-                      itemBuilder: (context, index) {
-                        return ResourceWidget(
-                          data: displayData!.data.data[index],
-                        );
-                      },
+                    child: Column(
+                      children: [
+                        SizedBox(height: 18.h,),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Milliy taom"  , style: TextStyle(
+                                color : Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600
+                              ),),
+                              SvgPicture.asset(AppIcons.resourceCub , width: 24.w,fit : BoxFit.cover),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                            itemCount: displayData.data.data.length,
+                            itemBuilder: (context, index) {
+                              return ResourceWidget(
+                                data: displayData!.data.data[index],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
                 
-                // Show error state only if we don't have cached data
                 if (state is HomeErrorState) {
                   return RefreshIndicator(
                     onRefresh: getData,

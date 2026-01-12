@@ -4,6 +4,7 @@ import 'package:bandu_business/src/model/api/auth/login_model.dart';
 import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
 import 'package:bandu_business/src/ui/main/main_screen.dart';
+import 'package:bandu_business/src/ui/onboard/on_borading.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -45,15 +46,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _splashChange(SplashChangeEvent event, Emitter<AuthState> emit) async {
     await Future.delayed(const Duration(seconds: 2));
-    if (CacheService.getToken() != '') {
-      if (HelperFunctions.getCompanyId() == -1 || HelperFunctions.getCompanyId() == null) {
-        emit(SplashChangeState(page: SelectCompanyScreen()));
+    if(CacheService.getBool("onboarding_view")){
+      if (CacheService.getToken() != '') {
+        if (HelperFunctions.getCompanyId() == -1 || HelperFunctions.getCompanyId() == null) {
+          emit(SplashChangeState(page: SelectCompanyScreen()));
+        } else {
+
+          emit(SplashChangeState(page: MainScreen()));
+        }
       } else {
-        emit(SplashChangeState(page: MainScreen()));
+        emit(SplashChangeState(page: OnboardScreen()));
       }
-    } else {
-      emit(SplashChangeState(page: OnboardScreen()));
     }
+    else{
+      emit(SplashChangeState(page: Onboarding()));
+    }
+
   }
 
   void _getImage(GetImageEvent event, Emitter<AuthState> emit) async {

@@ -252,5 +252,12 @@
   "hours" : "soat",
   "minutesShort" : "min",
   "deleteResource" : "Resursni o'chirish",
-  "deleteResourceConfirm" : "Resursni o'chirmoqchimisiz"
+  "deleteResourceConfirm" : "Resursni o'chirmoqchimisiz",
+  "resourceCategory" : "Resurs kategoriyasi",
+  "searchOrSelect" : "Qidirish yoki tanlang...",
+  "addText" : "qo'shish",
+  "noDataFound" : "Ma'lumot topilmadi",
+  "availability" : "Mavjudligi",
+  "available" : "Mavjud",
+  "booked" : "Band"
 }

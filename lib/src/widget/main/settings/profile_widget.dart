@@ -8,6 +8,7 @@ import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/settings/edit/edit_profile_screen.dart';
+import 'package:bandu_business/src/ui/main/settings/notification_screen/notification_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:bandu_business/src/widget/app/shimmer_widget.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfileWidget extends StatelessWidget {
   const ProfileWidget({super.key});
@@ -57,6 +59,26 @@ class ProfileWidget extends StatelessWidget {
                   children: [
                     TopAppName(color: AppColor.white),
                     Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        AppService.changePage(context, NotificationScreen());
+                      },
+                      child: Container(
+                        width: 32.w,
+                        height: 32.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            AppIcons.notificationIcon,
+                            width: 16.w,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    )
                     // AppIconButton(icon: AppIcons.notification, onTap: () {}),
                   ],
                 ),

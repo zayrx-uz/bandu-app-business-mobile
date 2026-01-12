@@ -78,4 +78,13 @@ class AppIcons {
   static const String delete = 'assets/icons/delete.svg';
   static const String edit2 = 'assets/icons/edit2.svg';
   static const String clock = 'assets/icons/clock.svg';
+
+  static const String arrowRight = 'assets/icons/arrow_right.svg';
+  static const String arrowLeft = 'assets/icons/arrow_left.svg';
+  static const String notificationIcon = 'assets/icons/notification.svg';
+  static const String ticksIcon = 'assets/icons/ticks.svg';
+  static const String resourceCub = 'assets/icons/category_cub.svg';
+  static const String resourceLine = 'assets/icons/category_line.svg';
+  static const String threeDot = 'assets/icons/three_dot.svg';
+  static const String food = 'assets/icons/food.svg';
 }

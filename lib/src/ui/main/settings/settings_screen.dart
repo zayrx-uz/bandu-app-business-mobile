@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     SettingsButtonWidget(
                       icon: AppIcons.money,
-                      text: "Resource",
+                      text: "resource".tr(),
                       onTap: () {
                         AppService.changePage(
                           context,

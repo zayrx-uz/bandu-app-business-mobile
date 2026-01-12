@@ -23,17 +23,17 @@ class SelectTypeWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Availability", style: AppTextStyle.f500s16),
+          Text("availability".tr(), style: AppTextStyle.f500s16),
           SizedBox(height: 6.h),
           Row(
             children: [
-              selectButton(context, "Available", isAvaible, () {
+              selectButton(context, "available".tr(), isAvaible, () {
                 onTap(true);
               }),
               SizedBox(width: 8.w),
               selectButton(
                 context,
-                "Booked",
+                "booked".tr(),
                 isAvaible != null ? !isAvaible! : null,
                     () {
                   onTap(false);

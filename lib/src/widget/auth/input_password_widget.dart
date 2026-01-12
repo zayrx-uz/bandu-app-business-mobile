@@ -13,6 +13,7 @@ class InputPasswordWidget extends StatefulWidget {
   final String? title;
   final String? hint;
   final String? trailingMessage;
+  final ValueChanged<String>? onChange;
 
 
   final TextEditingController controller;
@@ -21,7 +22,7 @@ class InputPasswordWidget extends StatefulWidget {
     super.key,
     this.title,
     required this.controller,
-    this.hint, this.trailingMessage,
+    this.hint, this.trailingMessage,  this.onChange,
   });
 
   @override
@@ -75,6 +76,7 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
               children: [
                 Expanded(
                   child: TextField(
+                    onChanged: widget.onChange,
                     cursorColor: Colors.grey,
                     controller: widget.controller,
                     obscureText: isView,

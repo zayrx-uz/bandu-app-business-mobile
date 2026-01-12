@@ -32,6 +32,12 @@ class AppColor {
   static const Color blue00 = Color(0xFF007AFF);
   static const Color cFAFAFA = Color(0xFFFAFAFA);
   static const Color cE5E7E5 = Color(0xFFE5E7E5);
+  static const Color c585B57 = Color(0xFF585B57);
+  static const Color c8E6D00 = Color(0xFF8E6D00);
+  static const Color c717784 = Color(0xFF717784);
+  static const Color c666970 = Color(0xFF666970);
+  static const Color cF4F5F4 = Color(0xFFF4F5F4);
+  static const Color cA7AAA7 = Color(0xFFA7AAA7);
 
   static final buttonGradient = LinearGradient(
     begin: Alignment.topCenter,
