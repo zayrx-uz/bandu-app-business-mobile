@@ -34,6 +34,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ///otp event
     on<OtpEvent>(_otp);
 
+    ///RegisterCompleteEvent
+    on<RegisterCompleteEvent>(_registerComplete);
+
     ///forgot password event
     on<ForgotPasswordEvent>(_forgotPassword);
 
@@ -103,33 +106,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _register(RegisterEvent event, Emitter<AuthState> emit) async {
-    emit(RegisterLoadingState());
-    try {
-      final imgResult = await authRepository.uploadImage(filePath: event.img);
 
-      if (imgResult.isSuccess) {
-        final result = await authRepository.register(
-          phone: event.phone,
-          fullName: event.fullName,
-          password: event.password,
-          img: imgResult.result['data']['data']['url'],
-          role: event.role,
-        );
-        if (result.isSuccess) {
-          emit(
-            RegisterSuccessState(otpToken: result.result["data"]['otpToken']),
-          );
-        } else {
-          emit(AuthErrorState(message: result.result['message']));
-        }
-      } else {
-        emit(AuthErrorState(message: imgResult.result['message']));
-      }
-    } catch (e) {
-      emit(AuthErrorState(message: e.toString()));
-    }
-  }
 
   void _otp(OtpEvent event, Emitter<AuthState> emit) async {
     emit(OtpLoadingState());
@@ -139,9 +116,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         code: event.code,
       );
       if (result.isSuccess) {
-        LoginModel data = LoginModel.fromJson(result.result);
-        HelperFunctions.saveLoginData(data);
-        emit(OtpSuccessState());
+        final data = result.result["data"];
+        final registrationToken = data["registrationToken"] ?? data["data"]?["registrationToken"];
+        emit(OtpSuccessState(token: registrationToken));
       } else {
         emit(AuthErrorState(message: result.result['message']));
       }
@@ -150,6 +127,75 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  void _registerComplete(
+      RegisterCompleteEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(RegisterCompleteLoadingState());
+    try {
+      String fcmToken = CacheService.getString("fcm_token");
+
+      final result = await authRepository.registerComplete(
+        role: event.role,
+        fullName: event.fullName,
+        token: event.token,
+        password: event.password,
+        fcmToken: fcmToken,
+      );
+      if (result.isSuccess) {
+        final responseData = result.result;
+        if (responseData is Map<String, dynamic>) {
+          LoginModel data = LoginModel.fromJson(responseData);
+          if (data.tokens.accessToken.isNotEmpty) {
+            HelperFunctions.saveLoginData(data);
+            emit(RegisterCompleteSuccessState(userModel: data));
+          } else {
+            emit(AuthErrorState(message: "Token not found in response"));
+          }
+        } else {
+          emit(AuthErrorState(message: "Invalid response format"));
+        }
+      } else {
+        final errorMessage = result.result is Map 
+            ? (result.result['message'] ?? result.result.toString())
+            : result.result.toString();
+        emit(AuthErrorState(message: errorMessage));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+
+
+  void _register(RegisterEvent event, Emitter<AuthState> emit) async {
+    emit(RegisterLoadingState());
+    try {
+      // String? imageUrl;
+
+      // Only upload image if provided
+      // if (event.img != null && event.img!.isNotEmpty) {
+      //   final imgResult = await authRepository.uploadImage(filePath: event.img!);
+      //   if (imgResult.isSuccess) {
+      //     imageUrl = imgResult.result['data']['data']['url'];
+      //   } else {
+      //     emit(AuthErrorState(message: imgResult.result['message']));
+      //     return;
+      //   }
+      // }
+
+      final result = await authRepository.register(phone: event.phone);
+
+      if (result.isSuccess) {
+        print("Mana u mana ${result.result["otpToken"]}");
+        emit(RegisterSuccessState(otpToken: result.result['otpToken']));
+      } else {
+        emit(AuthErrorState(message: result.result['message']));
+      }
+    } catch (e) {
+      emit(AuthErrorState(message: e.toString()));
+    }
+  }
 
 
 

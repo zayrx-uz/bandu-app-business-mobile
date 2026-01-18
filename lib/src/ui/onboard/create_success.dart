@@ -1,9 +1,14 @@
+import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
+import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
-import 'package:bandu_business/src/ui/main/main_screen.dart';
+import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CreateSuccess extends StatefulWidget {
@@ -13,7 +18,8 @@ class CreateSuccess extends StatefulWidget {
   State<CreateSuccess> createState() => _CreateSuccessState();
 }
 
-class _CreateSuccessState extends State<CreateSuccess> with SingleTickerProviderStateMixin {
+class _CreateSuccessState extends State<CreateSuccess>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -28,15 +34,25 @@ class _CreateSuccessState extends State<CreateSuccess> with SingleTickerProvider
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6, curve: Curves.easeIn)),
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack)),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
+          ),
+        );
 
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.2, 0.8, curve: Curves.elasticOut)),
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.2, 0.8, curve: Curves.elasticOut),
+      ),
     );
 
     _controller.forward();
@@ -73,7 +89,7 @@ class _CreateSuccessState extends State<CreateSuccess> with SingleTickerProvider
               child: Column(
                 children: [
                   Text(
-                    "Account Verified! 🎉",
+                    "accountVerified".tr(),
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 24.sp,
@@ -84,7 +100,7 @@ class _CreateSuccessState extends State<CreateSuccess> with SingleTickerProvider
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Text(
-                      "You're all set! Start exploring rewards and exclusive deals from your favorite stores.",
+                      "accountVerifiedDescription".tr(),
                       style: TextStyle(
                         color: AppColor.c717784,
                         fontSize: 16.sp,
@@ -103,9 +119,15 @@ class _CreateSuccessState extends State<CreateSuccess> with SingleTickerProvider
                 padding: EdgeInsets.only(bottom: 36.h),
                 child: AppButton(
                   onTap: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const MainScreen()), (route) => false);
+                    AppService.changePage(
+                      context,
+                      BlocProvider(
+                        create: (_) => HomeBloc(homeRepository: HomeRepository()),
+                        child: SelectCompanyScreen(),
+                      ),
+                    );
                   },
-                  text: "Get Started!",
+                  text: "getStarted".tr(),
                 ),
               ),
             ),

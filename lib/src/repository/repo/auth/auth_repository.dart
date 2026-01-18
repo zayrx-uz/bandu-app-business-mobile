@@ -14,14 +14,6 @@ class AuthRepository implements AbstractAuthRepository {
     return await authProvider.login(phone, password, role);
   }
 
-  @override
-  Future<HttpResult> otp({
-    required String otpToken,
-    required String code,
-  }) async {
-    return await authProvider.otp(otpToken, code);
-  }
-
 
   @override
   Future<HttpResult> forgotPassword({required String phoneNumber}) async {
@@ -46,15 +38,33 @@ class AuthRepository implements AbstractAuthRepository {
   }
 
   @override
+  Future<HttpResult> otp({
+    required String otpToken,
+    required String code,
+  }) async {
+    return await authProvider.otp(otpToken, code);
+  }
+
+
+  @override
+  Future<HttpResult> registerComplete({
+    required String role,
+    required String fullName,
+    required String token,
+    required String password,
+    required String fcmToken,
+  }) async {
+    return await authProvider.registerComplete(role: role, fullName: fullName, token: token, password: password, fcmToken: fcmToken);
+  }
+
+  @override
   Future<HttpResult> register({
     required String phone,
-    required String fullName,
-    required String password,
-    required String img,
-    required String role,
   }) async {
-    return await authProvider.register(phone, fullName, password, img, role);
+    return await authProvider.register(phone);
   }
+
+
 
   @override
   Future<HttpResult> uploadImage({required String filePath}) async {

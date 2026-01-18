@@ -31,21 +31,11 @@ class LoginEvent extends AuthEvent {
 
 class RegisterEvent extends AuthEvent {
   final String phone;
-  final String fullName;
-  final String password;
-  final String img;
-  final String role;
 
-  RegisterEvent({
-    required this.phone,
-    required this.fullName,
-    required this.password,
-    required this.img,
-    required this.role,
-  });
+    RegisterEvent({required this.phone});
 
   @override
-  List<Object?> get props => [phone, fullName, password, img, role];
+  List<Object?> get props => [phone];
 }
 
 class OtpEvent extends AuthEvent {
@@ -98,4 +88,22 @@ class ResetPasswordEvent extends AuthEvent {
 
   @override
   List<Object?> get props => [resetToken, newPassword];
+}
+
+
+class RegisterCompleteEvent extends AuthEvent {
+  final String token;
+  final String fullName;
+  final String password;
+  final String role;
+
+  RegisterCompleteEvent({
+    required this.role,
+    required this.fullName,
+    required this.token,
+    required this.password,
+  });
+
+  @override
+  List<Object?> get props => [role, fullName, token , password];
 }

@@ -1,37 +1,25 @@
 class ResourceCategoryModel {
-  Data data;
-
-  ResourceCategoryModel({required this.data});
-
-  factory ResourceCategoryModel.fromJson(Map<String, dynamic> json) =>
-      ResourceCategoryModel(
-        data: json["data"] == null || json["data"] is! Map
-            ? Data.fromJson(<String, dynamic>{})
-            : Data.fromJson(json["data"] as Map<String, dynamic>),
-      );
-}
-
-class Data {
   List<ResourceCategoryData> data;
   String message;
 
-  Data({required this.data, required this.message});
+  ResourceCategoryModel({required this.data, required this.message});
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    data: json["data"] == null || json["data"] is! List
-        ? <ResourceCategoryData>[]
-        : List<ResourceCategoryData>.from(
-            (json["data"] as List).map((x) => x is Map<String, dynamic> 
-                ? ResourceCategoryData.fromJson(x) 
-                : ResourceCategoryData(
-                    id: 0,
-                    name: "",
-                    parent: null,
-                    children: [],
-                  )),
-          ),
-    message: json["message"] ?? "",
-  );
+  factory ResourceCategoryModel.fromJson(Map<String, dynamic> json) =>
+      ResourceCategoryModel(
+        data: json["data"] == null || json["data"] is! List
+            ? <ResourceCategoryData>[]
+            : List<ResourceCategoryData>.from(
+                (json["data"] as List).map((x) => x is Map<String, dynamic> 
+                    ? ResourceCategoryData.fromJson(x) 
+                    : ResourceCategoryData(
+                        id: 0,
+                        name: "",
+                        parent: null,
+                        children: [],
+                      )),
+              ),
+        message: json["message"] ?? "",
+      );
 }
 
 class ResourceCategoryData {

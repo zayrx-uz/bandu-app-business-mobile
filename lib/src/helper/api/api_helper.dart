@@ -12,10 +12,11 @@ class ApiHelper {
 
   static const register = "${baseUrl}api/otp-based-auth/register";
   static const login = "${baseUrl}api/otp-based-auth/login";
-  static const otp = "${baseUrl}api/otp-based-auth/complete-registration";
+  static const otp = "${baseUrl}api/otp-based-auth/verify-otp";
   static const forgotPassword = "${baseUrl}api/otp-based-auth/forgot-password";
   static const verifyResetCode = "${baseUrl}api/otp-based-auth/verify-reset-code";
   static const resetPassword = "${baseUrl}api/otp-based-auth/reset-password";
+  static const registerComplete = "${baseUrl}api/otp-based-auth/complete-registration";
   static const media = "${baseUrl}api/upload/image/user";
   static const getCompany = "${baseUrl}api/company";
   static const getMyCompany = "${baseUrl}api/user/companies";
@@ -23,6 +24,7 @@ class ApiHelper {
   static const getCategory = "${baseUrl}api/categories";
   static const getMonitoring = "${baseUrl}api/booking/my-bookings";
   static const getMe = "${baseUrl}api/user/me";
+  static const deleteAccount = "${baseUrl}api/user/me";
   static const getPlace = "${baseUrl}api/place/company/";
   static const booking = "${baseUrl}api/booking";
   static const place = "${baseUrl}api/place";
@@ -35,4 +37,14 @@ class ApiHelper {
   static const createResourceCategory = "${baseUrl}api/resource-category";
   static const deleteResourceCategory = "${baseUrl}api/resource-category/";
   static const confirmBook = "${baseUrl}api/booking/";
+  static const aliceChecker = "${baseUrl}api/payment/alice/check";
+  static const getOwnerBookings = "${baseUrl}api/booking/owner-bookings";
+  static const getBookingDetail = "${baseUrl}api/booking/";
+  static const updateBookingStatus = "${baseUrl}api/booking/";
+  static const dashboardSummary = "${baseUrl}api/dashboard/summary";
+  static const dashboardRevenueSeries = "${baseUrl}api/dashboard/revenue/series";
+  static const dashboardIncomingCustomersSeries = "${baseUrl}api/dashboard/incoming-customers/series";
+  static const dashboardIncomingCustomers = "${baseUrl}api/dashboard/incoming-customers";
+  static const dashboardPlacesBooked = "${baseUrl}api/dashboard/places/booked";
+  static const dashboardPlacesEmpty = "${baseUrl}api/dashboard/places/empty";
 }

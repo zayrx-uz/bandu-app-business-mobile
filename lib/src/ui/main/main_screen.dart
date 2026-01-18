@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/helper/service/rx_bus.dart';
@@ -14,6 +15,7 @@ import 'package:bandu_business/src/ui/main/settings/settings_screen.dart';
 import 'package:bandu_business/src/ui/main/statistic/statistic_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
+import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +124,58 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  String _getCategoryImage(int categoryId, bool isSelected) {
+    switch (categoryId) {
+      case 1:
+        return isSelected ? AppImages.restaurantSelect : AppImages.restaurantUnselect;
+      case 24:
+        return isSelected ? AppImages.barberSelect : AppImages.barberUnselect;
+      case 37:
+        return isSelected ? AppImages.carwashSelect : AppImages.carwashUnselect;
+      default:
+        return isSelected ? AppImages.restaurantSelect : AppImages.restaurantUnselect;
+    }
+  }
+
   Widget buttons(String text, int index) {
+    final isSelected = select == index;
+    
+    if (index == 1) {
+      final categoryId = CacheService.getCategoryId() ?? 1;
+      final imagePath = _getCategoryImage(categoryId, isSelected);
+      
+      return Expanded(
+        child: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Container(
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Image.asset(
+                  imagePath,
+                  width: 24.w,
+                  height: 24.w,
+                  fit: BoxFit.cover,
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  text,
+                  maxLines: 1,
+                  style: AppTextStyle.f500s10.copyWith(
+                    color: isSelected ? AppColor.yellow8E : AppColor.greyA7,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          onPressed: () {
+            select = index;
+            setState(() {});
+          },
+        ),
+      );
+    }
+    
     return Expanded(
       child: CupertinoButton(
         padding: EdgeInsets.zero,
@@ -130,13 +183,13 @@ class _MainScreenState extends State<MainScreen> {
           color: Colors.transparent,
           child: Column(
             children: [
-              AppSvgAsset(select != index ? icon[index] : iconSelect[index]),
+              AppSvgAsset(isSelected ? iconSelect[index] : icon[index]),
               SizedBox(height: 4.h),
               Text(
                 text,
                 maxLines: 1,
                 style: AppTextStyle.f500s10.copyWith(
-                  color: select == index ? AppColor.yellow8E : AppColor.greyA7,
+                  color: isSelected ? AppColor.yellow8E : AppColor.greyA7,
                 ),
               ),
             ],
@@ -157,6 +210,15 @@ class _MainScreenState extends State<MainScreen> {
       Navigator.popUntil(context, (route) => route.isFirst);
       AppService.replacePage(context, OnboardScreen());
     });
+
+    RxBus.register(tag: "SERVER_ERROR").listen((d) {
+      BottomDialog.serverError(context);
+    });
+
+    RxBus.register(tag: "NO_CONNECTION").listen((d) {
+      BottomDialog.noConnection(context);
+    });
+
     RxBus.register(tag: "notification").listen((url) async {
       await CupertinoScaffold.showCupertinoModalBottomSheet(
         context: sheetContext,

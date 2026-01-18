@@ -51,9 +51,28 @@ class RegisterSuccessState extends AuthState {
   List<Object?> get props => [otpToken];
 }
 
+class RegisterCompleteLoadingState extends AuthState {}
+
+class RegisterCompleteSuccessState extends AuthState {
+  final LoginModel userModel;
+
+  RegisterCompleteSuccessState({required this.userModel});
+
+  @override
+  List<Object?> get props => [userModel];
+}
+
 class OtpLoadingState extends AuthState {}
 
-class OtpSuccessState extends AuthState {}
+class OtpSuccessState extends AuthState {
+  final String token;
+
+  OtpSuccessState({required this.token});
+
+  @override
+  List<Object?> get props => [token];
+
+}
 
 
 

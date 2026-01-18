@@ -148,13 +148,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             
             setState(() {
               nameController.text = user.fullName;
-              firstNameController.text = user.firstName.isNotEmpty ? user.firstName : "";
-              lastNameController.text = user.lastName.isNotEmpty ? user.lastName : "";
+              firstNameController.text = (user.firstName?.isNotEmpty ?? false) ? user.firstName! : "";
+              lastNameController.text = (user.lastName?.isNotEmpty ?? false) ? user.lastName! : "";
               phoneController.text = phoneData.replaceAll("998", "").replaceAll("+", "");
               
-              if (user.birthDate.isNotEmpty) {
+              if (user.birthDate != null && user.birthDate!.isNotEmpty) {
                 try {
-                  birthController.text = user.birthDate.formatBirthdate();
+                  birthController.text = user.birthDate!.formatBirthdate();
                 } catch (_) {
                   birthController.text = "";
                 }

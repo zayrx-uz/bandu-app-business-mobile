@@ -1,31 +1,13 @@
 class ResourceModel {
-  Data data;
-
-  ResourceModel({
-    required this.data,
-  });
-
-  factory ResourceModel.fromJson(Map<String, dynamic> json) => ResourceModel(
-    data: json["data"] == null || json["data"] is! Map<String, dynamic>
-        ? Data.fromJson({})
-        : Data.fromJson(json["data"] as Map<String, dynamic>),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "data": data.toJson(),
-  };
-}
-
-class Data {
   List<Datum> data;
   String message;
 
-  Data({
+  ResourceModel({
     required this.data,
     required this.message,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory ResourceModel.fromJson(Map<String, dynamic> json) => ResourceModel(
     data: json["data"] == null || json["data"] is! List
         ? []
         : List<Datum>.from((json["data"] as List).map((x) => Datum.fromJson(x))),

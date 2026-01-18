@@ -1,7 +1,5 @@
-import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
-import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

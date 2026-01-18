@@ -35,7 +35,7 @@ class ProfileWidget extends StatelessWidget {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         bool isLoading = state is GetMeLoadingState;
-        LoginModelData? userData;
+        LoginModel? userData;
         
         if (state is GetMeSuccessState) {
           userData = state.data;
@@ -79,11 +79,9 @@ class ProfileWidget extends StatelessWidget {
                         ),
                       ),
                     )
-                    // AppIconButton(icon: AppIcons.notification, onTap: () {}),
                   ],
                 ),
               ),
-              // SizedBox(height: 10.h),
               SizedBox(
                 height: 92.h,
                 width: 92.h,

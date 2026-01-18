@@ -171,10 +171,6 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
     });
   }
 
-  void updateSearchText(int level, String text) {
-    _filterItems(level);
-  }
-
   void selectItem(CategoryItem item, int level) async {
     setState(() {
       for (int i = level + 1; i < selectionLevels.length; i++) {
@@ -220,6 +216,24 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
         });
       });
     } else {
+      if (selectionLevels.length <= level + 1) {
+        setState(() {
+          final newLevel = level + 1;
+          selectionLevels.add(SelectionLevel(
+            items: [],
+            selectedItem: null,
+            isExpanded: true,
+            level: newLevel,
+          ));
+          _createAnimationController(newLevel);
+          _createSearchController(newLevel);
+          filteredItems[newLevel] = [];
+
+          Future.delayed(const Duration(milliseconds: 100), () {
+            animationControllers[newLevel]?.forward();
+          });
+        });
+      }
       setState(() {
         if (selectionLevels.length > level + 1) {
           for (int i = level + 1; i < selectionLevels.length; i++) {
@@ -294,6 +308,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
       companyId: companyId,
     ));
   }
+
 
   @override
   void initState() {
@@ -462,7 +477,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                             });
                           }
 
-                          updateSearchText(levelIndex, value);
+                          _filterItems(levelIndex);
                         },
                       ),
                     ),
@@ -600,7 +615,9 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                               ),
                           if (level.selectedItem != null &&
                               level.selectedItem!.children.isEmpty &&
-                              searchControllers[levelIndex]!.text.isNotEmpty)
+                              searchControllers[levelIndex]!.text.isNotEmpty &&
+                              levelIndex + 1 < selectionLevels.length &&
+                              selectionLevels[levelIndex + 1].items.isEmpty)
                             TweenAnimationBuilder<double>(
                               key: ValueKey('add-empty-$levelIndex'),
                               duration: const Duration(milliseconds: 400),
@@ -617,7 +634,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                               },
                               child: GestureDetector(
                                 onTap: () {
-                                  addNewItemToSelectedParent(levelIndex, searchControllers[levelIndex]!.text);
+                                  addNewItemToSelectedParent(levelIndex + 1, searchControllers[levelIndex]!.text);
                                 },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
@@ -657,6 +674,104 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
                                   ),
                                 ),
                               ),
+                            ),
+                          if (level.selectedItem != null &&
+                              level.selectedItem!.children.isEmpty &&
+                              levelIndex + 1 < selectionLevels.length &&
+                              selectionLevels[levelIndex + 1].items.isEmpty)
+                            Column(
+                              children: [
+                                if (searchControllers[levelIndex + 1]!.text.isNotEmpty)
+                                  TweenAnimationBuilder<double>(
+                                    key: ValueKey('add-subcategory-$levelIndex'),
+                                    duration: const Duration(milliseconds: 400),
+                                    tween: Tween(begin: 0.0, end: 1.0),
+                                    curve: Curves.easeOutCubic,
+                                    builder: (context, value, child) {
+                                      return Transform.translate(
+                                        offset: Offset(30 * (1 - value), 0),
+                                        child: Opacity(
+                                          opacity: value,
+                                          child: child,
+                                        ),
+                                      );
+                                    },
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        addNewItemToSelectedParent(levelIndex + 1, searchControllers[levelIndex + 1]!.text);
+                                      },
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOutCubic,
+                                        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.circular(8.r),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                '"${searchControllers[levelIndex + 1]!.text}" ${"addText".tr()}',
+                                                style: TextStyle(
+                                                  color: AppColor.yellowFFC,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16.sp,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 24.w,
+                                              height: 24.w,
+                                              decoration: BoxDecoration(
+                                                color: AppColor.yellowFFC,
+                                                borderRadius: BorderRadius.circular(6.r),
+                                              ),
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 18.sp,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (searchControllers[levelIndex + 1]!.text.isEmpty)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                                    decoration: BoxDecoration(
+                                      color: AppColor.greyFA,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      border: Border.all(
+                                        width: 1.w,
+                                        color: AppColor.greyE5,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline,
+                                          size: 18.sp,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Expanded(
+                                          child: Text(
+                                            "addSubcategoryHint".tr(),
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
                           if (searchControllers[levelIndex]!.text.isNotEmpty &&
                               (level.selectedItem == null || level.selectedItem!.children.isNotEmpty))

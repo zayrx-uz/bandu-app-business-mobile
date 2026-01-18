@@ -1,8 +1,10 @@
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/settings/notification/notification_item.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,7 +25,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         children: [
           AppButton(
             onTap: () {},
-            text: "Mark as Read",
+            text: "markAsRead".tr(),
             border: Border.all(width: 1.w, color: AppColor.cE5E7E5),
             isGradient: false,
             backColor: Colors.white,
@@ -36,14 +38,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: Column(
         children: [
-          TopBarWidget(text: "Notifications", isBack: true),
+          TopBarWidget(text: "notifications".tr(), isBack: true),
           Padding(
             padding: EdgeInsets.all(16.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "8 November 2025",
+                  DateTime.now().toDDMMYYY(),
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w600,

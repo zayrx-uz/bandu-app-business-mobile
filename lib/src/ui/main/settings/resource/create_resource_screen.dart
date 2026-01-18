@@ -11,6 +11,7 @@ import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:flutter/services.dart';
 import 'package:bandu_business/src/widget/main/settings/resource/select_resource_item.dart';
 import 'package:bandu_business/src/widget/main/settings/resource/select_type_item.dart';
+import 'package:bandu_business/src/widget/main/settings/resource/select_employee_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   bool isTimeSlotBased = false;
   int timeSlotDurationMinutes = 60;
   List<Map<String, dynamic>> uploadedImages = [];
+  List<int> selectedEmployeeIds = [];
   
   XFile? img;
   String? _networkImageUrl;
@@ -49,6 +51,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     final companyId = HelperFunctions.getCompanyId() ?? 0;
     if (companyId > 0) {
       context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+      context.read<HomeBloc>().add(GetEmployeeEvent());
     }
   }
 
@@ -139,6 +142,14 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                           });
                         },
                         isAvaible: isBookable,
+                      ),
+                      SizedBox(height: 12.h),
+                      SelectEmployeeWidget(
+                        onEmployeesSelected: (ids) {
+                          setState(() {
+                            selectedEmployeeIds = ids;
+                          });
+                        },
                       ),
                       SizedBox(height: 12.h),
                       Container(
@@ -232,6 +243,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                     isTimeSlotBased: isTimeSlotBased,
                     timeSlotDurationMinutes: timeSlotDurationMinutes,
                     images: uploadedImages,
+                    employeeIds: selectedEmployeeIds.isNotEmpty ? selectedEmployeeIds : null,
                   ));
                 },
                 leftIcon: AppIcons.plus,

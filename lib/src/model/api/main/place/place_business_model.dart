@@ -1,13 +1,19 @@
 class PlaceBusinessModel {
-  Data data;
+  List<PlaceBusinessItemData> data;
+  String message;
 
-  PlaceBusinessModel({required this.data});
+  PlaceBusinessModel({
+    required this.data,
+    required this.message,
+  });
 
   factory PlaceBusinessModel.fromJson(Map<String, dynamic> json) =>
       PlaceBusinessModel(
         data: json["data"] == null
-            ? Data.fromJson({})
-            : Data.fromJson(json["data"]),
+            ? []
+            : List<PlaceBusinessItemData>.from(
+                json["data"].map((x) => PlaceBusinessItemData.fromJson(x))),
+        message: json["message"] ?? "",
       );
 }
 
@@ -19,7 +25,7 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     data: json["data"] == null
-        ? List<PlaceBusinessItemData>.from({})
+        ? []
         : List<PlaceBusinessItemData>.from(json["data"].map((x) => PlaceBusinessItemData.fromJson(x))),
     message: json["message"] ?? "",
   );

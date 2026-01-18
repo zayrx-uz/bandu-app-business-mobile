@@ -1,4 +1,5 @@
-import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 extension NumberFormation on int {
   String priceFormat() {
@@ -14,6 +15,22 @@ extension StringFormat on String {
       return this[0].toUpperCase() + substring(1);
     } catch (_) {
       return this;
+    }
+  }
+
+  String getLocalizedStatus() {
+    switch (toLowerCase()) {
+      case 'pending':
+        return "pending".tr();
+      case 'confirmed':
+        return "confirmed".tr();
+      case 'canceled':
+      case 'cancelled':
+        return "cancelled".tr();
+      case 'completed':
+        return "completed".tr();
+      default:
+        return this;
     }
   }
 

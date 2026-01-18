@@ -87,4 +87,13 @@ class AppIcons {
   static const String resourceLine = 'assets/icons/category_line.svg';
   static const String threeDot = 'assets/icons/three_dot.svg';
   static const String food = 'assets/icons/food.svg';
+  static const String linesIcon = 'assets/icons/lines.svg';
+  static const String buildIcon = 'assets/icons/building.svg';
+  static const String copyIcon = 'assets/icons/edit.svg';
+  static const String refreshIcon = 'assets/icons/edit2.svg';
+  static const String commentIcon = 'assets/icons/pen.svg';
+  static const String clinic = 'assets/icons/place.svg';
+  static const String closeIcon = 'assets/icons/close.svg';
+  static const String copy = 'assets/icons/edit.svg';
+  static const String refresh = 'assets/icons/edit2.svg';
 }

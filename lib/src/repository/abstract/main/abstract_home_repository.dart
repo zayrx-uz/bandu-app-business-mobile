@@ -72,6 +72,7 @@ abstract class AbstractHomeRepository {
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
     required List<Map<String, dynamic>> images,
+    List<int>? employeeIds,
   });
 
   Future<HttpResult> getResource({required int id});
@@ -106,4 +107,63 @@ abstract class AbstractHomeRepository {
   });
 
   Future<HttpResult> updateUserInfo({required UserUpdateModel data});
+
+  Future<HttpResult> checkAlicePayment({
+    required String transactionId,
+    required int bookingId,
+  });
+
+  Future<HttpResult> getOwnerBookings({
+    required int page,
+    required int limit,
+    required int companyId,
+  });
+
+  Future<HttpResult> getBookingDetail({required int bookingId});
+
+  Future<HttpResult> updateBookingStatus({
+    required int bookingId,
+    required String status,
+    String? note,
+  });
+
+  Future<HttpResult> cancelBooking({
+    required int bookingId,
+    required String note,
+  });
+
+  Future<HttpResult> getDashboardSummary({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  });
+
+  Future<HttpResult> getDashboardRevenueSeries({
+    int? companyId,
+    String? period,
+    String? date,
+  });
+
+  Future<HttpResult> getDashboardIncomingCustomersSeries({
+    int? companyId,
+    String? period,
+    String? date,
+  });
+
+  Future<HttpResult> getDashboardIncomingCustomers({
+    int? companyId,
+    String? date,
+    int? page,
+    int? limit,
+  });
+
+  Future<HttpResult> getDashboardPlacesBooked({
+    int? companyId,
+    String? clientDateTime,
+  });
+
+  Future<HttpResult> getDashboardPlacesEmpty({
+    int? companyId,
+    String? clientDateTime,
+  });
 }

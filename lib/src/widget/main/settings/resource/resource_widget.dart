@@ -1,12 +1,10 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
-import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart'
-    hide Image;
+  import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart'
+      hide Image;
 import 'package:bandu_business/src/theme/app_color.dart';
-import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
-import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,9 +20,6 @@ class ResourceWidget extends StatelessWidget {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {},
       builder: (context, state) {
-        final isDeleting = state is DeleteResourceLoadingState &&
-                          state.resourceId == data.id;
-        
         return Container(
           margin: EdgeInsets.only(bottom: 16.h),
           width: double.infinity,
@@ -42,7 +37,7 @@ class ResourceWidget extends StatelessWidget {
                       width: 56.w,
                       height: 56.w,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.0),
+                        color: Colors.grey.withValues(alpha: 0.0),
                         borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(
                           width: 1.w,
@@ -63,7 +58,7 @@ class ResourceWidget extends StatelessWidget {
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                         SizedBox(width: 18.w,),
@@ -82,9 +77,9 @@ class ResourceWidget extends StatelessWidget {
                       "${data.price.formatWithSpaces()} UZS",
                       style: TextStyle(
                         color: AppColor.yellowFFC,
-                        fontSize: 18.sp,
+                        fontSize: 16.sp,
                         letterSpacing: -1,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ],

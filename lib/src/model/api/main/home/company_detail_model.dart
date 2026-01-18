@@ -4,26 +4,16 @@ CompanyDetailModel companyDetailModelFromJson(String str) =>
     CompanyDetailModel.fromJson(json.decode(str));
 
 class CompanyDetailModel {
-  CompanyDetailModelData data;
-
-  CompanyDetailModel({required this.data});
-
-  factory CompanyDetailModel.fromJson(Map<String, dynamic> json) =>
-      CompanyDetailModel(
-        data: json["data"] == null
-            ? CompanyDetailModelData.fromJson({})
-            : CompanyDetailModelData.fromJson(json["data"]),
-      );
-}
-
-class CompanyDetailModelData {
   CompanyDetailData data;
   String message;
 
-  CompanyDetailModelData({required this.data, required this.message});
+  CompanyDetailModel({
+    required this.data,
+    required this.message,
+  });
 
-  factory CompanyDetailModelData.fromJson(Map<String, dynamic> json) =>
-      CompanyDetailModelData(
+  factory CompanyDetailModel.fromJson(Map<String, dynamic> json) =>
+      CompanyDetailModel(
         data: json["data"] == null
             ? CompanyDetailData.fromJson({})
             : CompanyDetailData.fromJson(json["data"]),
@@ -37,11 +27,13 @@ class CompanyDetailData {
   Location location;
   List<Category> categories;
   bool isOpen247;
-  String logo;
+  String? logo;
+  double? rating;
   WorkingHours workingHours;
   List<Category> resourceCategories;
   List<Resource> resources;
   List<ImageData> images;
+  List<dynamic> reviews;
 
   CompanyDetailData({
     required this.id,
@@ -49,11 +41,13 @@ class CompanyDetailData {
     required this.location,
     required this.categories,
     required this.isOpen247,
-    required this.logo,
+    this.logo,
+    this.rating,
     required this.workingHours,
     required this.resourceCategories,
     required this.resources,
     required this.images,
+    required this.reviews,
   });
 
   factory CompanyDetailData.fromJson(Map<String, dynamic> json) =>
@@ -69,25 +63,29 @@ class CompanyDetailData {
                 json["categories"].map((x) => Category.fromJson(x)),
               ),
         isOpen247: json["isOpen247"] ?? false,
-        logo: json["logo"] ?? "",
+        logo: json["logo"]?.toString(),
+        rating: json["rating"]?.toDouble(),
         workingHours: json["workingHours"] == null
             ? WorkingHours.fromJson({})
             : WorkingHours.fromJson(json["workingHours"]),
         resourceCategories: json["resourceCategories"] == null
-            ? List<Category>.from({})
+            ? []
             : List<Category>.from(
                 json["resourceCategories"].map((x) => Category.fromJson(x)),
               ),
         resources: json["resources"] == null
-            ? List<Resource>.from({})
+            ? []
             : List<Resource>.from(
                 json["resources"].map((x) => Resource.fromJson(x)),
               ),
         images: json["images"] == null
-            ? List<ImageData>.from({})
+            ? []
             : List<ImageData>.from(
                 json["images"].map((x) => ImageData.fromJson(x)),
               ),
+        reviews: json["reviews"] == null
+            ? []
+            : json["reviews"],
       );
 }
 
@@ -95,13 +93,13 @@ class Category {
   int id;
   String name;
   String description;
-  CategoryMetadata metadata;
+  CategoryMetadata? metadata;
 
   Category({
     required this.id,
     required this.name,
     required this.description,
-    required this.metadata,
+    this.metadata,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
@@ -109,7 +107,7 @@ class Category {
     name: json["name"] ?? "",
     description: json["description"] ?? "",
     metadata: json["metadata"] == null
-        ? CategoryMetadata.fromJson({})
+        ? null
         : CategoryMetadata.fromJson(json["metadata"]),
   );
 }
@@ -287,13 +285,13 @@ class ResourceMetadata {
 }
 
 class WorkingHours {
-  FridayClass monday;
-  FridayClass tuesday;
-  FridayClass wednesday;
-  FridayClass thursday;
-  FridayClass friday;
-  SaturdayClass saturday;
-  SaturdayClass sunday;
+  DayHours monday;
+  DayHours tuesday;
+  DayHours wednesday;
+  DayHours thursday;
+  DayHours friday;
+  DayHours saturday;
+  DayHours sunday;
 
   WorkingHours({
     required this.monday,
@@ -307,48 +305,43 @@ class WorkingHours {
 
   factory WorkingHours.fromJson(Map<String, dynamic> json) => WorkingHours(
     monday: json["monday"] == null
-        ? FridayClass.fromJson({})
-        : FridayClass.fromJson(json["monday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["monday"]),
     tuesday: json["tuesday"] == null
-        ? FridayClass.fromJson({})
-        : FridayClass.fromJson(json["tuesday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["tuesday"]),
     wednesday: json["wednesday"] == null
-        ? FridayClass.fromJson({})
-        : FridayClass.fromJson(json["wednesday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["wednesday"]),
     thursday: json["thursday"] == null
-        ? FridayClass.fromJson({})
-        : FridayClass.fromJson(json["thursday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["thursday"]),
     friday: json["friday"] == null
-        ? FridayClass.fromJson({})
-        : FridayClass.fromJson(json["friday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["friday"]),
     saturday: json["saturday"] == null
-        ? SaturdayClass.fromJson({})
-        : SaturdayClass.fromJson(json["saturday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["saturday"]),
     sunday: json["sunday"] == null
-        ? SaturdayClass.fromJson({})
-        : SaturdayClass.fromJson(json["sunday"]),
+        ? DayHours.fromJson({})
+        : DayHours.fromJson(json["sunday"]),
   );
 }
 
-class FridayClass {
-  String open;
-  String close;
+class DayHours {
+  String? open;
+  String? close;
   bool closed;
 
-  FridayClass({required this.open, required this.close, required this.closed});
+  DayHours({
+    this.open,
+    this.close,
+    required this.closed,
+  });
 
-  factory FridayClass.fromJson(Map<String, dynamic> json) => FridayClass(
-    open: json["open"] ?? "",
-    close: json["close"] ?? "",
-    closed: json["closed"] ?? false,
+  factory DayHours.fromJson(Map<String, dynamic> json) => DayHours(
+    open: json["open"]?.toString(),
+    close: json["close"]?.toString(),
+    closed: json["closed"] ?? true,
   );
-}
-
-class SaturdayClass {
-  bool closed;
-
-  SaturdayClass({required this.closed});
-
-  factory SaturdayClass.fromJson(Map<String, dynamic> json) =>
-      SaturdayClass(closed: json["closed"] ?? false);
 }

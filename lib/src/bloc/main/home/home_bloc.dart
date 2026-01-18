@@ -9,10 +9,14 @@ import 'package:bandu_business/src/model/api/main/home/place_model.dart';
 import 'package:bandu_business/src/model/api/main/home/resource_category_model.dart' as resource_category;
 import 'package:bandu_business/src/model/api/main/monitoring/monitoring_model.dart';
 import 'package:bandu_business/src/model/api/main/place/place_business_model.dart';
+import 'package:bandu_business/src/model/api/main/alice/alice_checker_model.dart';
 import 'package:bandu_business/src/model/api/main/qr/book_model.dart';
 import 'package:bandu_business/src/model/api/main/qr/place_model.dart';
 import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart' as resource_model;
 import 'package:bandu_business/src/model/api/main/statistic/statistic_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_summary_model.dart';
+import 'package:bandu_business/src/model/api/main/booking/owner_booking_model.dart';
+import 'package:bandu_business/src/model/api/main/booking/booking_detail_model.dart';
 import 'package:bandu_business/src/model/response/booking_send_model.dart';
 import 'package:bandu_business/src/model/response/create_company_model.dart';
 import 'package:bandu_business/src/model/response/user_update_model.dart';
@@ -65,6 +69,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetResourceEvent>(_onGetResourceEvent);
     on<DeleteResourceEvent>(_onDeleteResourceEvent);
     on<DeleteResourceCategoryEvent>(_onDeleteResourceCategory);
+    on<CheckAlicePaymentEvent>(_onCheckAlicePayment);
+    on<GetOwnerBookingsEvent>(_onGetOwnerBookings);
+    on<GetBookingDetailEvent>(_onGetBookingDetail);
+    on<UpdateBookingStatusEvent>(_onUpdateBookingStatus);
+    on<CancelBookingEvent>(_onCancelBooking);
   }
 
   void _onGetCompany(GetCompanyEvent event, Emitter<HomeState> emit) async {
@@ -72,8 +81,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.getCompany();
       if (result.isSuccess) {
-        final data = CompanyModel.fromJson(result.result).data;
-        emit(GetCompanySuccessState(data: data));
+        final companyModel = CompanyModel.fromJson(result.result);
+        final companyDataList = CompanyDataList(
+          data: companyModel.data,
+          meta: Meta.empty(),
+          message: companyModel.message,
+        );
+        emit(GetCompanySuccessState(data: companyDataList));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -87,8 +101,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.getCategory();
       if (result.isSuccess) {
-        final data = CategoryModel.fromJson(result.result).data;
-        emit(GetCategorySuccessState(data: data));
+        final categoryModel = CategoryModel.fromJson(result.result);
+        final categoryDataList = CategoryDataList(
+          data: categoryModel.data,
+          message: categoryModel.message,
+        );
+        emit(GetCategorySuccessState(data: categoryDataList));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -109,8 +127,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         search: event.search,
       );
       if (result.isSuccess) {
-        final data = CompanyModel.fromJson(result.result).data;
-        emit(GetCompanyByCategorySuccessState(data: data));
+        final companyModel = CompanyModel.fromJson(result.result);
+        final companyDataList = CompanyDataList(
+          data: companyModel.data,
+          meta: Meta.empty(),
+          message: companyModel.message,
+        );
+        emit(GetCompanyByCategorySuccessState(data: companyDataList));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -129,8 +152,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         companyId: event.companyId,
       );
       if (result.isSuccess) {
-        final data = CompanyDetailModel.fromJson(result.result).data;
-        emit(GetCompanyDetailSuccessState(data: data.data));
+        final companyDetailModel = CompanyDetailModel.fromJson(result.result);
+        emit(GetCompanyDetailSuccessState(data: companyDetailModel.data));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -165,8 +188,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.getMonitoring();
       if (result.isSuccess) {
-        final data = MonitoringModel.fromJson(result.result).data;
-        emit(GetMonitoringSuccessState(data: data));
+        final model = MonitoringModel.fromJson(result.result);
+        emit(GetMonitoringSuccessState(data: model.data));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -245,7 +268,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.getMe();
       if (result.isSuccess) {
         final data = LoginModel.fromJson(result.result);
-        emit(GetMeSuccessState(data: data.data));
+        emit(GetMeSuccessState(data: data));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -280,7 +303,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final getMeResult = await homeRepository.getMe();
         if (getMeResult.isSuccess) {
           final meData = LoginModel.fromJson(getMeResult.result);
-          emit(GetMeSuccessState(data: meData.data));
+          emit(GetMeSuccessState(data: meData));
         }
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
@@ -295,7 +318,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.getPlace(companyId: event.companyId);
       if (result.isSuccess) {
-        final data = PlaceModel.fromJson(result.result).data.data;
+        final placeModel = PlaceModel.fromJson(result.result);
+        final placeData = PlaceData(
+          data: placeModel.data,
+          message: placeModel.message,
+        );
+        final data = placeData.data;
         emit(GetPlaceSuccessState(data: data));
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
@@ -313,8 +341,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.place(companyId: event.companyId);
       if (result.isSuccess) {
-        final data = PlaceBusinessModel.fromJson(result.result).data.data;
-        emit(GetPlaceBusinessSuccessState(data: data));
+        final placeBusinessModel = PlaceBusinessModel.fromJson(result.result);
+        emit(GetPlaceBusinessSuccessState(data: placeBusinessModel.data));
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -393,7 +421,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         period: event.period,
       );
       if (result.isSuccess) {
-        final data = StatisticModel.fromJson(result.result).data.data;
+        final dashboardSummaryModel = DashboardSummaryModel.fromJson(result.result);
+        final dashboardData = dashboardSummaryModel.data;
+        final data = StatisticItemData(
+          period: event.period,
+          date: dashboardData.date,
+          year: dashboardData.date.split("-").first,
+          totalRevenue: dashboardData.dailyIncome.amount.toInt(),
+          totalCustomers: dashboardData.incomingCustomers.count,
+          totalPlaces: dashboardData.places.bookedNowCount,
+          totalEmptyPlaces: dashboardData.places.emptyNowCount,
+          newCustomers: [],
+          revenuePercentageChange: dashboardData.dailyIncome.changePercent.toInt(),
+          customersPercentageChange: dashboardData.incomingCustomers.changePercent.toInt(),
+          placesPercentageChange: 0,
+          monthlyData: null,
+        );
         emit(GetStatisticSuccessState(data: data));
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
@@ -408,7 +451,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.getEmployee();
       if (result.isSuccess) {
-        final data = EmployeeModel.fromJson(result.result).data.data;
+        final data = EmployeeModel.fromJson(result.result).data;
         emit(GetEmployeeSuccessState(data: data));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
@@ -427,6 +470,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.deleteEmployee(id: event.id);
       if (result.isSuccess) {
         emit(DeleteEmployeeSuccessState());
+        add(GetEmployeeEvent());
       } else {
         emit(HomeErrorState(message: result.error.toString()));
       }
@@ -438,21 +482,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void _onSaveCompany(SaveCompanyEvent event, Emitter<HomeState> emit) async {
     emit(SaveCompanyLoadingState());
     try {
-      var imgUrl = "";
-      final response = await homeRepository.uploadImage(
-        filePath: event.data.images[0].url,
-      );
-      if (response.isSuccess) {
-        imgUrl = response.result['data']['data']['url'];
-      } else {
-        emit(
-          HomeErrorState(message: HelperFunctions.errorText(response.result)),
-        );
-        return;
-      }
-
       var data = event.data;
-      data.images = [ImageCreateModel(url: imgUrl, index: 1, isMain: true)];
+      
+      // Upload image only if provided
+      if (data.images.isNotEmpty && !data.images[0].url.startsWith("http")) {
+        var imgUrl = "";
+        final response = await homeRepository.uploadImage(
+          filePath: data.images[0].url,
+        );
+        if (response.isSuccess) {
+          imgUrl = response.result['data']['url'];
+          data.images = [ImageCreateModel(url: imgUrl, index: 1, isMain: true)];
+        } else {
+          emit(
+            HomeErrorState(message: HelperFunctions.errorText(response.result)),
+          );
+          return;
+        }
+      }
+      
       final result = await homeRepository.saveCompany(data: data);
       if (result.isSuccess) {
         emit(SaveCompanySuccessState());
@@ -538,6 +586,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       if (result.isSuccess) {
         emit(SaveEmployeeSuccessState());
+        add(GetEmployeeEvent());
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -560,6 +609,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       if (result.isSuccess) {
         emit(UpdateEmployeeSuccessState());
+        add(GetEmployeeEvent());
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -591,8 +641,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.getQrCode(url: event.url);
       if (result.isSuccess) {
-        final data = BookModel.fromJson(result.result);
-        emit(GetQRBookCodeSuccessState(data: data.data.data));
+        final model = BookModel.fromJson(result.result);
+        emit(GetQRBookCodeSuccessState(data: model.data));
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -624,8 +674,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.getResourceCategory(companyId: event.companyId);
       if (result.isSuccess) {
         if (result.result is Map<String, dynamic>) {
-          final data = resource_category.ResourceCategoryModel.fromJson(result.result as Map<String, dynamic>).data;
-          emit(GetResourceCategorySuccessState(data: data.data));
+          final model = resource_category.ResourceCategoryModel.fromJson(result.result as Map<String, dynamic>);
+          emit(GetResourceCategorySuccessState(data: model.data));
         } else {
           emit(GetResourceCategorySuccessState(data: <resource_category.ResourceCategoryData>[]));
         }
@@ -704,11 +754,37 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       
       if (result.isSuccess) {
+        // Parse the created category from response if available
+        resource_category.ResourceCategoryData? createdCategory;
+        if (result.result is Map<String, dynamic> && 
+            result.result.containsKey('data') &&
+            result.result['data'] is Map<String, dynamic>) {
+          try {
+            final categoryData = result.result['data'];
+            createdCategory = resource_category.ResourceCategoryData(
+              id: categoryData['id'] is int 
+                  ? categoryData['id'] 
+                  : (categoryData['id'] != null ? int.tryParse(categoryData['id'].toString()) ?? 0 : 0),
+              name: categoryData['name']?.toString() ?? event.name,
+              description: categoryData['description']?.toString() ?? event.description,
+              parent: event.parentId != null 
+                  ? resource_category.Category(id: event.parentId!, name: "")
+                  : null,
+              children: [],
+              metadata: categoryData['metadata'] ?? event.metadata,
+            );
+            emit(CreateResourceCategorySuccessState(data: createdCategory));
+          } catch (e) {
+            // If parsing fails, continue with refresh
+          }
+        }
+        
+        // Refresh the category list
         final refreshResult = await homeRepository.getResourceCategory(companyId: event.companyId);
         if (refreshResult.isSuccess) {
           if (refreshResult.result is Map<String, dynamic>) {
-            final data = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>).data;
-            emit(GetResourceCategorySuccessState(data: data.data));
+            final model = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>);
+            emit(GetResourceCategorySuccessState(data: model.data));
           } else {
             if (currentCategories != null) {
               emit(GetResourceCategorySuccessState(data: currentCategories));
@@ -751,9 +827,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (result.isSuccess) {
         if (result.result is Map && 
             result.result.containsKey('data') &&
-            result.result['data'] is Map &&
-            result.result['data'].containsKey('data')) {
-          final data = result.result['data']['data'];
+            result.result['data'] is Map) {
+          final data = result.result['data'];
           emit(UploadResourceImageSuccessState(
             url: data['url'] ?? '',
             filename: data['filename'] ?? '',
@@ -787,6 +862,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         isTimeSlotBased: event.isTimeSlotBased,
         timeSlotDurationMinutes: event.timeSlotDurationMinutes,
         images: event.images,
+        employeeIds: event.employeeIds,
       );
       if (result.isSuccess) {
         emit(CreateResourceSuccessState());
@@ -847,8 +923,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         if (companyId > 0) {
           final refreshResult = await homeRepository.getResourceCategory(companyId: companyId);
           if (refreshResult.isSuccess && refreshResult.result is Map<String, dynamic>) {
-            final data = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>).data;
-            emit(GetResourceCategorySuccessState(data: data.data));
+            final model = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>);
+            emit(GetResourceCategorySuccessState(data: model.data));
           }
         }
         emit(DeleteResourceCategorySuccessState(categoryId: event.id));
@@ -858,8 +934,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           if (companyId > 0) {
             final refreshResult = await homeRepository.getResourceCategory(companyId: companyId);
             if (refreshResult.isSuccess && refreshResult.result is Map<String, dynamic>) {
-              final data = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>).data;
-              emit(GetResourceCategorySuccessState(data: data.data));
+              final model = resource_category.ResourceCategoryModel.fromJson(refreshResult.result as Map<String, dynamic>);
+              emit(GetResourceCategorySuccessState(data: model.data));
             }
           }
         }
@@ -889,12 +965,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // Optimistically update the resource list by removing deleted item
         if (currentResourceData != null) {
           final updatedData = resource_model.ResourceModel(
-            data: resource_model.Data(
-              data: currentResourceData.data.data
-                  .where((item) => item.id != event.id)
-                  .toList(),
-              message: currentResourceData.data.message,
-            ),
+            data: currentResourceData.data
+                .where((item) => item.id != event.id)
+                .toList(),
+            message: currentResourceData.message,
           );
           // Emit updated resource state - this keeps the UI showing the updated list
           emit(GetResourceSuccessState(data: updatedData));
@@ -917,6 +991,189 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } else {
         emit(HomeErrorState(message: e.toString()));
       }
+    }
+  }
+
+  void _onCheckAlicePayment(
+    CheckAlicePaymentEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(CheckAlicePaymentLoadingState());
+    try {
+      final result = await homeRepository.checkAlicePayment(
+        transactionId: event.transactionId,
+        bookingId: event.bookingId,
+      );
+      if (result.isSuccess) {
+        final data = AliceCheckerModel.fromJson(result.result);
+        emit(CheckAlicePaymentSuccessState(
+          isPaid: data.success,
+          message: data.message,
+        ));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetOwnerBookings(
+    GetOwnerBookingsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final currentState = state;
+    List<OwnerBookingItemData> currentData = [];
+    OwnerBookingMeta? currentMeta;
+
+    if (currentState is GetOwnerBookingsSuccessState && event.page > 1) {
+      currentData = List.from(currentState.data);
+      currentMeta = currentState.meta;
+      emit(GetOwnerBookingsSuccessState(
+        data: currentData,
+        meta: currentMeta,
+        isLoadMore: true,
+      ));
+    } else {
+      emit(GetOwnerBookingsLoadingState());
+    }
+
+    try {
+      final result = await homeRepository.getOwnerBookings(
+        page: event.page,
+        limit: event.limit,
+        companyId: event.companyId,
+      );
+      if (result.isSuccess) {
+        final model = OwnerBookingModel.fromJson(result.result);
+        if (event.page > 1 && currentData.isNotEmpty) {
+          currentData.addAll(model.data);
+          emit(GetOwnerBookingsSuccessState(
+            data: currentData,
+            meta: model.meta,
+            isLoadMore: false,
+          ));
+        } else {
+          emit(GetOwnerBookingsSuccessState(
+            data: model.data,
+            meta: model.meta,
+            isLoadMore: false,
+          ));
+        }
+      } else {
+        if (currentData.isNotEmpty && currentMeta != null) {
+          emit(GetOwnerBookingsSuccessState(
+            data: currentData,
+            meta: currentMeta,
+            isLoadMore: false,
+          ));
+        } else {
+          emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+        }
+      }
+    } catch (e) {
+      if (currentData.isNotEmpty && currentMeta != null) {
+        emit(GetOwnerBookingsSuccessState(
+          data: currentData,
+          meta: currentMeta,
+          isLoadMore: false,
+        ));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+      }
+    }
+  }
+
+  void _onGetBookingDetail(
+    GetBookingDetailEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetBookingDetailLoadingState());
+    try {
+      final result = await homeRepository.getBookingDetail(bookingId: event.bookingId);
+      if (result.isSuccess) {
+        final model = BookingDetailModel.fromJson(result.result);
+        emit(GetBookingDetailSuccessState(data: model.data));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onUpdateBookingStatus(
+    UpdateBookingStatusEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(UpdateBookingStatusLoadingState());
+    try {
+      final result = await homeRepository.updateBookingStatus(
+        bookingId: event.bookingId,
+        status: event.status,
+        note: event.note,
+      );
+      if (result.isSuccess) {
+        emit(UpdateBookingStatusSuccessState(bookingId: event.bookingId));
+        final companyId = HelperFunctions.getCompanyId() ?? 0;
+        if (companyId > 0) {
+          final currentState = state;
+          if (currentState is GetOwnerBookingsSuccessState) {
+            add(GetOwnerBookingsEvent(
+              page: currentState.meta.page,
+              limit: 10,
+              companyId: companyId,
+            ));
+          } else {
+            add(GetOwnerBookingsEvent(
+              page: 1,
+              limit: 10,
+              companyId: companyId,
+            ));
+          }
+        }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onCancelBooking(
+    CancelBookingEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(CancelBookingLoadingState());
+    try {
+      final result = await homeRepository.cancelBooking(
+        bookingId: event.bookingId,
+        note: event.note,
+      );
+      if (result.isSuccess) {
+        emit(CancelBookingSuccessState(bookingId: event.bookingId));
+        final companyId = HelperFunctions.getCompanyId() ?? 0;
+        if (companyId > 0) {
+          final currentState = state;
+          if (currentState is GetOwnerBookingsSuccessState) {
+            add(GetOwnerBookingsEvent(
+              page: currentState.meta.page,
+              limit: 10,
+              companyId: companyId,
+            ));
+          } else {
+            add(GetOwnerBookingsEvent(
+              page: 1,
+              limit: 10,
+              companyId: companyId,
+            ));
+          }
+        }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
     }
   }
 }

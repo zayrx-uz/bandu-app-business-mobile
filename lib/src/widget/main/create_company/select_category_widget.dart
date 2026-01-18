@@ -44,9 +44,12 @@ class SelectCategoryWidget extends StatelessWidget {
                       orElse: () => a,
                     )
                   : a;
-              return Text(displayItem.name, style: AppTextStyle.f400s16.copyWith(
-                fontSize: isTablet(context) ? 12.sp : 16.sp
-              ));
+              return Text(
+                displayItem.name,
+                style: AppTextStyle.f400s16.copyWith(
+                  fontSize: isTablet(context) ? 12.sp : 16.sp
+                ),
+              );
             },
             canCloseOutsideBounds: false,
             decoration: CustomDropdownDecoration(
@@ -75,9 +78,14 @@ class SelectCategoryWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    Expanded(child: Text(b.name, style: AppTextStyle.f400s16.copyWith(
-                      fontSize: isTablet(context) ? 12.sp : 16.sp
-                    ))),
+                    Expanded(
+                      child: Text(
+                        b.name,
+                        style: AppTextStyle.f400s16.copyWith(
+                          fontSize: isTablet(context) ? 12.sp : 16.sp
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );

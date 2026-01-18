@@ -1,28 +1,16 @@
 class MonitoringModel {
-  MonitoringData data;
-
-  MonitoringModel({required this.data});
-
-  factory MonitoringModel.fromJson(Map<String, dynamic> json) =>
-      MonitoringModel(
-        data: json["data"] == null
-            ? MonitoringData.fromJson({})
-            : MonitoringData.fromJson(json["data"]),
-      );
-}
-
-class MonitoringData {
   List<MonitoringItemData> data;
   String message;
 
-  MonitoringData({required this.data, required this.message});
+  MonitoringModel({required this.data, required this.message});
 
-  factory MonitoringData.fromJson(Map<String, dynamic> json) => MonitoringData(
-    data: json["data"] == null
-        ? List<MonitoringItemData>.from({})
-        : List<MonitoringItemData>.from(json["data"].map((x) => MonitoringItemData.fromJson(x))),
-    message: json["message"] ?? "",
-  );
+  factory MonitoringModel.fromJson(Map<String, dynamic> json) =>
+      MonitoringModel(
+        data: json["data"] == null || json["data"] is! List
+            ? []
+            : List<MonitoringItemData>.from(json["data"].map((x) => MonitoringItemData.fromJson(x))),
+        message: json["message"] ?? "",
+      );
 }
 
 class MonitoringItemData {

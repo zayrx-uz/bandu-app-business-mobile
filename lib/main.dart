@@ -75,25 +75,29 @@ class MyApp extends StatelessWidget {
           right: false,
           top: false,
           bottom: Platform.isIOS ? false : true,
-          child: MaterialApp(
-            title: 'Bandu Business',
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            theme: ThemeData(
-              platform: TargetPlatform.iOS,
-              fontFamily: GoogleFonts.inter().fontFamily,
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
-              appBarTheme: AppBarTheme(surfaceTintColor: Colors.transparent),
-            ),
-            home: MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (_) => AuthBloc(authRepository: AuthRepository()),
-                ),
-              ],
-              child: const SplashScreen(),
+          child: SafeArea(
+            bottom: false,
+            top : false,
+            child: MaterialApp(
+              title: 'Bandu Business',
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              theme: ThemeData(
+                platform: TargetPlatform.iOS,
+                fontFamily: GoogleFonts.inter().fontFamily,
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
+                appBarTheme: AppBarTheme(surfaceTintColor: Colors.transparent),
+              ),
+              home: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) => AuthBloc(authRepository: AuthRepository()),
+                  ),
+                ],
+                child: const SplashScreen(),
+              ),
             ),
           ),
         );

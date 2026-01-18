@@ -8,6 +8,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../helper/constants/app_images.dart';
+
 class BottomDialog {
   static void langDialog(BuildContext context) {
     final parentContext = context;
@@ -234,5 +236,224 @@ class BottomDialog {
     );
   }
 
+
+
+  static void serverError(BuildContext context,) {
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (dialogContext) {
+        return EasyLocalization(
+          supportedLocales: const [Locale('en', 'EN'), Locale('ru', 'RU'), Locale('uz', 'UZ')],
+          path: 'assets/translations',
+          startLocale: EasyLocalization.of(context)?.locale ?? const Locale('ru', 'RU'),
+          fallbackLocale: const Locale('ru', 'RU'),
+          child: Builder(
+            builder: (localizedContext) {
+              return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color : Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(16.r),
+                          topLeft: Radius.circular(16.r)
+                      )
+                  ),
+                  child : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 12.h,),
+                      Container(
+                        width: 56.w,
+                        height: 4.h,
+                        decoration: BoxDecoration(
+                            color : AppColor.cE5E7E5,
+                            borderRadius: BorderRadius.circular(100.r)
+                        ),
+                      ),
+                      SizedBox(height: 20.h,),
+                      Image.asset(AppImages.server , width: 200.w,fit : BoxFit.cover),
+                      SizedBox(height: 10.h,),
+                      Text("errorServer".tr() , style: TextStyle(
+                          color : Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24.sp
+                      ),),
+                      SizedBox(height: 8.h,),
+                      Text("somethingWentWrong".tr() , style: TextStyle(
+                          color : AppColor.c6C6C6C,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12.sp
+                      ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20.h,),
+                      AppButton(
+                        onTap: (){
+                          Navigator.pop(context);
+                        } ,
+                        isGradient: false,
+                        txtColor: Colors.black,
+                        text: "goBack".tr(),backColor: Colors.white,border: Border.all(
+                          width: 1.w,
+                          color : AppColor.cE5E7E5
+                      ),),
+                      SizedBox(height: 40.h,),
+                    ],
+                  )
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+
+  static void noConnection(BuildContext context,) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      enableDrag: false,
+      builder: (dialogContext) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: EasyLocalization(
+            supportedLocales: const [Locale('en', 'EN'), Locale('ru', 'RU'), Locale('uz', 'UZ')],
+            path: 'assets/translations',
+            startLocale: EasyLocalization.of(context)?.locale ?? const Locale('ru', 'RU'),
+            fallbackLocale: const Locale('ru', 'RU'),
+            child: Builder(
+              builder: (localizedContext) {
+                return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color : Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(16.r),
+                            topLeft: Radius.circular(16.r)
+                        )
+                    ),
+                    child : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 12.h,),
+                        Container(
+                          width: 56.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                              color : AppColor.cE5E7E5,
+                              borderRadius: BorderRadius.circular(100.r)
+                          ),
+                        ),
+                        SizedBox(height: 20.h,),
+                        Image.asset(AppImages.noConnection , width: 200.w,fit : BoxFit.cover),
+                        SizedBox(height: 10.h,),
+                        Text("noConnection".tr() , style: TextStyle(
+                            color : Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 24.sp
+                        ),),
+                        SizedBox(height: 8.h,),
+                        Text("somethingWentWrong".tr() , style: TextStyle(
+                            color : AppColor.c6C6C6C,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12.sp
+                        ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 40.h,),
+                      ],
+                    )
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void bookCancel(BuildContext context, {required int bookingId}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (dialogContext) {
+        return EasyLocalization(
+          supportedLocales: const [Locale('en', 'EN'), Locale('ru', 'RU'), Locale('uz', 'UZ')],
+          path: 'assets/translations',
+          startLocale: EasyLocalization.of(context)?.locale ?? const Locale('ru', 'RU'),
+          fallbackLocale: const Locale('ru', 'RU'),
+          child: Builder(
+            builder: (localizedContext) {
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                decoration: BoxDecoration(
+                  color: AppColor.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24.r),
+                    topRight: Radius.circular(24.r),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 12.h),
+                    Container(
+                      height: 4.h,
+                      width: 56.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.r),
+                        color: AppColor.greyF4,
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                    Text(
+                      "cancelBooking".tr(),
+                      style: AppTextStyle.f600s24,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      "areYouSureCancelBooking".tr(),
+                      style: AppTextStyle.f400s16.copyWith(
+                        color: AppColor.grey58,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 24.h),
+                    AppButton(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      text: "cancel".tr(),
+                      margin: EdgeInsets.zero,
+                      isGradient: false,
+                      backColor: AppColor.white,
+                      border: Border.all(width: 1.h, color: AppColor.greyE5),
+                    ),
+                    SizedBox(height: 12.h),
+                    AppButton(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      text: "confirm".tr(),
+                      margin: EdgeInsets.zero,
+                    ),
+                    SizedBox(height: 24.h),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
 }

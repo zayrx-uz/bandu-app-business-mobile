@@ -1,7 +1,6 @@
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 
 class SliderWidget extends StatefulWidget {
   const SliderWidget({
@@ -30,6 +29,9 @@ class _SliderWidgetState extends State<SliderWidget>
   late AnimationController _controller;
   late Animation<double> _imageAnimation;
   late Animation<double> _titleAnimation;
+  String _displayedText = '';
+  int _currentIndex = 0;
+  bool _isTyping = true;
 
   @override
   void initState() {
@@ -50,6 +52,30 @@ class _SliderWidgetState extends State<SliderWidget>
     );
 
     _controller.forward();
+
+    _startTypewriter();
+  }
+
+  void _startTypewriter() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _typeText(widget.subTitle);
+    });
+  }
+
+  void _typeText(String fullText) {
+    if (_currentIndex < fullText.length) {
+      setState(() {
+        _displayedText += fullText[_currentIndex];
+        _currentIndex++;
+      });
+      Future.delayed(const Duration(milliseconds: 40), () {
+        _typeText(fullText);
+      });
+    } else {
+      setState(() {
+        _isTyping = false;
+      });
+    }
   }
 
   @override
@@ -98,22 +124,14 @@ class _SliderWidgetState extends State<SliderWidget>
                 ),
               ),
               SizedBox(height: 8.h),
-              AnimatedTextKit(
-                isRepeatingAnimation: false,
-                animatedTexts: [
-                  TypewriterAnimatedText(
-                    widget.subTitle,
-                    textAlign: TextAlign.center,
-                    textStyle: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColor.c585B57,
-                    ),
-                    speed: const Duration(milliseconds: 40),
-                    cursor: "..."
-                  ),
-
-                ],
+              Text(
+                _isTyping ? '$_displayedText...' : _displayedText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColor.c585B57,
+                ),
               ),
             ],
           ),

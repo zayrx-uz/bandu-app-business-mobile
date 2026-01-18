@@ -327,6 +327,18 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                       onTap: () {
                         if (selectedId != -1) {
                           CacheService.saveInt("select_company", selectedId);
+                          
+                          final selectedCompany = data!.firstWhere(
+                            (company) => company.id == selectedId,
+                            orElse: () => data!.first,
+                          );
+                          
+                          if (selectedCompany.categories.isNotEmpty) {
+                            final firstCategory = selectedCompany.categories.first;
+                            CacheService.saveCategoryId(firstCategory.id);
+                            CacheService.saveCategoryName(firstCategory.name);
+                          }
+                          
                           Navigator.popUntil(context, (route) => route.isFirst);
                           AppService.replacePage(context, const MainScreen());
                         }

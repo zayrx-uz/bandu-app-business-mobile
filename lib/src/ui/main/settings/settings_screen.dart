@@ -114,6 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         launchUrl(Uri.parse(help));
                       },
                     ),
+                    SizedBox(height: 16.h),
                     SettingsButtonWidget(
                       icon: AppIcons.money,
                       text: "resource".tr(),
@@ -218,11 +219,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
-                ),
-              ],
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
         },
       ),
     );

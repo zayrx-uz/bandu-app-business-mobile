@@ -1,6 +1,8 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/place/place_business_model.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -8,7 +10,6 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/place/screen/add_place_screen.dart';
 import 'package:bandu_business/src/ui/main/place/screen/edit_people_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
-import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -93,11 +94,38 @@ class _PlaceScreenState extends State<PlaceScreen> {
                     },
                     child: SingleChildScrollView(
                       physics: AlwaysScrollableScrollPhysics(),
-                      child: Center(
-                        child: EmptyWidget(
-                          text: "noPlacesAvailable".tr(),
-                          icon: AppIcons.chair,
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 130.h,),
+                          Image.asset(
+                            AppImages.empty,
+                            width: 200.w,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(height: 24.h),
+                          Text(
+                            "noPlacesAvailable".tr(),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            "addPlace".tr(),
+                            style: TextStyle(
+                              color: AppColor.greyA7,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 100.h),
+                        ],
                       ),
                     ),
                   ),
@@ -137,7 +165,23 @@ class _PlaceScreenState extends State<PlaceScreen> {
     );
   }
 
+  String _getCategoryImage(int categoryId) {
+    switch (categoryId) {
+      case 1:
+        return AppImages.restaurantSelect;
+      case 24:
+        return AppImages.barberSelect;
+      case 37:
+        return AppImages.carwashSelect;
+      default:
+        return AppImages.restaurantSelect;
+    }
+  }
+
   Widget item(PlaceBusinessItemData item) {
+    final categoryId = CacheService.getCategoryId() ?? 1;
+    final imagePath = _getCategoryImage(categoryId);
+    
     return CupertinoButton(
       onPressed: () {
         CupertinoScaffold.showCupertinoModalBottomSheet(
@@ -183,7 +227,12 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ),
             ),
             SizedBox(height: 6.h),
-            AppSvgAsset(AppIcons.placeSelect),
+            Image.asset(
+              imagePath,
+              width: 40.w,
+              height: 40.w,
+              fit: BoxFit.cover,
+            ),
             SizedBox(height: 4.h),
           ],
         ),

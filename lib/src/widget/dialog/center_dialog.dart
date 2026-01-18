@@ -1,13 +1,16 @@
-import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
+import 'package:bandu_business/src/helper/constants/app_images.dart';
+import 'package:bandu_business/src/helper/device_helper/device_helper.dart';
+import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
+import 'package:bandu_business/src/provider/auth/auth_provider.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
+import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CenterDialog {
@@ -50,50 +53,84 @@ class CenterDialog {
   }
 
   static void deleteAccountDialog(BuildContext context) {
+    final authProvider = AuthProvider();
+    bool isLoading = false;
     showDialog(
       context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: Text(
-            "deleteAccount".tr(),
-            style: TextStyle(
-              fontSize: isTablet(context) ? 12.sp : 16.sp,
-            ),
-          ),
-          content: Text(
-            "areYouSureDeleteAccountPermanent".tr(),
-            style: TextStyle(
-              fontSize: isTablet(context) ? 8.sp : 12.sp,
-            ),
-          ),
-          actions: [
-            CupertinoButton(
-              child: Text(
-                "cancel".tr(),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.blue00,
-                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return CupertinoAlertDialog(
+              title: Text(
+                "deleteAccount".tr(),
+                style: TextStyle(
+                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
                 ),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            CupertinoButton(
-              child: Text(
-                "delete".tr(),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.red00,
-                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+              content: isLoading
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      child: CupertinoActivityIndicator(),
+                    )
+                  : Text(
+                      "areYouSureDeleteAccountPermanent".tr(),
+                      style: TextStyle(
+                        fontSize: DeviceHelper.isTablet(context) ? 8.sp : 12.sp,
+                      ),
+                    ),
+              actions: [
+                if (!isLoading)
+                  CupertinoButton(
+                    child: Text(
+                      "cancel".tr(),
+                      style: AppTextStyle.f600s16.copyWith(
+                        color: AppColor.blue00,
+                        fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                CupertinoButton(
+                  child: isLoading
+                      ? CupertinoActivityIndicator()
+                      : Text(
+                          "delete".tr(),
+                          style: AppTextStyle.f600s16.copyWith(
+                            color: AppColor.red00,
+                            fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+                          ),
+                        ),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          final result = await authProvider.deleteAccount();
+                          if (context.mounted) {
+                            if (result.isSuccess) {
+                              Navigator.of(context).pop();
+                              CacheService.clear();
+                              Navigator.of(context).popUntil((route) => route.isFirst);
+                              AppService.replacePage(context, OnboardScreen());
+                            } else {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Navigator.of(context).pop();
+                              errorDialog(
+                                context,
+                                HelperFunctions.errorText(result.result),
+                              );
+                            }
+                          }
+                        },
                 ),
-              ),
-              onPressed: () {
-                CacheService.clear();
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                AppService.replacePage(context, OnboardScreen());
-              },
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
@@ -222,27 +259,127 @@ class CenterDialog {
     );
   }
 
-  static void errorDialog(BuildContext context, String text) {
+  static void confirmBookingDialog(
+    BuildContext context, {
+    required VoidCallback onConfirm,
+  }) {
     showDialog(
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
           title: Text(
-            "error".tr(),
-            style: AppTextStyle.f600s16.copyWith(color: AppColor.red00 , fontSize: isTablet(context) ? 8.sp : 16.sp),
+            "confirmBooking".tr(),
+            style: TextStyle(
+              fontSize: isTablet(context) ? 12.sp : 16.sp,
+            ),
           ),
-          content: Text(text, style: AppTextStyle.f400s16),
+          content: Text(
+            "areYouSureConfirmBooking".tr(),
+            style: TextStyle(
+              fontSize: isTablet(context) ? 8.sp : 12.sp,
+            ),
+          ),
           actions: [
             CupertinoButton(
               child: Text(
-                "ok".tr(),
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00 , fontSize:  isTablet(context) ? 12.sp : 16.sp),
+                "cancel".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.blue00,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
               ),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "confirm".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.yellowFFC,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
               },
             ),
           ],
+        );
+      },
+    );
+  }
+
+  static void errorDialog(BuildContext context, String text) {
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (dialogContext) {
+        return EasyLocalization(
+          supportedLocales: const [Locale('en', 'EN'), Locale('ru', 'RU'), Locale('uz', 'UZ')],
+          path: 'assets/translations',
+          startLocale: EasyLocalization.of(context)?.locale ?? const Locale('ru', 'RU'),
+          fallbackLocale: const Locale('ru', 'RU'),
+          child: Builder(
+            builder: (localizedContext) {
+              return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color : Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(16.r),
+                          topLeft: Radius.circular(16.r)
+                      )
+                  ),
+                  child : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 12.h,),
+                      Container(
+                        width: 56.w,
+                        height: 4.h,
+                        decoration: BoxDecoration(
+                            color : AppColor.cE5E7E5,
+                            borderRadius: BorderRadius.circular(100.r)
+                        ),
+                      ),
+                      SizedBox(height: 20.h,),
+                      Image.asset(AppImages.manVectorImage , width: 200.w,fit : BoxFit.cover),
+                      SizedBox(height: 10.h,),
+                      Text("error".tr() , style: TextStyle(
+                          color : Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24.sp
+                      ),),
+                      SizedBox(height: 8.h,),
+                      Text(text , style: TextStyle(
+                          color : AppColor.c6C6C6C,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12.sp
+                      ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20.h,),
+                      AppButton(
+                        onTap: (){
+                          Navigator.pop(context);
+                        } ,
+                        isGradient: false,
+                        txtColor: Colors.black,
+                        text: "goBack".tr(),backColor: Colors.white,border: Border.all(
+                          width: 1.w,
+                          color : AppColor.cE5E7E5
+                      ),),
+                      SizedBox(height: 40.h,),
+                    ],
+                  )
+              );
+            },
+          ),
         );
       },
     );

@@ -2,8 +2,7 @@ part of 'home_bloc.dart';
 
 class HomeEvent extends Equatable {
   @override
-  // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [];
 }
 
 class GetCompanyEvent extends HomeEvent {
@@ -314,6 +313,7 @@ class CreateResourceEvent extends HomeEvent {
   final bool isTimeSlotBased;
   final int timeSlotDurationMinutes;
   final List<Map<String, dynamic>> images;
+  final List<int>? employeeIds;
 
   CreateResourceEvent({
     required this.name,
@@ -325,6 +325,7 @@ class CreateResourceEvent extends HomeEvent {
     required this.isTimeSlotBased,
     required this.timeSlotDurationMinutes,
     required this.images,
+    this.employeeIds,
   });
 
   @override
@@ -338,6 +339,7 @@ class CreateResourceEvent extends HomeEvent {
         isTimeSlotBased,
         timeSlotDurationMinutes,
         images,
+        employeeIds,
       ];
 }
 
@@ -368,4 +370,69 @@ class DeleteResourceEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [id];
+}
+
+class CheckAlicePaymentEvent extends HomeEvent {
+  final String transactionId;
+  final int bookingId;
+
+  CheckAlicePaymentEvent({
+    required this.transactionId,
+    required this.bookingId,
+  });
+
+  @override
+  List<Object?> get props => [transactionId, bookingId];
+}
+
+class GetOwnerBookingsEvent extends HomeEvent {
+  final int page;
+  final int limit;
+  final int companyId;
+
+  GetOwnerBookingsEvent({
+    required this.page,
+    required this.limit,
+    required this.companyId,
+  });
+
+  @override
+  List<Object?> get props => [page, limit, companyId];
+}
+
+class GetBookingDetailEvent extends HomeEvent {
+  final int bookingId;
+
+  GetBookingDetailEvent({required this.bookingId});
+
+  @override
+  List<Object?> get props => [bookingId];
+}
+
+class UpdateBookingStatusEvent extends HomeEvent {
+  final int bookingId;
+  final String status;
+  final String? note;
+
+  UpdateBookingStatusEvent({
+    required this.bookingId,
+    required this.status,
+    this.note,
+  });
+
+  @override
+  List<Object?> get props => [bookingId, status, note];
+}
+
+class CancelBookingEvent extends HomeEvent {
+  final int bookingId;
+  final String note;
+
+  CancelBookingEvent({
+    required this.bookingId,
+    required this.note,
+  });
+
+  @override
+  List<Object?> get props => [bookingId, note];
 }

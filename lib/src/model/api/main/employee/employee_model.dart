@@ -4,34 +4,20 @@ EmployeeModel employeeModelFromJson(String str) =>
     EmployeeModel.fromJson(json.decode(str));
 
 class EmployeeModel {
-  final EmployeeData data;
-
-  EmployeeModel({required this.data});
-
-  factory EmployeeModel.fromJson(Map<String, dynamic> json) => EmployeeModel(
-    data: json["data"] == null
-        ? EmployeeData.fromJson({})
-        : EmployeeData.fromJson(json["data"]),
-  );
-}
-
-/// ---------------- DATA WRAPPER ----------------
-
-class EmployeeData {
   final List<EmployeeItemData> data;
   final String message;
 
-  EmployeeData({
+  EmployeeModel({
     required this.data,
     required this.message,
   });
 
-  factory EmployeeData.fromJson(Map<String, dynamic> json) => EmployeeData(
+  factory EmployeeModel.fromJson(Map<String, dynamic> json) => EmployeeModel(
     data: json["data"] == null
         ? []
         : List<EmployeeItemData>.from(
-      json["data"].map((x) => EmployeeItemData.fromJson(x)),
-    ),
+            json["data"].map((x) => EmployeeItemData.fromJson(x)),
+          ),
     message: json["message"] ?? "",
   );
 }
@@ -44,7 +30,7 @@ class EmployeeItemData {
   final String fullName;
   final dynamic firstName;
   final dynamic lastName;
-  final String profilePicture;
+  final dynamic profilePicture;
   final dynamic birthDate;
   final dynamic gender;
   final bool verified;
@@ -86,7 +72,7 @@ class EmployeeItemData {
         fullName: json["fullName"] ?? "",
         firstName: json["firstName"],
         lastName: json["lastName"],
-        profilePicture: json["profilePicture"] ?? "",
+        profilePicture: json["profilePicture"],
         birthDate: json["birthDate"],
         gender: json["gender"],
         verified: json["verified"] ?? false,

@@ -1,29 +1,17 @@
 // login_model.dart
 
 class LoginModel {
-  LoginModelData data;
-
-  LoginModel({required this.data});
-
-  factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
-    data: json["data"] == null
-        ? LoginModelData.fromJson({})
-        : LoginModelData.fromJson(json["data"]),
-  );
-}
-
-class LoginModelData {
   DataData data;
   String message;
   Tokens tokens;
 
-  LoginModelData({
+  LoginModel({
     required this.data,
     required this.message,
     required this.tokens,
   });
 
-  factory LoginModelData.fromJson(Map<String, dynamic> json) => LoginModelData(
+  factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
     data: json["data"] == null
         ? DataData.fromJson({})
         : DataData.fromJson(json["data"]),
@@ -60,13 +48,13 @@ class DataData {
   });
 
   factory DataData.fromJson(Map<String, dynamic> json) => DataData(
-    id: json["id"] ?? 0,
+    id: json["id"] is int ? json["id"] : (json["id"] is String ? int.tryParse(json["id"]) ?? 0 : 0),
     phoneNumber: json["phoneNumber"] ?? "",
     password: json["password"] ?? "",
     useType: json["useType"] ?? "",
     providerType: json["providerType"] ?? "",
     providersUserId: json["providersUserId"] ?? "",
-    email: json["email"] ?? "",
+    email: json["email"]?.toString() ?? "",
     inUse: json["inUse"] ?? false,
     refreshToken: json["refreshToken"] ?? "",
     user: json["user"] == null
@@ -77,65 +65,65 @@ class DataData {
 
 class User {
   int id;
-  String email;
+  String? email;
   String fullName;
-  String firstName;
-  String lastName;
+  String? firstName;
+  String? lastName;
   String profilePicture;
-  String birthDate;
+  String? birthDate;
   String gender;
   bool verified;
   bool isBlocked;
   String role;
-  int companyId;
+  int? companyId;
   String fcmToken;
-  String telegramId;
+  String? telegramId;
   DateTime? createdAt;
   DateTime? updatedAt;
-  String deletedAt;
+  String? deletedAt;
 
   User({
     required this.id,
-    required this.email,
+    this.email,
     required this.fullName,
-    required this.firstName,
-    required this.lastName,
+    this.firstName,
+    this.lastName,
     required this.profilePicture,
-    required this.birthDate,
+    this.birthDate,
     required this.gender,
     required this.verified,
     required this.isBlocked,
     required this.role,
-    required this.companyId,
+    this.companyId,
     required this.fcmToken,
-    required this.telegramId,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.telegramId,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"] ?? 0,
-    email: json["email"] ?? "",
+    id: json["id"] is int ? json["id"] : (json["id"] is String ? int.tryParse(json["id"]) ?? 0 : 0),
+    email: json["email"]?.toString(),
     fullName: json["fullName"] ?? "",
-    firstName: json["firstName"] ?? "",
-    lastName: json["lastName"] ?? "",
+    firstName: json["firstName"]?.toString(),
+    lastName: json["lastName"]?.toString(),
     profilePicture: json["profilePicture"] ?? "",
-    birthDate: json["birthDate"] ?? "",
+    birthDate: json["birthDate"]?.toString(),
     gender: json["gender"] ?? "",
     verified: json["verified"] ?? false,
     isBlocked: json["isBlocked"] ?? false,
     role: json["role"] ?? "",
-    companyId: json["companyId"] ?? 0,
+    companyId: json["companyId"] is int ? json["companyId"] : (json["companyId"] is String ? int.tryParse(json["companyId"]) : null),
     fcmToken: json["fcmToken"] ?? "",
-    telegramId: json["telegramId"] ?? "",
+    telegramId: json["telegramId"]?.toString(),
     createdAt: json["createdAt"] == null
         ? null
         : DateTime.tryParse(json["createdAt"]),
     updatedAt: json["updatedAt"] == null
         ? null
         : DateTime.tryParse(json["updatedAt"]),
-    deletedAt: json["deletedAt"]?.toString() ?? "",
+    deletedAt: json["deletedAt"]?.toString(),
   );
 }
 

@@ -58,6 +58,26 @@ class CacheService {
     return preferences!.getBool(key) ?? false;
   }
 
+  ///save category id
+  static void saveCategoryId(int categoryId) {
+    preferences!.setInt("selected_category_id", categoryId);
+  }
+
+  ///get category id
+  static int? getCategoryId() {
+    return preferences!.getInt("selected_category_id");
+  }
+
+  ///save category name
+  static void saveCategoryName(String categoryName) {
+    preferences!.setString("selected_category_name", categoryName);
+  }
+
+  ///get category name
+  static String getCategoryName() {
+    return preferences!.getString("selected_category_name") ?? '';
+  }
+
   ///clear
   static Future<bool> clear() {
     return preferences!.clear();

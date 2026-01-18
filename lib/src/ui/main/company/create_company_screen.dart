@@ -2,6 +2,7 @@ import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/home/category_model.dart';
 import 'package:bandu_business/src/model/api/main/home/company_detail_model.dart';
 import 'package:bandu_business/src/model/response/create_company_model.dart'
@@ -46,6 +47,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   Map<String, dynamic> day = {};
 
   YandexMapController? _previewController;
+  String? _networkImageUrl;
   List<MapObject> previewMarkers = [];
   bool open24 = false;
 
@@ -55,6 +57,11 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
     getData();
     if (widget.companyId != null) {
       context.read<HomeBloc>().add(GetCompanyDetailEvent(companyId: widget.companyId!));
+    } else {
+      final cachedCategoryId = CacheService.getCategoryId();
+      if (cachedCategoryId != null) {
+        selectedCategoryId = cachedCategoryId;
+      }
     }
   }
 
@@ -82,65 +89,45 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
         orElse: () => company.images[0],
       );
       _networkImageUrl = mainImage.url;
-    } else if (company.logo.isNotEmpty) {
+    } else if (company.logo != null && company.logo!.isNotEmpty) {
       _networkImageUrl = company.logo;
     }
 
     if (!open24) {
       day = {
         "monday": {
-          "open": company.workingHours.monday.open.isNotEmpty
-              ? company.workingHours.monday.open
-              : null,
-          "close": company.workingHours.monday.close.isNotEmpty
-              ? company.workingHours.monday.close
-              : null,
+          "open": company.workingHours.monday.open,
+          "close": company.workingHours.monday.close,
           "closed": company.workingHours.monday.closed,
         },
         "tuesday": {
-          "open": company.workingHours.tuesday.open.isNotEmpty
-              ? company.workingHours.tuesday.open
-              : null,
-          "close": company.workingHours.tuesday.close.isNotEmpty
-              ? company.workingHours.tuesday.close
-              : null,
+          "open": company.workingHours.tuesday.open,
+          "close": company.workingHours.tuesday.close,
           "closed": company.workingHours.tuesday.closed,
         },
         "wednesday": {
-          "open": company.workingHours.wednesday.open.isNotEmpty
-              ? company.workingHours.wednesday.open
-              : null,
-          "close": company.workingHours.wednesday.close.isNotEmpty
-              ? company.workingHours.wednesday.close
-              : null,
+          "open": company.workingHours.wednesday.open,
+          "close": company.workingHours.wednesday.close,
           "closed": company.workingHours.wednesday.closed,
         },
         "thursday": {
-          "open": company.workingHours.thursday.open.isNotEmpty
-              ? company.workingHours.thursday.open
-              : null,
-          "close": company.workingHours.thursday.close.isNotEmpty
-              ? company.workingHours.thursday.close
-              : null,
+          "open": company.workingHours.thursday.open,
+          "close": company.workingHours.thursday.close,
           "closed": company.workingHours.thursday.closed,
         },
         "friday": {
-          "open": company.workingHours.friday.open.isNotEmpty
-              ? company.workingHours.friday.open
-              : null,
-          "close": company.workingHours.friday.close.isNotEmpty
-              ? company.workingHours.friday.close
-              : null,
+          "open": company.workingHours.friday.open,
+          "close": company.workingHours.friday.close,
           "closed": company.workingHours.friday.closed,
         },
         "saturday": {
-          "open": null,
-          "close": null,
+          "open": company.workingHours.saturday.open,
+          "close": company.workingHours.saturday.close,
           "closed": company.workingHours.saturday.closed,
         },
         "sunday": {
-          "open": null,
-          "close": null,
+          "open": company.workingHours.sunday.open,
+          "close": company.workingHours.sunday.close,
           "closed": company.workingHours.sunday.closed,
         },
       };
@@ -150,7 +137,6 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
     setState(() {});
   }
 
-  String? _networkImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +146,15 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
         listener: (context, state) {
           if (state is GetCategorySuccessState) {
             categoryData = state.data.data;
+            if (widget.companyId == null && selectedCategoryId == -1) {
+              final cachedCategoryId = CacheService.getCategoryId();
+              if (cachedCategoryId != null) {
+                final categoryExists = categoryData!.any((cat) => cat.id == cachedCategoryId);
+                if (categoryExists) {
+                  selectedCategoryId = cachedCategoryId;
+                }
+              }
+            }
             setState(() {});
           } else if (state is GetImageSuccessState) {
             img = state.img;
@@ -259,8 +254,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                 onTap: () {
                   if (nameController.text.isEmpty ||
                       selectedLat == null ||
-                      selectedLon == null ||
-                      (img == null && _networkImageUrl == null)) {
+                      selectedLon == null) {
                     AppService.errorToast(
                       context,
                       "pleaseEnterAllFields".tr(),

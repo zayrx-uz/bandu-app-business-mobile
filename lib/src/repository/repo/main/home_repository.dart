@@ -202,6 +202,7 @@ class HomeRepository implements AbstractHomeRepository {
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
     required List<Map<String, dynamic>> images,
+    List<int>? employeeIds,
   }) async {
     return await homeProvider.createResource(
       name: name,
@@ -213,6 +214,7 @@ class HomeRepository implements AbstractHomeRepository {
       isTimeSlotBased: isTimeSlotBased,
       timeSlotDurationMinutes: timeSlotDurationMinutes,
       images: images,
+      employeeIds: employeeIds,
     );
   }
 
@@ -224,5 +226,134 @@ class HomeRepository implements AbstractHomeRepository {
   @override
   Future<HttpResult> deleteResource({required int id}) async {
     return await homeProvider.deleteResource(id: id);
+  }
+
+  @override
+  Future<HttpResult> checkAlicePayment({
+    required String transactionId,
+    required int bookingId,
+  }) async {
+    return await homeProvider.checkAlicePayment(
+      transactionId: transactionId,
+      bookingId: bookingId,
+    );
+  }
+
+  @override
+  Future<HttpResult> getOwnerBookings({
+    required int page,
+    required int limit,
+    required int companyId,
+  }) async {
+    return await homeProvider.getOwnerBookings(
+      page: page,
+      limit: limit,
+      companyId: companyId,
+    );
+  }
+
+  @override
+  Future<HttpResult> getBookingDetail({required int bookingId}) async {
+    return await homeProvider.getBookingDetail(bookingId: bookingId);
+  }
+
+  @override
+  Future<HttpResult> updateBookingStatus({
+    required int bookingId,
+    required String status,
+    String? note,
+  }) async {
+    return await homeProvider.updateBookingStatus(
+      bookingId: bookingId,
+      status: status,
+      note: note,
+    );
+  }
+
+  @override
+  Future<HttpResult> cancelBooking({
+    required int bookingId,
+    required String note,
+  }) async {
+    return await homeProvider.cancelBooking(
+      bookingId: bookingId,
+      note: note,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardSummary({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  }) async {
+    return await homeProvider.getDashboardSummary(
+      companyId: companyId,
+      date: date,
+      clientDateTime: clientDateTime,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardRevenueSeries({
+    int? companyId,
+    String? period,
+    String? date,
+  }) async {
+    return await homeProvider.getDashboardRevenueSeries(
+      companyId: companyId,
+      period: period,
+      date: date,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardIncomingCustomersSeries({
+    int? companyId,
+    String? period,
+    String? date,
+  }) async {
+    return await homeProvider.getDashboardIncomingCustomersSeries(
+      companyId: companyId,
+      period: period,
+      date: date,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardIncomingCustomers({
+    int? companyId,
+    String? date,
+    int? page,
+    int? limit,
+  }) async {
+    return await homeProvider.getDashboardIncomingCustomers(
+      companyId: companyId,
+      date: date,
+      page: page,
+      limit: limit,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardPlacesBooked({
+    int? companyId,
+    String? clientDateTime,
+  }) async {
+    return await homeProvider.getDashboardPlacesBooked(
+      companyId: companyId,
+      clientDateTime: clientDateTime,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardPlacesEmpty({
+    int? companyId,
+    String? clientDateTime,
+  }) async {
+    return await homeProvider.getDashboardPlacesEmpty(
+      companyId: companyId,
+      clientDateTime: clientDateTime,
+    );
   }
 }

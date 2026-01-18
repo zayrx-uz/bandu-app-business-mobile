@@ -4,8 +4,12 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/ui/onboard/create_success.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
+import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 
 class TurnOnNotification extends StatefulWidget {
   const TurnOnNotification({super.key});
@@ -17,6 +21,7 @@ class TurnOnNotification extends StatefulWidget {
 class _TurnOnNotificationState extends State<TurnOnNotification>
     with SingleTickerProviderStateMixin {
   bool isOn = false;
+  bool isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
   late Animation<double> _fadeAnimation;
@@ -50,10 +55,20 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
 
   Future<void> _toggleNotification() async {
     setState(() {
-      isOn = !isOn;
+      isLoading = true;
     });
 
-    if (isOn) {
+    bool tokenReceived = await _requestNotificationPermissionAndGetToken();
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (tokenReceived) {
+      setState(() {
+        isOn = true;
+      });
+
       CacheService.saveBool("notif", true);
 
       await Future.delayed(const Duration(milliseconds: 800));
@@ -61,6 +76,105 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
       if (mounted) {
         _navigateToNextScreen();
       }
+    } else {
+      CacheService.saveBool("notif", false);
+
+      if (mounted) {
+        CenterDialog.errorDialog(context, "notificationConnectionError".tr());
+
+        await Future.delayed(const Duration(seconds: 2));
+
+        if (mounted) {
+          _navigateToNextScreen();
+        }
+      }
+    }
+  }
+
+  Future<bool> _requestNotificationPermissionAndGetToken() async {
+    try {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
+
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        print('✅ Notification ruxsati berildi');
+
+        if (Platform.isIOS) {
+          await messaging.setForegroundNotificationPresentationOptions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+          int retryCount = 0;
+          const maxRetries = 5;
+          String? token;
+
+          while (retryCount < maxRetries && token == null) {
+            await Future.delayed(Duration(milliseconds: 500 * (retryCount + 1)));
+
+            try {
+              token = await messaging.getToken();
+              if (token != null) {
+                break;
+              }
+            } catch (e) {
+              print('⏳ APNS token kutilmoqda... (${retryCount + 1}/$maxRetries)');
+            }
+
+            retryCount++;
+          }
+
+          if (token != null) {
+            print('🔑 FCM Token (iOS): $token');
+            CacheService.saveString("fcm_token", token);
+
+            messaging.onTokenRefresh.listen((newToken) {
+              print('🔄 FCM Token yangilandi: $newToken');
+              CacheService.saveString("fcm_token", newToken);
+            });
+
+            return true;
+          } else {
+            print('❌ APNS token olishda xatolik. Token olinmadi.');
+            return false;
+          }
+        } else {
+          String? token = await messaging.getToken();
+
+          if (token != null) {
+            print('🔑 FCM Token (Android): $token');
+            CacheService.saveString("fcm_token", token);
+
+            messaging.onTokenRefresh.listen((newToken) {
+              print('🔄 FCM Token yangilandi: $newToken');
+              CacheService.saveString("fcm_token", newToken);
+            });
+
+            return true;
+          } else {
+            print('❌ FCM token olishda xatolik');
+            return false;
+          }
+        }
+
+      } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        print('⚠️ Notification ruxsati rad etildi');
+        return false;
+      } else {
+        print('⚠️ Notification ruxsati berilmadi');
+        return false;
+      }
+
+    } catch (e) {
+      print('❌ FCM token olishda xatolik: $e');
+      return false;
     }
   }
 
@@ -74,9 +188,10 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
 
   void _navigateToNextScreen() {
     print("Navigate to next screen");
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CreateSuccess()),
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const CreateSuccess()),
+            (route)  => false
     );
   }
 
@@ -115,14 +230,14 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
                     duration: const Duration(milliseconds: 500),
                     transitionBuilder:
                         (Widget child, Animation<double> animation) {
-                          return ScaleTransition(
-                            scale: animation,
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
+                      return ScaleTransition(
+                        scale: animation,
+                        child: FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        ),
+                      );
+                    },
                     child: Image.asset(
                       !isOn ? AppImages.notifOff : AppImages.notifOn,
                       key: ValueKey<bool>(isOn),
@@ -138,7 +253,7 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
                 child: Transform.translate(
                   offset: Offset(0, _slideAnimation.value),
                   child: Text(
-                    "Turn On Notifications!",
+                    "turnOnNotifications".tr(),
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
@@ -157,7 +272,7 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.r),
                     child: Text(
-                      "Stay updated with important notifications and never miss out on what matters to you. You can change this setting anytime.",
+                      "notificationsDescription".tr(),
                       style: TextStyle(
                         color: AppColor.c585B57,
                         fontWeight: FontWeight.w400,
@@ -175,7 +290,11 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
                 opacity: _fadeAnimation.value,
                 child: Transform.translate(
                   offset: Offset(0, _slideAnimation.value),
-                  child: AppButton(onTap: _toggleNotification, text: "Turn On"),
+                  child: AppButton(
+                    onTap: _toggleNotification,
+                    text: "turnOn".tr(),
+                    loading: isLoading,
+                  ),
                 ),
               ),
 
@@ -187,7 +306,7 @@ class _TurnOnNotificationState extends State<TurnOnNotification>
                   offset: Offset(0, _slideAnimation.value),
                   child: AppButton(
                     onTap: _skipNotification,
-                    text: "Maybe later",
+                    text: "maybeLater".tr(),
                     isGradient: false,
                     backColor: Colors.white,
                     border: Border.all(width: 1.w, color: AppColor.cE5E7E5),

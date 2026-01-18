@@ -1,12 +1,18 @@
 class CategoryModel {
-  CategoryDataList data;
+  List<CategoryData> data;
+  String message;
 
-  CategoryModel({required this.data});
+  CategoryModel({
+    required this.data,
+    required this.message,
+  });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
     data: json["data"] == null
-        ? CategoryDataList.fromJson({})
-        : CategoryDataList.fromJson(json["data"]),
+        ? []
+        : List<CategoryData>.from(
+            json["data"].map((x) => CategoryData.fromJson(x))),
+    message: json["message"] ?? "",
   );
 }
 
@@ -19,10 +25,9 @@ class CategoryDataList {
   factory CategoryDataList.fromJson(Map<String, dynamic> json) =>
       CategoryDataList(
         data: json["data"] == null
-            ? List<CategoryData>.from({})
+            ? []
             : List<CategoryData>.from(
-                json["data"].map((x) => CategoryData.fromJson(x)),
-              ),
+                json["data"].map((x) => CategoryData.fromJson(x))),
         message: json["message"] ?? "",
       );
 }
@@ -39,7 +44,7 @@ class CategoryData {
   });
 
   factory CategoryData.fromJson(Map<String, dynamic> json) => CategoryData(
-    id: json["id"] ?? "",
+    id: json["id"] ?? 0,
     name: json["name"] ?? "",
     description: json["description"] ?? "",
   );

@@ -7,15 +7,22 @@ abstract class AbstractAuthRepository {
     required String role,
   });
 
-  Future<HttpResult> register({
-    required String phone,
-    required String fullName,
-    required String password,
-    required String img,
+  Future<HttpResult> otp({
+    required String otpToken,
+    required String code,
+  }) ;
+
+  Future<HttpResult> registerComplete({
     required String role,
+    required String fullName,
+    required String token,
+    required String password,
+    required String fcmToken,
   });
 
-  Future<HttpResult> otp({required String otpToken, required String code});
+  Future<HttpResult> register({
+    required String phone,
+  }) ;
 
   Future<HttpResult> forgotPassword({required String phoneNumber});
 

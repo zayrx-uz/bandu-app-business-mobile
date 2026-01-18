@@ -1,17 +1,20 @@
 class CompanyModel {
-  final CompanyDataList data;
+  final List<CompanyData> data;
+  final String message;
 
-  CompanyModel({required this.data});
+  CompanyModel({
+    required this.data,
+    required this.message,
+  });
 
-  factory CompanyModel.fromJson(Map<String, dynamic> json) =>
-      CompanyModel(
-        data: json["data"] == null
-            ? CompanyDataList.empty()
-            : CompanyDataList.fromJson(json["data"]),
-      );
+  factory CompanyModel.fromJson(Map<String, dynamic> json) => CompanyModel(
+    data: json["data"] == null
+        ? []
+        : List<CompanyData>.from(
+            json["data"].map((x) => CompanyData.fromJson(x))),
+    message: json["message"] ?? "",
+  );
 }
-
-// ---------------------------------------------------------
 
 class CompanyDataList {
   final List<CompanyData> data;
@@ -81,7 +84,7 @@ class CompanyData {
           : List<Category>.from(
           json["categories"].map((x) => Category.fromJson(x))),
       resourceCategoryIds: json["resourceCategoryIds"] == null
-          ? []
+          ? null
           : List<int>.from(json["resourceCategoryIds"].map((x) => x)),
       serviceTypeId: json["serviceTypeId"],
       isOpen247: json["isOpen247"] ?? false,
@@ -197,8 +200,8 @@ class WorkingHours {
   final DayHours wednesday;
   final DayHours thursday;
   final DayHours friday;
-  final DayOff saturday;
-  final DayOff sunday;
+  final DayHours saturday;
+  final DayHours sunday;
 
   WorkingHours({
     required this.monday,
@@ -216,8 +219,8 @@ class WorkingHours {
     wednesday: DayHours.empty(),
     thursday: DayHours.empty(),
     friday: DayHours.empty(),
-    saturday: DayOff.empty(),
-    sunday: DayOff.empty(),
+    saturday: DayHours.empty(),
+    sunday: DayHours.empty(),
   );
 
   factory WorkingHours.fromJson(Map<String, dynamic> json) => WorkingHours(
@@ -226,48 +229,35 @@ class WorkingHours {
     wednesday: DayHours.fromJson(json["wednesday"] ?? {}),
     thursday: DayHours.fromJson(json["thursday"] ?? {}),
     friday: DayHours.fromJson(json["friday"] ?? {}),
-    saturday: DayOff.fromJson(json["Saturday"] ?? json["saturday"] ?? {}),
-    sunday: DayOff.fromJson(json["Sunday"] ?? json["sunday"] ?? {}),
+    saturday: DayHours.fromJson(json["saturday"] ?? {}),
+    sunday: DayHours.fromJson(json["sunday"] ?? {}),
   );
 }
 
 // ---------------------------------------------------------
 
 class DayHours {
-  final String open;
-  final String close;
+  final String? open;
+  final String? close;
   final bool closed;
 
   DayHours({
-    required this.open,
-    required this.close,
+    this.open,
+    this.close,
     required this.closed,
   });
 
   factory DayHours.empty() => DayHours(
-    open: "",
-    close: "",
-    closed: false,
+    open: null,
+    close: null,
+    closed: true,
   );
 
   factory DayHours.fromJson(Map<String, dynamic> json) => DayHours(
-    open: json["open"] ?? "",
-    close: json["close"] ?? "",
-    closed: json["closed"] ?? false,
+    open: json["open"]?.toString(),
+    close: json["close"]?.toString(),
+    closed: json["closed"] ?? true,
   );
-}
-
-// ---------------------------------------------------------
-
-class DayOff {
-  final bool closed;
-
-  DayOff({required this.closed});
-
-  factory DayOff.empty() => DayOff(closed: true);
-
-  factory DayOff.fromJson(Map<String, dynamic> json) =>
-      DayOff(closed: json["closed"] ?? true);
 }
 
 // ---------------------------------------------------------

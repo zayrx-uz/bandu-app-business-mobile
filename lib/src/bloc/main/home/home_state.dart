@@ -88,7 +88,7 @@ class ResourceSearchState extends HomeState {
 class GetMonitoringLoadingState extends HomeState {}
 
 class GetMonitoringSuccessState extends HomeState {
-  final MonitoringData data;
+  final List<MonitoringItemData> data;
 
   GetMonitoringSuccessState({required this.data});
 
@@ -99,7 +99,7 @@ class GetMonitoringSuccessState extends HomeState {
 class GetMeLoadingState extends HomeState {}
 
 class GetMeSuccessState extends HomeState {
-  final LoginModelData data;
+  final LoginModel data;
 
   GetMeSuccessState({required this.data});
 
@@ -325,6 +325,21 @@ class DeleteResourceSuccessState extends HomeState {
   List<Object?> get props => [resourceId];
 }
 
+class CheckAlicePaymentLoadingState extends HomeState {}
+
+class CheckAlicePaymentSuccessState extends HomeState {
+  final bool isPaid;
+  final String message;
+
+  CheckAlicePaymentSuccessState({
+    required this.isPaid,
+    required this.message,
+  });
+
+  @override
+  List<Object?> get props => [isPaid, message];
+}
+
 class GetStatisticLoadingState extends HomeState {}
 
 class GetStatisticSuccessState extends HomeState {
@@ -360,4 +375,54 @@ class HomeErrorState extends HomeState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class GetOwnerBookingsLoadingState extends HomeState {}
+
+class GetOwnerBookingsSuccessState extends HomeState {
+  final List<OwnerBookingItemData> data;
+  final OwnerBookingMeta meta;
+  final bool isLoadMore;
+
+  GetOwnerBookingsSuccessState({
+    required this.data,
+    required this.meta,
+    this.isLoadMore = false,
+  });
+
+  @override
+  List<Object?> get props => [data, meta, isLoadMore];
+}
+
+class GetBookingDetailLoadingState extends HomeState {}
+
+class GetBookingDetailSuccessState extends HomeState {
+  final BookingDetailData data;
+
+  GetBookingDetailSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class UpdateBookingStatusLoadingState extends HomeState {}
+
+class UpdateBookingStatusSuccessState extends HomeState {
+  final int bookingId;
+
+  UpdateBookingStatusSuccessState({required this.bookingId});
+
+  @override
+  List<Object?> get props => [bookingId];
+}
+
+class CancelBookingLoadingState extends HomeState {}
+
+class CancelBookingSuccessState extends HomeState {
+  final int bookingId;
+
+  CancelBookingSuccessState({required this.bookingId});
+
+  @override
+  List<Object?> get props => [bookingId];
 }

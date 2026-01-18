@@ -82,13 +82,10 @@ class _EmployerScreenState extends State<EmployerScreen> {
                       getData();
                       await Future.delayed(Duration(milliseconds: 500));
                     },
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Center(
-                        child: EmptyWidget(
-                          text: "noEmployeesAvailable".tr(),
-                          icon: AppIcons.employe,
-                        ),
+                    child: Center(
+                      child: EmptyWidget(
+                        text: "noEmployeesAvailable".tr(),
+                        icon: AppIcons.employe,
                       ),
                     ),
                   ),

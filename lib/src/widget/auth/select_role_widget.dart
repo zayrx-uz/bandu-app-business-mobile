@@ -12,6 +12,14 @@ class SelectRoleWidget extends StatelessWidget {
 
   const SelectRoleWidget({super.key, required this.role});
 
+  // English role names - always in English regardless of app language
+  static const List<String> _englishRoles = [
+    "Business Owner",
+    "Moderator",
+    "Manager",
+    "Worker",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +42,7 @@ class SelectRoleWidget extends StatelessWidget {
               closedBorder: Border.all(width: 1.h, color: AppColor.greyE5),
               headerStyle: AppTextStyle.f500s16,
             ),
-            items: ["businessOwner".tr(), "moderator".tr(), "manager".tr(), "worker".tr()],
+            items: _englishRoles,
             listItemBuilder: (a, b, s, d) {
               return Container(
                 color: Colors.transparent,

@@ -4,14 +4,20 @@ PlaceModel placeModelFromJson(String str) =>
     PlaceModel.fromJson(json.decode(str));
 
 class PlaceModel {
-  final PlaceData data;
+  final List<PlaceItemData> data;
+  final String message;
 
-  PlaceModel({required this.data});
+  PlaceModel({
+    required this.data,
+    required this.message,
+  });
 
   factory PlaceModel.fromJson(Map<String, dynamic> json) => PlaceModel(
     data: json["data"] == null
-        ? PlaceData.fromJson({})
-        : PlaceData.fromJson(json["data"]),
+        ? []
+        : List<PlaceItemData>.from(
+            json["data"].map((x) => PlaceItemData.fromJson(x))),
+    message: json["message"] ?? "",
   );
 }
 
@@ -23,7 +29,7 @@ class PlaceData {
 
   factory PlaceData.fromJson(Map<String, dynamic>? json) => PlaceData(
     data: json?["data"] == null
-        ? List<PlaceItemData>.from({})
+        ? []
         : List<PlaceItemData>.from(json!["data"].map((x) => PlaceItemData.fromJson(x))),
     message: json?["message"] ?? "",
   );

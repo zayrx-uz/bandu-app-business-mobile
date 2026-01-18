@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomNetworkImage extends StatelessWidget {
   final double? height, width, borderRadius;
-  final String imageUrl;
+  final String? imageUrl;
   final BoxFit? fit;
 
   const CustomNetworkImage({
@@ -11,16 +11,32 @@ class CustomNetworkImage extends StatelessWidget {
     this.height,
     this.width,
     this.borderRadius,
-    required this.imageUrl,
+    this.imageUrl,
     this.fit,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl == null || imageUrl!.isEmpty) {
+      return Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(borderRadius ?? 0),
+          color: Colors.grey[300],
+        ),
+        child: Icon(
+          Icons.person,
+          size: (height != null && width != null)
+              ? (height! < width! ? height! / 2 : width! / 2)
+              : 24,
+        ),
+      );
+    }
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius ?? 0),
       child: CachedNetworkImage(
-        imageUrl: imageUrl,
+        imageUrl: imageUrl!,
         height: height,
         width: width,
         fit: fit ?? BoxFit.cover,

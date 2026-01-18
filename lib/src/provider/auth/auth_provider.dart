@@ -1,14 +1,14 @@
 import 'package:bandu_business/src/helper/api/api_helper.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/response/http_result.dart';
 import 'package:bandu_business/src/provider/api_provider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider extends ApiProvider {
   ///login
   Future<HttpResult> login(String phone, String password, String role) async {
-    String? d = await getToken();
+    String? d = CacheService.getString("fcm_token");
     final body = {
       'phoneNumber': phone,
       'password': password,
@@ -20,37 +20,43 @@ class AuthProvider extends ApiProvider {
 
   ///register
   Future<HttpResult> register(
-    String phone,
-    String fullName,
-    String password,
-    String img,
-    String role,
-  ) async {
-    String? d = await getToken();
-
-    final body = {
+      String phone,
+      ) async {
+    final Map<String, dynamic> body = {
       'phoneNumber': phone,
-      'fullName': fullName,
-      'password': password,
-      'role': role,
-      'profilePicture': img,
-      "fcmToken": d,
     };
-    return await postRequest(ApiHelper.register, body);
-  }
 
-  Future<String?> getToken() async {
-    try {
-      return await FirebaseMessaging.instance.getToken();
-    } catch (_) {
-      return null;
-    }
+    // if (img != null) {
+    //   body['profilePicture'] = img;
+    // }
+
+    return await postRequest(ApiHelper.register, body);
   }
 
   ///otp
   Future<HttpResult> otp(String otpToken, String code) async {
     final body = {'otpToken': otpToken, 'otp': code};
     return await postRequest(ApiHelper.otp, body);
+  }
+
+
+  ///otp
+  Future<HttpResult> registerComplete({
+    required String role,
+    required String fullName,
+    required String token,
+    required String password,
+    required String fcmToken,
+  }) async {
+    final body = {
+      "registrationToken": token,
+      "fullName": fullName,
+      "password": password,
+      "role": role,
+      "gender": "FEMALE",
+      "fcmToken": fcmToken
+    };
+    return await postRequest(ApiHelper.registerComplete, body);
   }
 
   ///forgot password
@@ -91,5 +97,10 @@ class AuthProvider extends ApiProvider {
     );
 
     return await postMultiRequest(request);
+  }
+
+  ///delete account
+  Future<HttpResult> deleteAccount() async {
+    return await deleteRequest(ApiHelper.deleteAccount);
   }
 }

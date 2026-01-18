@@ -8,6 +8,8 @@ import 'package:bandu_business/src/ui/main/qr/screen/receipt_item_widget.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:bandu_business/src/widget/main/qr/alice_checker_widget.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,6 +50,18 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
               Navigator.pop(context);
             },
           );
+        } else if (state is CheckAlicePaymentSuccessState) {
+          if (state.isPaid) {
+            CenterDialog.successDialog(
+              context,
+              state.message.isNotEmpty
+                  ? state.message
+                  : "paymentVerifiedSuccessfully".tr(),
+              () {
+                Navigator.pop(context);
+              },
+            );
+          }
         }
       },
       builder: (context, state) {
@@ -116,24 +130,46 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
                       ),
                       ReceiptItemWidget(
                         title: "status".tr(),
-                        data: data!.status.capitalizeFirstLetter(),
-                        dataColor: data!.status == "pending"
+                        data: data!.status.getLocalizedStatus(),
+                        dataColor: data!.status.toLowerCase() == "pending"
                             ? AppColor.yellowFF
-                            : AppColor.green34,
+                            : data!.status.toLowerCase() == "confirmed"
+                                ? AppColor.yellow8E
+                                : data!.status.toLowerCase() == "canceled" || data!.status.toLowerCase() == "cancelled"
+                                    ? AppColor.cE52E4C
+                                    : AppColor.green34,
                       ),
                     ],
                   ),
                 ),
                 SizedBox(height: 12.h),
                 if (data!.status == "pending")
-                  AppButton(
-                    onTap: () {
-                      BlocProvider.of<HomeBloc>(
-                        context,
-                      ).add(ConfirmBookEvent(bookId: data!.id));
-                    },
-                    loading: loading,
-                    text: "confirmBooking".tr(),
+                  Column(
+                    children: [
+                      AppButton(
+                        onTap: () {
+                          showCupertinoModalBottomSheet(
+                            context: context,
+                            builder: (context) => AliceCheckerWidget(
+                              bookingId: data!.id,
+                            ),
+                          );
+                        },
+                        text: "checkPayment".tr(),
+                        backColor: AppColor.blue00,
+                        isGradient: false,
+                      ),
+                      SizedBox(height: 12.h),
+                      AppButton(
+                        onTap: () {
+                          BlocProvider.of<HomeBloc>(
+                            context,
+                          ).add(ConfirmBookEvent(bookId: data!.id));
+                        },
+                        loading: loading,
+                        text: "confirmBooking".tr(),
+                      ),
+                    ],
                   ),
                 SizedBox(height: 24.h),
               ],

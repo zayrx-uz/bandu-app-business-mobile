@@ -1,65 +1,57 @@
 class StatisticModel {
-  final StatisticModelData data;
-
-  StatisticModel({required this.data});
-
-  factory StatisticModel.fromJson(Map<String, dynamic> json) =>
-      StatisticModel(
-        data: json["data"] == null
-            ? StatisticModelData.fromJson({})
-            : StatisticModelData.fromJson(json["data"]),
-      );
-}
-
-class StatisticModelData {
   final StatisticItemData data;
   final String message;
 
-  StatisticModelData({
+  StatisticModel({
     required this.data,
     required this.message,
   });
 
-  factory StatisticModelData.fromJson(Map<String, dynamic> json) =>
-      StatisticModelData(
-        data: json["data"] == null
-            ? StatisticItemData.fromJson({})
-            : StatisticItemData.fromJson(json["data"]),
-        message: json["message"] ?? "",
-      );
+  factory StatisticModel.fromJson(Map<String, dynamic> json) => StatisticModel(
+    data: json["data"] == null
+        ? StatisticItemData.fromJson({})
+        : StatisticItemData.fromJson(json["data"]),
+    message: json["message"] ?? "",
+  );
 }
 
 class StatisticItemData {
   final String period;
-  final String year;
+  final String? date;
+  final String? year;
   final int totalRevenue;
   final int totalCustomers;
   final int totalPlaces;
+  final int totalEmptyPlaces;
   final List<NewCustomer> newCustomers;
   final int revenuePercentageChange;
   final int customersPercentageChange;
   final int placesPercentageChange;
-  final List<MonthlyDatum> monthlyData;
+  final List<MonthlyDatum>? monthlyData;
 
   StatisticItemData({
     required this.period,
-    required this.year,
+    this.date,
+    this.year,
     required this.totalRevenue,
     required this.totalCustomers,
     required this.totalPlaces,
+    required this.totalEmptyPlaces,
     required this.newCustomers,
     required this.revenuePercentageChange,
     required this.customersPercentageChange,
     required this.placesPercentageChange,
-    required this.monthlyData,
+    this.monthlyData,
   });
 
   factory StatisticItemData.fromJson(Map<String, dynamic> json) => StatisticItemData(
     period: json["period"] ?? "",
-    year: json["year"] ?? "",
+    date: json["date"]?.toString(),
+    year: json["year"]?.toString(),
     totalRevenue: json["totalRevenue"] ?? 0,
     totalCustomers: json["totalCustomers"] ?? 0,
     totalPlaces: json["totalPlaces"] ?? 0,
+    totalEmptyPlaces: json["totalEmptyPlaces"] ?? 0,
     newCustomers: json["newCustomers"] == null
         ? []
         : List<NewCustomer>.from(
@@ -69,7 +61,7 @@ class StatisticItemData {
     customersPercentageChange: json["customersPercentageChange"] ?? 0,
     placesPercentageChange: json["placesPercentageChange"] ?? 0,
     monthlyData: json["monthlyData"] == null
-        ? []
+        ? null
         : List<MonthlyDatum>.from(
       json["monthlyData"].map((x) => MonthlyDatum.fromJson(x)),
     ),

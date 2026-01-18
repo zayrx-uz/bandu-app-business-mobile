@@ -56,10 +56,12 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
         if (state is GetStatisticSuccessState) {
           data = state.data;
           maxIndex = 0;
-          for (int i = 0; i < data!.monthlyData.length; i++) {
-            incomes[i] = data!.monthlyData[i].revenue.toDouble();
-            if (maxIndex < incomes[i]) {
-              maxIndex = incomes[i].toInt();
+          if (data!.monthlyData != null) {
+            for (int i = 0; i < data!.monthlyData!.length; i++) {
+              incomes[i] = data!.monthlyData![i].revenue.toDouble();
+              if (maxIndex < incomes[i]) {
+                maxIndex = incomes[i].toInt();
+              }
             }
           }
         }

@@ -47,10 +47,8 @@ class _ForgotPasswordResetScreenState extends State<ForgotPasswordResetScreen> {
     errorText = null;
 
     if (password.isNotEmpty) {
-      if (password.length < 8) {
+      if (password.length < 6) {
         passwordError = "passwordMinLength".tr();
-      } else if (!RegExp(r'[a-zA-Z]').hasMatch(password)) {
-        passwordError = "passwordMustContainLetter".tr();
       } else {
         passwordError = null;
       }
@@ -68,9 +66,7 @@ class _ForgotPasswordResetScreenState extends State<ForgotPasswordResetScreen> {
       confirmError = null;
     }
 
-    final passwordOk = password.length >= 8 && 
-                       RegExp(r'[a-zA-Z]').hasMatch(password) && 
-                       passwordError == null;
+    final passwordOk = password.length >= 6 && passwordError == null;
     final confirmOk = confirm == password && confirmError == null && confirm.isNotEmpty;
 
     setState(() {

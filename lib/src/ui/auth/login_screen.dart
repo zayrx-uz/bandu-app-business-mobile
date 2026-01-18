@@ -5,7 +5,7 @@ import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/auth/forgot_password_screen.dart';
-import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
+import 'package:bandu_business/src/ui/onboard/create_success.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/back_button.dart';
@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _check() {
     final phoneOk = phoneController.text.length == 12;
-    final passOk = passwordController.text.length >= 8;
+    final passOk = passwordController.text.length >= 6;
     errorText = null;
     if (isActive != (phoneOk && passOk)) {
       setState(() => isActive = phoneOk && passOk);
@@ -77,13 +77,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       context,
                       BlocProvider(
                         create: (_) => HomeBloc(homeRepository: HomeRepository()),
-                        child: SelectCompanyScreen(
-                          canPop: true,
+                        child: CreateSuccess(
                         ),
                       ),
                     );
                   } else if (state is AuthErrorState) {
-                    errorText = state.message;
+                    setState(() {
+                      errorText = state.message;
+                    });
                   }
                 },
                 builder: (context, state) {
@@ -115,9 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         InputPhoneWidget(controller: phoneController),
                         SizedBox(height: 12.h),
                         InputPasswordWidget(controller: passwordController),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 12.h),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             GestureDetector(
                               onTap: () {
@@ -132,12 +133,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 "forgotPasswordQuestion".tr(),
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: AppColor.yellowFFC,
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
+                            SizedBox(width: 20.w,)
                           ],
                         ),
                         if (errorText != null)

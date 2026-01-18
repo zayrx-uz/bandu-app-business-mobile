@@ -21,4 +21,15 @@ class AppImages{
   static const String enImage = 'assets/images/en.png';
   static const String ruImage = 'assets/images/ru.png';
   static const String uzImage = 'assets/images/uzz.png';
+  static const String manVectorImage = 'assets/images/man_vector.png';
+  static const String server = 'assets/images/server.png';
+  static const String noConnection = 'assets/images/no_connection.png';
+
+  static const String restaurantSelect = 'assets/images/restarant_select.png';
+  static const String restaurantUnselect = 'assets/images/restarant_unselect.png';
+  static const String barberSelect = 'assets/images/barber_select.png';
+  static const String barberUnselect = 'assets/images/barber_unselect.png';
+  static const String carwashSelect = 'assets/images/carwash_select.png';
+  static const String carwashUnselect = 'assets/images/carwash_unselect.png';
+
 }

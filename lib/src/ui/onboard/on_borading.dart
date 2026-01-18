@@ -5,7 +5,6 @@ import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/ui/main/main_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
-import 'package:bandu_business/src/ui/onboard/turn_on_notification.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/auth/on_boarding/slider_widget.dart';

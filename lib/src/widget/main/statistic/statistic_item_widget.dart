@@ -1,8 +1,10 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/main/booking/bookings_screen.dart';
 import 'package:bandu_business/src/ui/main/statistic/screen/statistic_view_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -27,15 +29,25 @@ class StatisticItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoButton(
       onPressed: () {
-        CupertinoScaffold.showCupertinoModalBottomSheet(
-          context: context,
-          builder: (context) {
-            return BlocProvider(
+        if (title == "occupiedPlaces".tr()) {
+          AppService.changePage(
+            context,
+            BlocProvider(
               create: (_) => HomeBloc(homeRepository: HomeRepository()),
-              child: const StatisticViewScreen(),
-            );
-          },
-        );
+              child: const BookingsScreen(),
+            ),
+          );
+        } else {
+          CupertinoScaffold.showCupertinoModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return BlocProvider(
+                create: (_) => HomeBloc(homeRepository: HomeRepository()),
+                child: const StatisticViewScreen(),
+              );
+            },
+          );
+        }
       },
       padding: EdgeInsets.zero,
       child: Container(

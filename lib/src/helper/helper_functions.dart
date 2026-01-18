@@ -25,12 +25,18 @@ class HelperFunctions {
   }
 
   static void saveLoginData(LoginModel data) {
-    if (data.data.tokens.accessToken != "") {
-      CacheService.saveToken(data.data.tokens.accessToken);
+    if (data.tokens.accessToken.isNotEmpty) {
+      CacheService.saveToken(data.tokens.accessToken);
     }
-    CacheService.saveString("full_name", data.data.data.user.fullName);
-    CacheService.saveString("image", data.data.data.user.profilePicture);
-    CacheService.saveString("phone", data.data.data.phoneNumber);
+    if (data.data.user.fullName.isNotEmpty) {
+      CacheService.saveString("full_name", data.data.user.fullName);
+    }
+    if (data.data.user.profilePicture.isNotEmpty) {
+      CacheService.saveString("image", data.data.user.profilePicture);
+    }
+    if (data.data.phoneNumber.isNotEmpty) {
+      CacheService.saveString("phone", data.data.phoneNumber);
+    }
   }
 
   static String errorText(dynamic dt) {

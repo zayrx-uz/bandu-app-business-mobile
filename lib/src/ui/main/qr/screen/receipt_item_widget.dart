@@ -47,10 +47,14 @@ class ReceiptItemWidget extends StatelessWidget {
                 AppSvgAsset(leftIcon!, height: 20.h, width: 20.h),
                 SizedBox(width: 4.w),
               ],
-              Text(
-                data,
-                style: AppTextStyle.f600s14.copyWith(
-                  color: dataColor ?? AppColor.black09,
+              Expanded(
+                child: Text(
+                  data,
+                  style: AppTextStyle.f600s14.copyWith(
+                    color: dataColor ?? AppColor.black09,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

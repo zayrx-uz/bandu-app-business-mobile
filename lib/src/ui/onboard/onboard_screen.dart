@@ -1,14 +1,17 @@
+import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
+import 'package:bandu_business/src/ui/auth/login_screen.dart';
 import 'package:bandu_business/src/ui/auth/register_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/privacy_widget.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
-import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OnboardScreen extends StatefulWidget {
@@ -23,7 +26,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.white,
-      // appBar: AppBar(backgroundColor: AppColor.white, title: TopAppName()),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -50,7 +52,13 @@ class _OnboardScreenState extends State<OnboardScreen> {
             SizedBox(height: 24.h),
             AppButton(
               onTap: () {
-                BottomDialog.selectLogin(context);
+                AppService.changePage(
+                  context,
+                  BlocProvider(
+                    create: (_) => AuthBloc(authRepository: AuthRepository()),
+                    child: LoginScreen(role: "OWNER"),
+                  ),
+                );
               },
               margin: isTablet(context) ? EdgeInsets.symmetric(horizontal: 50.w) : EdgeInsets.symmetric(horizontal: 20.w),
               text: "login".tr(),

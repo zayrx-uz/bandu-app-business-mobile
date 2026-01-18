@@ -1,24 +1,11 @@
 class BookModel {
-  final BookModelData data;
-
-  BookModel({required this.data});
-
-  factory BookModel.fromJson(Map<String, dynamic> json) =>
-      BookModel(
-        data: json["data"] == null
-            ? BookModelData.fromJson({})
-            : BookModelData.fromJson(json["data"]),
-      );
-}
-
-class BookModelData {
   final BookingData data;
   final String message;
 
-  BookModelData({required this.data, required this.message});
+  BookModel({required this.data, required this.message});
 
-  factory BookModelData.fromJson(Map<String, dynamic> json) =>
-      BookModelData(
+  factory BookModel.fromJson(Map<String, dynamic> json) =>
+      BookModel(
         data: json["data"] == null
             ? BookingData.fromJson({})
             : BookingData.fromJson(json["data"]),
