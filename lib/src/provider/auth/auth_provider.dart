@@ -12,7 +12,7 @@ class AuthProvider extends ApiProvider {
     final body = {
       'phoneNumber': phone,
       'password': password,
-      "role": role,
+      "useType": "BUSINESS",
       "fcmToken": d,
     };
     return await postRequest(ApiHelper.login, body);
@@ -24,6 +24,7 @@ class AuthProvider extends ApiProvider {
       ) async {
     final Map<String, dynamic> body = {
       'phoneNumber': phone,
+      'useType': 'BUSINESS',
     };
 
     // if (img != null) {
@@ -52,8 +53,7 @@ class AuthProvider extends ApiProvider {
       "registrationToken": token,
       "fullName": fullName,
       "password": password,
-      "role": role,
-      "gender": "FEMALE",
+      "useType": "BUSINESS",
       "fcmToken": fcmToken
     };
     return await postRequest(ApiHelper.registerComplete, body);

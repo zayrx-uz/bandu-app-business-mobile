@@ -267,7 +267,8 @@ class HomeProvider extends ApiProvider {
   ///get statistic
   Future<HttpResult> getStatistic(DateTime date, String period) async {
     String formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-    String clientDateTime = date.toIso8601String();
+    // clientDateTime should be the current time when making the request, not the query date
+    String clientDateTime = DateTime.now().toIso8601String();
     int? companyId = HelperFunctions.getCompanyId();
     if (companyId != null && companyId > 0) {
       return await getDashboardSummary(
@@ -357,10 +358,10 @@ class HomeProvider extends ApiProvider {
       path += "companyId=$companyId&";
     }
     if (date != null) {
-      path += "date=$date&";
+      path += "date=${Uri.encodeComponent(date)}&";
     }
     if (clientDateTime != null) {
-      path += "clientDateTime=$clientDateTime&";
+      path += "clientDateTime=${Uri.encodeComponent(clientDateTime)}&";
     }
     if (path.endsWith("&")) {
       path = path.substring(0, path.length - 1);
@@ -375,16 +376,20 @@ class HomeProvider extends ApiProvider {
     int? companyId,
     String? period,
     String? date,
+    String? clientDateTime,
   }) async {
     String path = "?";
     if (companyId != null) {
       path += "companyId=$companyId&";
     }
     if (period != null) {
-      path += "period=$period&";
+      path += "period=${Uri.encodeComponent(period)}&";
     }
     if (date != null) {
-      path += "date=$date&";
+      path += "date=${Uri.encodeComponent(date)}&";
+    }
+    if (clientDateTime != null) {
+      path += "clientDateTime=${Uri.encodeComponent(clientDateTime)}&";
     }
     if (path.endsWith("&")) {
       path = path.substring(0, path.length - 1);
@@ -449,14 +454,18 @@ class HomeProvider extends ApiProvider {
 
   Future<HttpResult> getDashboardPlacesBooked({
     int? companyId,
+    String? date,
     String? clientDateTime,
   }) async {
     String path = "?";
     if (companyId != null) {
       path += "companyId=$companyId&";
     }
+    if (date != null) {
+      path += "date=${Uri.encodeComponent(date)}&";
+    }
     if (clientDateTime != null) {
-      path += "clientDateTime=$clientDateTime&";
+      path += "clientDateTime=${Uri.encodeComponent(clientDateTime)}&";
     }
     if (path.endsWith("&")) {
       path = path.substring(0, path.length - 1);
@@ -469,14 +478,18 @@ class HomeProvider extends ApiProvider {
 
   Future<HttpResult> getDashboardPlacesEmpty({
     int? companyId,
+    String? date,
     String? clientDateTime,
   }) async {
     String path = "?";
     if (companyId != null) {
       path += "companyId=$companyId&";
     }
+    if (date != null) {
+      path += "date=${Uri.encodeComponent(date)}&";
+    }
     if (clientDateTime != null) {
-      path += "clientDateTime=$clientDateTime&";
+      path += "clientDateTime=${Uri.encodeComponent(clientDateTime)}&";
     }
     if (path.endsWith("&")) {
       path = path.substring(0, path.length - 1);
@@ -485,5 +498,53 @@ class HomeProvider extends ApiProvider {
       path = "";
     }
     return await getRequest("${ApiHelper.dashboardPlacesEmpty}$path");
+  }
+
+  Future<HttpResult> getDashboardEmployeesEmpty({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  }) async {
+    String path = "?";
+    if (companyId != null) {
+      path += "companyId=$companyId&";
+    }
+    if (date != null) {
+      path += "date=${Uri.encodeComponent(date)}&";
+    }
+    if (clientDateTime != null) {
+      path += "clientDateTime=${Uri.encodeComponent(clientDateTime)}&";
+    }
+    if (path.endsWith("&")) {
+      path = path.substring(0, path.length - 1);
+    }
+    if (path == "?") {
+      path = "";
+    }
+    return await getRequest("${ApiHelper.dashboardEmployeesEmpty}$path");
+  }
+
+  Future<HttpResult> getDashboardEmployeesBooked({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  }) async {
+    String path = "?";
+    if (companyId != null) {
+      path += "companyId=$companyId&";
+    }
+    if (date != null) {
+      path += "date=${Uri.encodeComponent(date)}&";
+    }
+    if (clientDateTime != null) {
+      path += "clientDateTime=${Uri.encodeComponent(clientDateTime)}&";
+    }
+    if (path.endsWith("&")) {
+      path = path.substring(0, path.length - 1);
+    }
+    if (path == "?") {
+      path = "";
+    }
+    return await getRequest("${ApiHelper.dashboardEmployeesBooked}$path");
   }
 }

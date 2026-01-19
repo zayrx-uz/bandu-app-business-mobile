@@ -26,8 +26,9 @@ class AppIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = loading != null && loading!;
     return CupertinoButton(
-      onPressed: onTap,
+      onPressed: isLoading ? null : onTap,
       padding: EdgeInsets.zero,
       child: Container(
         height: height ?? 32.h,
@@ -45,7 +46,13 @@ class AppIconButton extends StatelessWidget {
           ],
         ),
         child: Center(
-          child: loading != null && loading! ? CircularProgressIndicator.adaptive() : AppSvgAsset(icon, color: iconColor ?? AppColor.black),
+          child: isLoading 
+              ? CircularProgressIndicator.adaptive(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    iconColor ?? AppColor.black,
+                  ),
+                )
+              : AppSvgAsset(icon, color: iconColor ?? AppColor.black),
         ),
       ),
     );

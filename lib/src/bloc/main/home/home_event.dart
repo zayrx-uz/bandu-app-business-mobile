@@ -436,3 +436,80 @@ class CancelBookingEvent extends HomeEvent {
   @override
   List<Object?> get props => [bookingId, note];
 }
+
+class GetEmptyPlacesEvent extends HomeEvent {
+  final int? companyId;
+  final String? date;
+  final String? clientDateTime;
+
+  GetEmptyPlacesEvent({
+    this.companyId,
+    this.date,
+    this.clientDateTime,
+  });
+
+  @override
+  List<Object?> get props => [companyId, date, clientDateTime];
+}
+
+class GetBookedPlacesEvent extends HomeEvent {
+  final int? companyId;
+  final String? date;
+  final String? clientDateTime;
+
+  GetBookedPlacesEvent({
+    this.companyId,
+    this.date,
+    this.clientDateTime,
+  });
+
+  @override
+  List<Object?> get props => [companyId, date, clientDateTime];
+}
+
+class GetEmptyEmployeesEvent extends HomeEvent {
+  final int? companyId;
+  final String? date;
+  final String? clientDateTime;
+
+  GetEmptyEmployeesEvent({
+    this.companyId,
+    this.date,
+    this.clientDateTime,
+  });
+
+  @override
+  List<Object?> get props => [companyId, date, clientDateTime];
+}
+
+class GetBookedEmployeesEvent extends HomeEvent {
+  final int? companyId;
+  final String? date;
+  final String? clientDateTime;
+
+  GetBookedEmployeesEvent({
+    this.companyId,
+    this.date,
+    this.clientDateTime,
+  });
+
+  @override
+  List<Object?> get props => [companyId, date, clientDateTime];
+}
+
+class GetRevenueSeriesEvent extends HomeEvent {
+  final int? companyId;
+  final String? period;
+  final String? date;
+  final String? clientDateTime;
+
+  GetRevenueSeriesEvent({
+    this.companyId,
+    this.period,
+    this.date,
+    this.clientDateTime,
+  });
+
+  @override
+  List<Object?> get props => [companyId, period, date, clientDateTime];
+}

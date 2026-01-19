@@ -35,7 +35,7 @@ class EmployeeItemData {
   final dynamic gender;
   final bool verified;
   final bool isBlocked;
-  final String role;
+  final List<String> roles;
   final int companyId;
   final dynamic fcmToken;
   final dynamic telegramId;
@@ -55,7 +55,7 @@ class EmployeeItemData {
     required this.gender,
     required this.verified,
     required this.isBlocked,
-    required this.role,
+    required this.roles,
     required this.companyId,
     required this.fcmToken,
     required this.telegramId,
@@ -77,7 +77,9 @@ class EmployeeItemData {
         gender: json["gender"],
         verified: json["verified"] ?? false,
         isBlocked: json["isBlocked"] ?? false,
-        role: json["role"] ?? "",
+        roles: json["roles"] == null
+            ? []
+            : List<String>.from(json["roles"].map((x) => x.toString())),
         companyId: json["companyId"] ?? 0,
         fcmToken: json["fcmToken"],
         telegramId: json["telegramId"],

@@ -17,19 +17,23 @@ class StatisticItemWidget extends StatelessWidget {
   final String icon;
   final String title;
   final String desc;
+  final VoidCallback? onTap;
 
   const StatisticItemWidget({
     super.key,
     required this.icon,
     required this.title,
     required this.desc,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
       onPressed: () {
-        if (title == "occupiedPlaces".tr()) {
+        if (onTap != null) {
+          onTap!();
+        } else if (title == "occupiedPlaces".tr()) {
           AppService.changePage(
             context,
             BlocProvider(

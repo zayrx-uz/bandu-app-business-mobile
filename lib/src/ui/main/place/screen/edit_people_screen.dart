@@ -15,9 +15,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EditPlaceScreen extends StatefulWidget {
-  const EditPlaceScreen({super.key, required this.id, required this.number, required this.name});
+  const EditPlaceScreen({super.key, required this.id, this.number, required this.name});
   final int id;
-  final int number;
+  final int? number;
   final String name;
 
   @override
@@ -42,10 +42,12 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
   @override
   void initState() {
     super.initState();
-    number = widget.number;
-    int index = n.indexOf(number);
-    if (index != -1) {
-      selectedItem = item[index];
+    number = widget.number ?? 0;
+    if (number > 0) {
+      int index = n.indexOf(number);
+      if (index != -1) {
+        selectedItem = item[index];
+      }
     }
     nameController.addListener(check);
   }

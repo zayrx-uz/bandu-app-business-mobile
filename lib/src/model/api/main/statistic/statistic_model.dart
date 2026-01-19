@@ -28,6 +28,9 @@ class StatisticItemData {
   final int customersPercentageChange;
   final int placesPercentageChange;
   final List<MonthlyDatum>? monthlyData;
+  final int employeesTotalCount;
+  final int employeesBookedNowCount;
+  final int employeesEmptyNowCount;
 
   StatisticItemData({
     required this.period,
@@ -42,6 +45,9 @@ class StatisticItemData {
     required this.customersPercentageChange,
     required this.placesPercentageChange,
     this.monthlyData,
+    required this.employeesTotalCount,
+    required this.employeesBookedNowCount,
+    required this.employeesEmptyNowCount,
   });
 
   factory StatisticItemData.fromJson(Map<String, dynamic> json) => StatisticItemData(
@@ -65,6 +71,9 @@ class StatisticItemData {
         : List<MonthlyDatum>.from(
       json["monthlyData"].map((x) => MonthlyDatum.fromJson(x)),
     ),
+    employeesTotalCount: json["employeesTotalCount"] ?? 0,
+    employeesBookedNowCount: json["employeesBookedNowCount"] ?? 0,
+    employeesEmptyNowCount: json["employeesEmptyNowCount"] ?? 0,
   );
 }
 

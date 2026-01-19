@@ -8,6 +8,7 @@ import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/auth/on_boarding/slider_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,7 +21,6 @@ class Onboarding extends StatefulWidget {
 
 class _OnboardingScreenState extends State<Onboarding> {
   int _currentPage = 0;
-  String button = "Next";
   final PageController _controller = PageController();
 
   _onChanged(int index) {
@@ -35,41 +35,36 @@ class _OnboardingScreenState extends State<Onboarding> {
       SliderWidget(
         imageWidth: 286.w,
         imageHeight: 286.w,
-        title: "Welcome to our Bandu app",
-        subTitle:
-            "In this app, you can book a place for yourself at a restaurant, hairdresser, car wash, hospital.",
+        title: "onboardingWelcomeTitle".tr(),
+        subTitle: "onboardingDescription".tr(),
         image: AppImages.image1,
       ),
       SliderWidget(
         imageWidth: 286.w,
         imageHeight: 286.w,
-        title: "Make a reservation at the restaurant",
-        subTitle:
-            "In this app, you can book a place for yourself at a restaurant, hairdresser, car wash, hospital.",
+        title: "onboardingRestaurantTitle".tr(),
+        subTitle: "onboardingDescription".tr(),
         image: AppImages.image2,
       ),
       SliderWidget(
         imageWidth: 286.w,
         imageHeight: 286.w,
-        title: "Book hair salons online",
-        subTitle:
-            "In this app, you can book a place for yourself at a restaurant, hairdresser, car wash, hospital.",
+        title: "onboardingHairSalonTitle".tr(),
+        subTitle: "onboardingDescription".tr(),
         image: AppImages.image3,
       ),
       SliderWidget(
         imageWidth: 286.w,
         imageHeight: 286.w,
-        title: "Don't wait in line at the car wash",
-        subTitle:
-            "In this app, you can book a place for yourself at a restaurant, hairdresser, car wash, hospital.",
+        title: "onboardingCarWashTitle".tr(),
+        subTitle: "onboardingDescription".tr(),
         image: AppImages.image4,
       ),
       SliderWidget(
         imageWidth: 286.w,
         imageHeight: 286.w,
-        title: "Register for the clinic online",
-        subTitle:
-            "In this app, you can book a place for yourself at a restaurant, hairdresser, car wash, hospital.",
+        title: "onboardingClinicTitle".tr(),
+        subTitle: "onboardingDescription".tr(),
         image: AppImages.image5,
       ),
     ];
@@ -241,7 +236,7 @@ class _OnboardingScreenState extends State<Onboarding> {
                       curve: Curves.easeInOutQuint,
                     );
                   }
-                }  , text: "Continue",)),
+                }  , text: "continue".tr(),)),
           ],
         ),
       ),

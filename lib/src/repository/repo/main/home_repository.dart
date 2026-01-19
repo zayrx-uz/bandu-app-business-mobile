@@ -299,11 +299,13 @@ class HomeRepository implements AbstractHomeRepository {
     int? companyId,
     String? period,
     String? date,
+    String? clientDateTime,
   }) async {
     return await homeProvider.getDashboardRevenueSeries(
       companyId: companyId,
       period: period,
       date: date,
+      clientDateTime: clientDateTime,
     );
   }
 
@@ -338,10 +340,12 @@ class HomeRepository implements AbstractHomeRepository {
   @override
   Future<HttpResult> getDashboardPlacesBooked({
     int? companyId,
+    String? date,
     String? clientDateTime,
   }) async {
     return await homeProvider.getDashboardPlacesBooked(
       companyId: companyId,
+      date: date,
       clientDateTime: clientDateTime,
     );
   }
@@ -349,10 +353,38 @@ class HomeRepository implements AbstractHomeRepository {
   @override
   Future<HttpResult> getDashboardPlacesEmpty({
     int? companyId,
+    String? date,
     String? clientDateTime,
   }) async {
     return await homeProvider.getDashboardPlacesEmpty(
       companyId: companyId,
+      date: date,
+      clientDateTime: clientDateTime,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardEmployeesEmpty({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  }) async {
+    return await homeProvider.getDashboardEmployeesEmpty(
+      companyId: companyId,
+      date: date,
+      clientDateTime: clientDateTime,
+    );
+  }
+
+  @override
+  Future<HttpResult> getDashboardEmployeesBooked({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  }) async {
+    return await homeProvider.getDashboardEmployeesBooked(
+      companyId: companyId,
+      date: date,
       clientDateTime: clientDateTime,
     );
   }

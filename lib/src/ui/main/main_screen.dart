@@ -233,5 +233,12 @@ class _MainScreenState extends State<MainScreen> {
         setState(() {});
       }
     });
+
+    RxBus.register(tag: "CHANGE_TAB").listen((index) {
+      if (mounted && index is int) {
+        select = index;
+        setState(() {});
+      }
+    });
   }
 }

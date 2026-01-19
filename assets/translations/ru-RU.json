@@ -166,6 +166,15 @@
   "incomingCustomers" : "Входящие клиенты",
   "occupiedPlaces" : "Занятые места",
   "availablePlaces" : "Доступные места",
+  "noEmptyPlacesAvailable" : "Нет свободных мест",
+  "allPlacesAreOccupied" : "Все места заняты",
+  "noBookedPlacesAvailable" : "Нет забронированных мест",
+  "allPlacesAreEmpty" : "Все места свободны",
+  "totalEmployees" : "Всего сотрудников",
+  "bookedEmployees" : "Занятые сотрудники",
+  "availableEmployees" : "Доступные сотрудники",
+  "noEmptyEmployeesAvailable" : "Нет свободных сотрудников",
+  "noBookedEmployeesAvailable" : "Нет занятых сотрудников",
   "newCustomers" : "Новые клиенты",
   "cashFlow" : "Денежный поток",
   "lastUpdated" : "Последнее обновление",
@@ -186,6 +195,8 @@
   "employeeAdded" : "Сотрудник добавлен",
   "employeeUpdated" : "Сотрудник обновлен",
   "updateEmployee" : "Обновить сотрудника",
+  "deleteEmployee" : "Удалить сотрудника",
+  "areYouSureDeleteEmployee" : "Вы уверены, что хотите удалить этого сотрудника?",
   "pleaseFillAllFields" : "Пожалуйста, заполните все поля",
   "phoneNumber" : "Номер телефона",
   "contactStatus" : "Статус контакта",
@@ -314,7 +325,14 @@
   "invalidQrCode" : "Неверный QR-код или не удалось прочитать данные",
   "resources" : "Ресурсы",
   "markAsRead" : "Отметить как прочитанное",
-  "notifications" : "Уведомления"
+  "notifications" : "Уведомления",
+  "next" : "Далее",
+  "onboardingWelcomeTitle" : "Добро пожаловать в приложение Bandu",
+  "onboardingDescription" : "В этом приложении вы можете забронировать место для себя в ресторане, парикмахерской, автомойке, больнице.",
+  "onboardingRestaurantTitle" : "Забронировать место в ресторане",
+  "onboardingHairSalonTitle" : "Забронировать парикмахерские онлайн",
+  "onboardingCarWashTitle" : "Не ждите в очереди на автомойке",
+  "onboardingClinicTitle" : "Записаться в клинику онлайн"
 }
 
 

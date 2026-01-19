@@ -34,7 +34,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   int selectedCategoryId = -1;
   bool isBookable = true;
   bool isTimeSlotBased = false;
-  int timeSlotDurationMinutes = 60;
+  int timeSlotDurationMinutes = 0;
   List<Map<String, dynamic>> uploadedImages = [];
   List<int> selectedEmployeeIds = [];
   
@@ -130,9 +130,12 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                       SizedBox(height: 12.h),
                       InputWidget(
                         controller: priceController,
+                        inputType: TextInputType.number,
                         title: "price".tr(),
                         hint: "priceHint".tr(),
-                        format: [FilteringTextInputFormatter.digitsOnly],
+                        format: [    FilteringTextInputFormatter.digitsOnly,
+                          ThousandsFormatter(),
+                        ],
                       ),
                       SizedBox(height: 12.h),
                       SelectTypeWidget(
@@ -338,16 +341,20 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                     child: AppButton(
                       onTap: () {
                         int totalMinutes = selectedHours * 60 + selectedMinutes;
-                        if (totalMinutes == 0) {
-                          totalMinutes = 60;
-                        }
-                        
-                        String timeText = "$selectedHours ${"hours".tr()} $selectedMinutes ${"minutesShort".tr()}";
                         
                         setState(() {
-                          isTimeSlotBased = true;
-                          timeSlotDurationMinutes = totalMinutes;
-                          timeSlotController.text = timeText;
+                          if (totalMinutes == 0) {
+                            // Agar vaqt tanlanmasa, time slot based ni o'chirish
+                            isTimeSlotBased = false;
+                            timeSlotDurationMinutes = 0;
+                            timeSlotController.text = "";
+                          } else {
+                            // Agar vaqt tanlansa, saqlash
+                            String timeText = "$selectedHours ${"hours".tr()} $selectedMinutes ${"minutesShort".tr()}";
+                            isTimeSlotBased = true;
+                            timeSlotDurationMinutes = totalMinutes;
+                            timeSlotController.text = timeText;
+                          }
                         });
                         Navigator.pop(context);
                       },
@@ -370,5 +377,37 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     priceController.dispose();
     timeSlotController.dispose();
     super.dispose();
+  }
+}
+
+
+
+
+class ThousandsFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final text = newValue.text.replaceAll(' ', '');
+
+    if (text.isEmpty) {
+      return newValue;
+    }
+
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[text.length - i - 1]);
+      if ((i + 1) % 3 == 0 && i + 1 != text.length) {
+        buffer.write(' ');
+      }
+    }
+
+    final formatted = buffer.toString().split('').reversed.join();
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
   }
 }

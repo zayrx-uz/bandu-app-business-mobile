@@ -15,6 +15,11 @@ import 'package:bandu_business/src/model/api/main/qr/place_model.dart';
 import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart' as resource_model;
 import 'package:bandu_business/src/model/api/main/statistic/statistic_model.dart';
 import 'package:bandu_business/src/model/api/main/dashboard/dashboard_summary_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_places_empty_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_places_booked_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_employees_empty_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_employees_booked_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_revenue_series_model.dart';
 import 'package:bandu_business/src/model/api/main/booking/owner_booking_model.dart';
 import 'package:bandu_business/src/model/api/main/booking/booking_detail_model.dart';
 import 'package:bandu_business/src/model/response/booking_send_model.dart';
@@ -74,6 +79,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetBookingDetailEvent>(_onGetBookingDetail);
     on<UpdateBookingStatusEvent>(_onUpdateBookingStatus);
     on<CancelBookingEvent>(_onCancelBooking);
+    on<GetEmptyPlacesEvent>(_onGetEmptyPlaces);
+    on<GetBookedPlacesEvent>(_onGetBookedPlaces);
+    on<GetEmptyEmployeesEvent>(_onGetEmptyEmployees);
+    on<GetBookedEmployeesEvent>(_onGetBookedEmployees);
+    on<GetRevenueSeriesEvent>(_onGetRevenueSeries);
   }
 
   void _onGetCompany(GetCompanyEvent event, Emitter<HomeState> emit) async {
@@ -436,6 +446,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           customersPercentageChange: dashboardData.incomingCustomers.changePercent.toInt(),
           placesPercentageChange: 0,
           monthlyData: null,
+          employeesTotalCount: dashboardData.employees.totalCount,
+          employeesBookedNowCount: dashboardData.employees.bookedNowCount,
+          employeesEmptyNowCount: dashboardData.employees.emptyNowCount,
         );
         emit(GetStatisticSuccessState(data: data));
       } else {
@@ -1169,6 +1182,117 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             ));
           }
         }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetEmptyPlaces(
+    GetEmptyPlacesEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetEmptyPlacesLoadingState());
+    try {
+      final result = await homeRepository.getDashboardPlacesEmpty(
+        companyId: event.companyId,
+        date: event.date,
+        clientDateTime: event.clientDateTime,
+      );
+      if (result.isSuccess) {
+        final model = DashboardPlacesEmptyModel.fromJson(result.result);
+        emit(GetEmptyPlacesSuccessState(data: model.data));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetBookedPlaces(
+    GetBookedPlacesEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetBookedPlacesLoadingState());
+    try {
+      final result = await homeRepository.getDashboardPlacesBooked(
+        companyId: event.companyId,
+        date: event.date,
+        clientDateTime: event.clientDateTime,
+      );
+      if (result.isSuccess) {
+        final model = DashboardPlacesBookedModel.fromJson(result.result);
+        emit(GetBookedPlacesSuccessState(data: model.data));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetEmptyEmployees(
+    GetEmptyEmployeesEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetEmptyEmployeesLoadingState());
+    try {
+      final result = await homeRepository.getDashboardEmployeesEmpty(
+        companyId: event.companyId,
+        date: event.date,
+        clientDateTime: event.clientDateTime,
+      );
+      if (result.isSuccess) {
+        final model = DashboardEmployeesEmptyModel.fromJson(result.result);
+        emit(GetEmptyEmployeesSuccessState(data: model.data));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetBookedEmployees(
+    GetBookedEmployeesEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetBookedEmployeesLoadingState());
+    try {
+      final result = await homeRepository.getDashboardEmployeesBooked(
+        companyId: event.companyId,
+        date: event.date,
+        clientDateTime: event.clientDateTime,
+      );
+      if (result.isSuccess) {
+        final model = DashboardEmployeesBookedModel.fromJson(result.result);
+        emit(GetBookedEmployeesSuccessState(data: model.data));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetRevenueSeries(
+    GetRevenueSeriesEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(GetRevenueSeriesLoadingState());
+    try {
+      final result = await homeRepository.getDashboardRevenueSeries(
+        companyId: event.companyId,
+        period: event.period,
+        date: event.date,
+        clientDateTime: event.clientDateTime,
+      );
+      if (result.isSuccess) {
+        final model = DashboardRevenueSeriesModel.fromJson(result.result);
+        emit(GetRevenueSeriesSuccessState(data: model.data));
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }

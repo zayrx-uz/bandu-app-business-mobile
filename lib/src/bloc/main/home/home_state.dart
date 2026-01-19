@@ -426,3 +426,58 @@ class CancelBookingSuccessState extends HomeState {
   @override
   List<Object?> get props => [bookingId];
 }
+
+class GetEmptyPlacesLoadingState extends HomeState {}
+
+class GetEmptyPlacesSuccessState extends HomeState {
+  final DashboardPlacesEmptyData data;
+
+  GetEmptyPlacesSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetBookedPlacesLoadingState extends HomeState {}
+
+class GetBookedPlacesSuccessState extends HomeState {
+  final DashboardPlacesBookedData data;
+
+  GetBookedPlacesSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetEmptyEmployeesLoadingState extends HomeState {}
+
+class GetEmptyEmployeesSuccessState extends HomeState {
+  final DashboardEmployeesEmptyData data;
+
+  GetEmptyEmployeesSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetBookedEmployeesLoadingState extends HomeState {}
+
+class GetBookedEmployeesSuccessState extends HomeState {
+  final DashboardEmployeesBookedData data;
+
+  GetBookedEmployeesSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetRevenueSeriesLoadingState extends HomeState {}
+
+class GetRevenueSeriesSuccessState extends HomeState {
+  final DashboardRevenueSeriesData data;
+
+  GetRevenueSeriesSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}

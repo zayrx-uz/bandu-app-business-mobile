@@ -142,6 +142,7 @@ abstract class AbstractHomeRepository {
     int? companyId,
     String? period,
     String? date,
+    String? clientDateTime,
   });
 
   Future<HttpResult> getDashboardIncomingCustomersSeries({
@@ -159,11 +160,25 @@ abstract class AbstractHomeRepository {
 
   Future<HttpResult> getDashboardPlacesBooked({
     int? companyId,
+    String? date,
     String? clientDateTime,
   });
 
   Future<HttpResult> getDashboardPlacesEmpty({
     int? companyId,
+    String? date,
+    String? clientDateTime,
+  });
+
+  Future<HttpResult> getDashboardEmployeesEmpty({
+    int? companyId,
+    String? date,
+    String? clientDateTime,
+  });
+
+  Future<HttpResult> getDashboardEmployeesBooked({
+    int? companyId,
+    String? date,
     String? clientDateTime,
   });
 }

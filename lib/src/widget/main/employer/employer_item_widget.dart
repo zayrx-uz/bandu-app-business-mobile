@@ -103,7 +103,9 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                           ),
                         ),
                         Text(
-                          data.role.toUpperCase(),
+                          data.roles.isNotEmpty 
+                              ? data.roles.first.toUpperCase() 
+                              : "",
                           style: AppTextStyle.f400s14.copyWith(
                             color: AppColor.grey58,
                             fontSize: isTablet(context) ? 10.sp : 14.sp,
@@ -133,7 +135,9 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
 
                     _rowItem(
                       "phoneNumber".tr(),
-                      data.authProviders.first.phoneNumber.phoneFormat(),
+                      data.authProviders.isNotEmpty 
+                          ? data.authProviders.first.phoneNumber.phoneFormat()
+                          : "",
                     ),
 
                     SizedBox(height: isTablet(context) ? 8.h : 12.h),
@@ -160,7 +164,9 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                               color: AppColor.black,
                             ),
                             child: Text(
-                              data.role,
+                              data.roles.isNotEmpty 
+                                  ? data.roles.first 
+                                  : "",
                               style: AppTextStyle.f500s14.copyWith(
                                 color: AppColor.white,
                                 fontSize: isTablet(context) ? 10.sp : 14.sp,
@@ -198,11 +204,13 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                               Expanded(
                                 child: AppButton(
                                   onTap: () {
-                                    launchUrl(
-                                      Uri.parse(
-                                        'tel:${data.authProviders.first.phoneNumber.phoneFormat()}',
-                                      ),
-                                    );
+                                    if (data.authProviders.isNotEmpty) {
+                                      launchUrl(
+                                        Uri.parse(
+                                          'tel:${data.authProviders.first.phoneNumber.phoneFormat()}',
+                                        ),
+                                      );
+                                    }
                                   },
                                   height: 40.h,
                                   isGradient: false,
@@ -246,12 +254,20 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                               ),
                               SizedBox(width: 4.w),
                               AppIconButton(
-                                loading: state is DeleteEmployeeLoadingState,
                                 icon: AppIcons.delete,
+                                loading: state is DeleteEmployeeLoadingState,
                                 onTap: () {
-                                  BlocProvider.of<HomeBloc>(
-                                    context,
-                                  ).add(DeleteEmployeeEvent(widget.data.id));
+                                  if (state is! DeleteEmployeeLoadingState) {
+                                    CenterDialog.deleteEmployeeDialog(
+                                      context,
+                                      employeeId: widget.data.id,
+                                      onDelete: () {
+                                        BlocProvider.of<HomeBloc>(
+                                          context,
+                                        ).add(DeleteEmployeeEvent(widget.data.id));
+                                      },
+                                    );
+                                  }
                                 },
                                 iconColor: Colors.white,
                                 backColor: Colors.red,

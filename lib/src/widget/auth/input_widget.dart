@@ -14,6 +14,7 @@ class InputWidget extends StatelessWidget {
   final List<TextInputFormatter>? format;
   final VoidCallback? onRightIconTap;
   final bool readOnly;
+  final  TextInputType? inputType;
 
   const InputWidget({
     super.key,
@@ -23,7 +24,7 @@ class InputWidget extends StatelessWidget {
     this.rightIcon,
     this.format,
     this.onRightIconTap,
-    this.readOnly = false,
+    this.readOnly = false, this.inputType,
   });
 
   @override
@@ -51,6 +52,7 @@ class InputWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    keyboardType: inputType,
                     cursorColor: Colors.grey,
                     textCapitalization: TextCapitalization.sentences,
                     controller: controller,

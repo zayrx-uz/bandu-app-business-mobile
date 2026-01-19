@@ -8,7 +8,7 @@ class ApiHelper {
 
   static const baseUrl = devUrl;
 
-  static const uploadUrl = devUrl;
+  static const uploadUrl = prodUrl;
 
   static const register = "${baseUrl}api/otp-based-auth/register";
   static const login = "${baseUrl}api/otp-based-auth/login";
@@ -47,4 +47,6 @@ class ApiHelper {
   static const dashboardIncomingCustomers = "${baseUrl}api/dashboard/incoming-customers";
   static const dashboardPlacesBooked = "${baseUrl}api/dashboard/places/booked";
   static const dashboardPlacesEmpty = "${baseUrl}api/dashboard/places/empty";
+  static const dashboardEmployeesEmpty = "${baseUrl}api/dashboard/employees/empty";
+  static const dashboardEmployeesBooked = "${baseUrl}api/dashboard/employees/booked";
 }

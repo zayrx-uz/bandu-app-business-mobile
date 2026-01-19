@@ -29,21 +29,26 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
   TextEditingController passwordController = TextEditingController();
   String role = "";
 
-  // @override
-  // void initState() {
-  //   nameController.text = widget.data.fullName;
-  //   phoneController.text = widget.data.authProviders.first.phoneNumber.substring(3 , widget.data.authProviders.first.phoneNumber.length);
-  //   role = widget.data.role;
-  //   super.initState();
-  // }
+  // Helper function to convert API role format to display format
+  String _convertRoleToDisplay(String apiRole) {
+    return apiRole.replaceAll("_", " ").split(" ").map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(" ");
+  }
 
+  // Helper function to get first role from list or empty string
+  String _getFirstRole(List<String> roles) {
+    if (roles.isEmpty) return "";
+    return _convertRoleToDisplay(roles.first);
+  }
 
   @override
   void initState() {
     super.initState();
 
     nameController.text = widget.data.fullName;
-    role = widget.data.role;
+    role = _getFirstRole(widget.data.roles);
 
     // 1. Raqamni olish (+998 ni kesish)
     String rawPhone = widget.data.authProviders.first.phoneNumber;
@@ -130,7 +135,7 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                   AppButton(
                     onTap: () {
                       if (nameController.text.isEmpty ||
-                          role == "" ||
+                          role.isEmpty ||
                            phoneController.text.isEmpty) {
                         CenterDialog.errorDialog(
                           context,

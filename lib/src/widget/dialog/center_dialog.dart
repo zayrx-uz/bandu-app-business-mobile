@@ -1,3 +1,4 @@
+import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/device_helper/device_helper.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
@@ -11,6 +12,7 @@ import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CenterDialog {
@@ -176,6 +178,60 @@ class CenterDialog {
                 ),
               ),
               onPressed: onTapDelete,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void deleteEmployeeDialog(
+    BuildContext context, {
+    required int employeeId,
+    required Function() onDelete,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return CupertinoAlertDialog(
+          title: Text(
+            "deleteEmployee".tr(),
+            style: TextStyle(
+              fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+            ),
+          ),
+          content: Text(
+            "areYouSureDeleteEmployee".tr(),
+            style: TextStyle(
+              fontSize: DeviceHelper.isTablet(context) ? 8.sp : 12.sp,
+            ),
+          ),
+          actions: [
+            CupertinoButton(
+              child: Text(
+                "cancel".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.blue00,
+                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "delete".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.red00,
+                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onDelete();
+              },
             ),
           ],
         );
