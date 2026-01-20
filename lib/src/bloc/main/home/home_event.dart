@@ -158,6 +158,16 @@ class GetEmployeeEvent extends HomeEvent {
   List<Object?> get props => [];
 }
 
+class GetMyCompanyEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class GetMyCompaniesEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class DeleteEmployeeEvent extends HomeEvent {
   final int id;
 
@@ -372,6 +382,49 @@ class DeleteResourceEvent extends HomeEvent {
   List<Object?> get props => [id];
 }
 
+class EditResourceEvent extends HomeEvent {
+  final int id;
+  final String name;
+  final int companyId;
+  final int price;
+  final int resourceCategoryId;
+  final Map<String, dynamic>? metadata;
+  final bool isBookable;
+  final bool isTimeSlotBased;
+  final int timeSlotDurationMinutes;
+  final List<Map<String, dynamic>> images;
+  final List<int>? employeeIds;
+
+  EditResourceEvent({
+    required this.id,
+    required this.name,
+    required this.companyId,
+    required this.price,
+    required this.resourceCategoryId,
+    this.metadata,
+    required this.isBookable,
+    required this.isTimeSlotBased,
+    required this.timeSlotDurationMinutes,
+    required this.images,
+    this.employeeIds,
+  });
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        companyId,
+        price,
+        resourceCategoryId,
+        metadata,
+        isBookable,
+        isTimeSlotBased,
+        timeSlotDurationMinutes,
+        images,
+        employeeIds,
+      ];
+}
+
 class CheckAlicePaymentEvent extends HomeEvent {
   final String transactionId;
   final int bookingId;
@@ -435,6 +488,15 @@ class CancelBookingEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [bookingId, note];
+}
+
+class ConfirmPaymentEvent extends HomeEvent {
+  final int paymentId;
+
+  ConfirmPaymentEvent({required this.paymentId});
+
+  @override
+  List<Object?> get props => [paymentId];
 }
 
 class GetEmptyPlacesEvent extends HomeEvent {

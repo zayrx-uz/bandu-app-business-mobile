@@ -140,46 +140,77 @@ class CenterDialog {
 
 
   static void deleteResourceDialog(BuildContext context , {required String name , required int id , required VoidCallback onTapDelete}) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
     showDialog(
       context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: Text(
-            "deleteResource".tr(),
-            style: TextStyle(
-              fontSize: isTablet(context) ? 12.sp : 16.sp,
-            ),
-          ),
-          content: Text(
-            "${"deleteResourceConfirm".tr()} ($name)?",
-            style: TextStyle(
-              fontSize: isTablet(context) ? 8.sp : 12.sp,
-            ),
-          ),
-          actions: [
-            CupertinoButton(
-              child: Text(
-                "cancel".tr(),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.blue00,
-                  fontSize: isTablet(context) ? 12.sp : 16.sp,
-                ),
-              ),
-              onPressed: () {
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: homeBloc,
+          child: BlocListener<HomeBloc, HomeState>(
+            listener: (context, state) {
+              if (state is DeleteResourceSuccessState && state.resourceId == id) {
                 Navigator.of(context).pop();
+              }
+              if (state is HomeErrorState) {
+                Navigator.of(context).pop();
+                errorDialog(context, state.message);
+              }
+            },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                final isLoading = state is DeleteResourceLoadingState && state.resourceId == id;
+                return CupertinoAlertDialog(
+                  title: Text(
+                    "deleteResource".tr(),
+                    style: TextStyle(
+                      fontSize: isTablet(context) ? 12.sp : 16.sp,
+                    ),
+                  ),
+                  content: isLoading
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: CupertinoActivityIndicator(),
+                        )
+                      : Text(
+                          "${"deleteResourceConfirm".tr()} ($name)?",
+                          style: TextStyle(
+                            fontSize: isTablet(context) ? 8.sp : 12.sp,
+                          ),
+                        ),
+                  actions: [
+                    if (!isLoading)
+                      CupertinoButton(
+                        child: Text(
+                          "cancel".tr(),
+                          style: AppTextStyle.f600s16.copyWith(
+                            color: AppColor.blue00,
+                            fontSize: isTablet(context) ? 12.sp : 16.sp,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    CupertinoButton(
+                      child: isLoading
+                          ? CupertinoActivityIndicator()
+                          : Text(
+                              "delete".tr(),
+                              style: AppTextStyle.f600s16.copyWith(
+                                color: AppColor.red00,
+                                fontSize: isTablet(context) ? 12.sp : 16.sp,
+                              ),
+                            ),
+                      onPressed: isLoading ? null : () {
+                        onTapDelete();
+                      },
+                    ),
+                  ],
+                );
               },
             ),
-            CupertinoButton(
-              child: Text(
-                "delete".tr(),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.red00,
-                  fontSize: isTablet(context) ? 12.sp : 16.sp,
-                ),
-              ),
-              onPressed: onTapDelete,
-            ),
-          ],
+          ),
         );
       },
     );
@@ -471,5 +502,86 @@ class CenterDialog {
     ).then((d) {
       onTap();
     });
+  }
+
+  static void confirmPaymentDialog(
+    BuildContext context, {
+    required int paymentId,
+    required VoidCallback onConfirm,
+  }) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: homeBloc,
+          child: BlocListener<HomeBloc, HomeState>(
+            listener: (context, state) {
+              if (state is ConfirmPaymentSuccessState && state.paymentId == paymentId) {
+                Navigator.of(context).pop();
+              }
+              if (state is HomeErrorState) {
+                Navigator.of(context).pop();
+                errorDialog(context, state.message);
+              }
+            },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                final isLoading = state is ConfirmPaymentLoadingState && state.paymentId == paymentId;
+                return CupertinoAlertDialog(
+                  title: Text(
+                    "confirmPayment".tr(),
+                    style: TextStyle(
+                      fontSize: isTablet(context) ? 12.sp : 16.sp,
+                    ),
+                  ),
+                  content: isLoading
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: CupertinoActivityIndicator(),
+                        )
+                      : Text(
+                          "areYouSureConfirmPayment".tr(),
+                          style: TextStyle(
+                            fontSize: isTablet(context) ? 8.sp : 12.sp,
+                          ),
+                        ),
+                  actions: [
+                    if (!isLoading)
+                      CupertinoButton(
+                        child: Text(
+                          "cancel".tr(),
+                          style: AppTextStyle.f600s16.copyWith(
+                            color: AppColor.blue00,
+                            fontSize: isTablet(context) ? 12.sp : 16.sp,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    CupertinoButton(
+                      child: isLoading
+                          ? CupertinoActivityIndicator()
+                          : Text(
+                              "confirm".tr(),
+                              style: AppTextStyle.f600s16.copyWith(
+                                color: AppColor.yellowFFC,
+                                fontSize: isTablet(context) ? 12.sp : 16.sp,
+                              ),
+                            ),
+                      onPressed: isLoading ? null : () {
+                        onConfirm();
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 }

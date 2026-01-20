@@ -324,6 +324,7 @@
   "no" : "Yo'q",
   "invalidQrCode" : "QR kod noto'g'ri yoki ma'lumot o'qib bo'lmadi",
   "resources" : "Resurslar",
+  "editResource" : "Resursni tahrirlash",
   "markAsRead" : "O'qilgan deb belgilash",
   "notifications" : "Bildirishnomalar",
   "next" : "Keyingi",
@@ -333,5 +334,13 @@
   "onboardingHairSalonTitle" : "Sartaroshxonalarni onlayn bron qilish",
   "onboardingCarWashTitle" : "Avtoyuvishda navbatda turmang",
   "onboardingClinicTitle" : "Klinikaga onlayn ro'yxatdan o'tish",
-  "comment" : "Izoh"
+  "comment" : "Izoh",
+  "confirmPayment" : "To'lovni tasdiqlash",
+  "areYouSureConfirmPayment" : "To'lovni tasdiqlashni istaysizmi?",
+  "paymentStatusPending" : "Kutilmoqda",
+  "paymentStatusProcessing" : "Jarayonda",
+  "paymentStatusPaid" : "To'langan",
+  "paymentStatusFailed" : "Muvaffaqiyatsiz",
+  "paymentStatusCanceled" : "Bekor qilingan",
+  "paymentStatusRefunded" : "Qaytarilgan"
 }

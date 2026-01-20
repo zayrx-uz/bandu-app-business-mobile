@@ -34,24 +34,58 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
   List<CompanyData>? data;
   int? deletingId;
   int? updatingId;
+  List<String>? userRoles;
 
   @override
   void initState() {
-    getData();
     selectedId = HelperFunctions.getCompanyId() ?? 0;
+    _checkUserRoleAndGetData();
     super.initState();
   }
 
+  void _checkUserRoleAndGetData() {
+    // First get user info to check roles
+    BlocProvider.of<HomeBloc>(context).add(GetMeEvent());
+  }
+
   void getData() {
-    BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
+    if (userRoles == null || userRoles!.isEmpty) {
+      // If no roles, get all companies (fallback)
+      BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
+      return;
+    }
+    
+    // Check if user is BUSINESS_OWNER, WORKER, MODERATOR, or MANAGER
+    final isBusinessOwner = userRoles!.contains("BUSINESS_OWNER");
+    final isEmployee = userRoles!.contains("WORKER") || 
+                       userRoles!.contains("MODERATOR") || 
+                       userRoles!.contains("MANAGER");
+    
+    if (isBusinessOwner) {
+      // For BUSINESS_OWNER - use new endpoint api/company/my-companies
+      BlocProvider.of<HomeBloc>(context).add(GetMyCompaniesEvent());
+    } else if (isEmployee) {
+      // For WORKER, MODERATOR, MANAGER - get my company
+      BlocProvider.of<HomeBloc>(context).add(GetMyCompanyEvent());
+    } else {
+      // For other roles, get all companies
+      BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
-        if (state is GetCompanySuccessState) {
+        if (state is GetMeSuccessState) {
+          userRoles = state.data.data.user.roles;
+          getData();
+        } else if (state is GetCompanySuccessState) {
           data = state.data.data;
+          setState(() {});
+        } else if (state is GetMyCompanySuccessState) {
+          // For BUSINESS_OWNER, convert single company to list
+          data = [state.data];
           setState(() {});
         } else if (state is DeleteCompanyLoadingState) {
           deletingId = state.companyId;
@@ -88,6 +122,11 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
 
       },
       builder: (context, state) {
+        final isLoading = data == null || 
+                         state is GetCompanyLoadingState || 
+                         state is GetMyCompanyLoadingState ||
+                         state is GetMeLoadingState;
+        
         return PopScope(
           canPop: widget.canPop,
           child: Scaffold(
@@ -99,7 +138,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                   text: "selectCompany".tr(),
                   isBack: widget.canPop,
                 ),
-                if (data == null)
+                if (isLoading)
                   const Expanded(
                     child: Center(
                       child: CircularProgressIndicator.adaptive(),

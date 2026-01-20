@@ -52,6 +52,9 @@ class _ResourceScreenState extends State<ResourceScreen> {
                 if (state is GetResourceSuccessState) {
                   lastResourceData = state.data;
                 }
+                if (state is DeleteResourceSuccessState || state is EditResourceSuccessState) {
+                  getData();
+                }
               },
               builder: (context, state) {
                 ResourceModel? displayData = (state is GetResourceSuccessState)

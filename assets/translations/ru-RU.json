@@ -324,6 +324,7 @@
   "no" : "Нет",
   "invalidQrCode" : "Неверный QR-код или не удалось прочитать данные",
   "resources" : "Ресурсы",
+  "editResource" : "Редактировать ресурс",
   "markAsRead" : "Отметить как прочитанное",
   "notifications" : "Уведомления",
   "next" : "Далее",
@@ -333,7 +334,15 @@
   "onboardingHairSalonTitle" : "Забронировать парикмахерские онлайн",
   "onboardingCarWashTitle" : "Не ждите в очереди на автомойке",
   "onboardingClinicTitle" : "Записаться в клинику онлайн",
-  "comment" : "Комментарий"
+  "comment" : "Комментарий",
+  "confirmPayment" : "Подтвердить оплату",
+  "areYouSureConfirmPayment" : "Вы уверены, что хотите подтвердить оплату?",
+  "paymentStatusPending" : "В ожидании",
+  "paymentStatusProcessing" : "В процессе",
+  "paymentStatusPaid" : "Оплачено",
+  "paymentStatusFailed" : "Не удалось",
+  "paymentStatusCanceled" : "Отменено",
+  "paymentStatusRefunded" : "Возвращено"
 }
 
 

@@ -46,6 +46,10 @@ abstract class AbstractHomeRepository {
 
   Future<HttpResult> getEmployee();
 
+  Future<HttpResult> getMyCompany();
+
+  Future<HttpResult> getMyCompanies();
+
   Future<HttpResult> deleteEmployee({required int id});
 
   Future<HttpResult> getResourceCategory({required int companyId});
@@ -76,6 +80,20 @@ abstract class AbstractHomeRepository {
   });
 
   Future<HttpResult> getResource({required int id});
+
+  Future<HttpResult> updateResource({
+    required int id,
+    required String name,
+    required int companyId,
+    required int price,
+    required int resourceCategoryId,
+    Map<String, dynamic>? metadata,
+    required bool isBookable,
+    required bool isTimeSlotBased,
+    required int timeSlotDurationMinutes,
+    required List<Map<String, dynamic>> images,
+    List<int>? employeeIds,
+  });
 
   Future<HttpResult> deleteResource({required int id});
 
@@ -181,4 +199,6 @@ abstract class AbstractHomeRepository {
     String? date,
     String? clientDateTime,
   });
+
+  Future<HttpResult> confirmPayment({required int id});
 }

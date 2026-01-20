@@ -56,6 +56,7 @@ class CompanyData {
   final int? serviceTypeId;
   final bool isOpen247;
   final String logo;
+  final double? rating;
   final WorkingHours workingHours;
   final List<ImageModel> images;
 
@@ -68,6 +69,7 @@ class CompanyData {
     required this.serviceTypeId,
     required this.isOpen247,
     required this.logo,
+    this.rating,
     required this.workingHours,
     required this.images,
   });
@@ -89,6 +91,7 @@ class CompanyData {
       serviceTypeId: json["serviceTypeId"],
       isOpen247: json["isOpen247"] ?? false,
       logo: json["logo"] ?? "",
+      rating: json["rating"]?.toDouble(),
       workingHours: json["workingHours"] == null
           ? WorkingHours.empty()
           : WorkingHours.fromJson(json["workingHours"]),

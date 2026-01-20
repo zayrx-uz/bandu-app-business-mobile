@@ -39,12 +39,35 @@ class _BookCancelState extends State<BookCancel> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeBloc(homeRepository: HomeRepository()),
-      child: BlocConsumer<HomeBloc, HomeState>(
+    // Use existing bloc if available, otherwise create new one
+    HomeBloc? existingBloc;
+    try {
+      existingBloc = context.read<HomeBloc>();
+    } catch (e) {
+      existingBloc = null;
+    }
+    
+    return existingBloc != null
+        ? BlocProvider.value(
+            value: existingBloc,
+            child: _buildContent(),
+          )
+        : BlocProvider(
+            create: (_) => HomeBloc(homeRepository: HomeRepository()),
+            child: _buildContent(),
+          );
+  }
+
+  Widget _buildContent() {
+    return BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is CancelBookingSuccessState) {
-            Navigator.pop(context);
+            // Close all bottom sheets (both BookCancel and BookingDetailBottomSheet)
+            // First close BookCancel, then close BookingDetailBottomSheet
+            Navigator.pop(context); // Close BookCancel
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context); // Close BookingDetailBottomSheet if it exists
+            }
             if (widget.parentBloc != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 final companyId = HelperFunctions.getCompanyId() ?? 0;
@@ -288,6 +311,7 @@ class _BookCancelState extends State<BookCancel> {
                     ],
                   )
                 : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
@@ -354,9 +378,17 @@ class _BookCancelState extends State<BookCancel> {
                               isGradient: false,
                               txtColor: Colors.black,
                               onTap: () {
-                                haveProblem = true;
-                                setState(() {});
+                                if (!isLoading) {
+                                  // Cancel directly without asking for reason
+                                  context.read<HomeBloc>().add(
+                                    CancelBookingEvent(
+                                      bookingId: widget.bookingId,
+                                      note: "", // Empty note, cancel directly
+                                    ),
+                                  );
+                                }
                               },
+                              loading: isLoading,
                               margin: EdgeInsets.zero,
                               backColor: AppColor.white,
                               border: Border.all(width: 1.w, color: AppColor.cD6D8D6),
@@ -369,8 +401,7 @@ class _BookCancelState extends State<BookCancel> {
                   ),
           );
         },
-      ),
-    );
+      );
   }
 }
 

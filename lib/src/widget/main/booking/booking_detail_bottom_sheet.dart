@@ -13,6 +13,7 @@ import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:bandu_business/src/widget/main/booking/book_cancel.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -79,6 +80,46 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
     return dateTime.toDDMMYYY();
   }
 
+  Color _getPaymentStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return AppColor.grey58; // Grey for pending
+      case 'PROCESSING':
+        return AppColor.yellow8E; // Yellow/Orange for processing
+      case 'PAID':
+        return AppColor.green34; // Green for paid
+      case 'FAILED':
+        return AppColor.cE52E4C; // Red for failed
+      case 'CANCELED':
+      case 'CANCELLED':
+        return AppColor.cE52E4C; // Red for canceled
+      case 'REFUNDED':
+        return AppColor.blue00; // Blue for refunded
+      default:
+        return AppColor.grey58;
+    }
+  }
+
+  Color _getPaymentStatusBackgroundColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return AppColor.greyF4; // Light grey background
+      case 'PROCESSING':
+        return AppColor.yellowEF; // Light yellow background
+      case 'PAID':
+        return AppColor.green34.withValues(alpha: 0.1); // Light green background
+      case 'FAILED':
+        return AppColor.redFF; // Light red background
+      case 'CANCELED':
+      case 'CANCELLED':
+        return AppColor.redFF; // Light red background
+      case 'REFUNDED':
+        return AppColor.blue00.withValues(alpha: 0.1); // Light blue background
+      default:
+        return AppColor.greyF4;
+    }
+  }
+
   String _getCategoryIcon() {
     if (bookingDetail?.company.categories.isEmpty ?? true) {
       return AppIcons.placeSelect;
@@ -121,7 +162,22 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
             });
           }
         } else if (state is CancelBookingSuccessState) {
+          // Close BookingDetailBottomSheet (BookCancel should already be closed)
           Navigator.pop(context);
+          if (widget.parentBloc != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final companyId = HelperFunctions.getCompanyId() ?? 0;
+              if (companyId > 0) {
+                widget.parentBloc!.add(GetOwnerBookingsEvent(
+                  page: 1,
+                  limit: 10,
+                  companyId: companyId,
+                ));
+              }
+            });
+          }
+        } else if (state is ConfirmPaymentSuccessState) {
+          context.read<HomeBloc>().add(GetBookingDetailEvent(bookingId: widget.bookingId));
           if (widget.parentBloc != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final companyId = HelperFunctions.getCompanyId() ?? 0;
@@ -171,9 +227,33 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          bookingDetail?.company.name ?? "",
-                          style: AppTextStyle.f500s20,
+                        child: Row(
+                          children: [
+                            Text(
+                              bookingDetail?.company.name ?? "",
+                              style: AppTextStyle.f500s20,
+                            ),
+                            SizedBox(width: 10.w,),
+                            if(bookingDetail != null && bookingDetail!.payments.isNotEmpty) 
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                decoration: BoxDecoration(
+                                  color: _getPaymentStatusBackgroundColor(bookingDetail!.payments.first.status),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  border: Border.all(
+                                    width: 1.w,
+                                    color: _getPaymentStatusColor(bookingDetail!.payments.first.status).withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Text(
+                                  bookingDetail!.payments.first.status.getLocalizedPaymentStatus(),
+                                  style: AppTextStyle.f500s20.copyWith(
+                                    fontSize: 14.sp,
+                                    color: _getPaymentStatusColor(bookingDetail!.payments.first.status),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                       AppIconButton(
@@ -477,64 +557,9 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                     ),
                     SizedBox(height: 24.h),
                   ],
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AppButton(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (bottomSheetContext) {
-                                  return BlocProvider.value(
-                                    value: context.read<HomeBloc>(),
-                                    child: BookCancel(
-                                      bookingId: widget.bookingId,
-                                      parentBloc: widget.parentBloc ?? context.read<HomeBloc>(),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            text: "reject".tr(),
-                            height: 48.h,
-                            margin: EdgeInsets.zero,
-                            isGradient: false,
-                            backColor: AppColor.white,
-                            border: Border.all(width: 1.h, color: AppColor.cE52E4C),
-                            style: AppTextStyle.f600s16.copyWith(
-                              color: AppColor.cE52E4C,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: AppButton(
-                            onTap: () {
-                              CenterDialog.confirmBookingDialog(
-                                context,
-                                onConfirm: () {
-                                  context.read<HomeBloc>().add(
-                                    UpdateBookingStatusEvent(
-                                      bookingId: widget.bookingId,
-                                      status: "confirmed",
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            text: "confirm".tr(),
-                            height: 48.h,
-                            margin: EdgeInsets.zero,
-                            loading: isUpdating,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  if (!_isBookingCancelled() && !_isPaymentPaid()) ...[
+                    _buildActionButtons(context, state),
+                  ],
                   SizedBox(height: 24.h),
                 ],
               ],
@@ -542,6 +567,183 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
           ),
         );
       },
+    );
+  }
+
+  bool _isPaymentPaid() {
+    if (bookingDetail == null || bookingDetail!.payments.isEmpty) return false;
+    final payment = bookingDetail!.payments.firstWhere(
+      (p) => p.id == bookingDetail!.paymentId,
+      orElse: () => bookingDetail!.payments.first,
+    );
+    return payment.status.toUpperCase() == "PAID";
+  }
+
+  bool _isBookingConfirmed() {
+    if (bookingDetail == null) return false;
+    return bookingDetail!.status.toLowerCase() == "confirmed";
+  }
+
+  bool _isBookingCancelled() {
+    if (bookingDetail == null) return false;
+    final status = bookingDetail!.status.toLowerCase();
+    return status == "cancelled" || status == "canceled";
+  }
+
+  bool _isBookingPending() {
+    if (bookingDetail == null) return false;
+    return bookingDetail!.status.toLowerCase() == "pending";
+  }
+
+  Widget _buildActionButtons(BuildContext context, HomeState state) {
+    final isPending = _isBookingPending();
+    final isConfirmed = _isBookingConfirmed();
+    
+    // If booking is cancelled, show no buttons
+    if (_isBookingCancelled()) {
+      return SizedBox.shrink();
+    }
+    
+    // If booking is pending: Show "Reject" and "Accept" buttons
+    if (isPending) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Row(
+          children: [
+            Expanded(
+              child: AppButton(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (bottomSheetContext) {
+                      return BlocProvider.value(
+                        value: context.read<HomeBloc>(),
+                        child: BookCancel(
+                          bookingId: widget.bookingId,
+                          parentBloc: widget.parentBloc ?? context.read<HomeBloc>(),
+                        ),
+                      );
+                    },
+                  );
+                },
+                text: "reject".tr(),
+                height: 48.h,
+                margin: EdgeInsets.zero,
+                isGradient: false,
+                backColor: AppColor.white,
+                border: Border.all(width: 1.h, color: AppColor.cE52E4C),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.cE52E4C,
+                ),
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: AppButton(
+                onTap: () {
+                  CenterDialog.confirmBookingDialog(
+                    context,
+                    onConfirm: () {
+                      context.read<HomeBloc>().add(
+                        UpdateBookingStatusEvent(
+                          bookingId: widget.bookingId,
+                          status: "confirmed",
+                        ),
+                      );
+                    },
+                  );
+                },
+                text: "confirm".tr(),
+                height: 48.h,
+                margin: EdgeInsets.zero,
+                loading: state is UpdateBookingStatusLoadingState,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // If booking is confirmed: Show "Reject" and "Paid" buttons
+    if (isConfirmed) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (bottomSheetContext) {
+                          return BlocProvider.value(
+                            value: context.read<HomeBloc>(),
+                            child: BookCancel(
+                              bookingId: widget.bookingId,
+                              parentBloc: widget.parentBloc ?? context.read<HomeBloc>(),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    text: "reject".tr(),
+                    height: 48.h,
+                    margin: EdgeInsets.zero,
+                    isGradient: false,
+                    backColor: AppColor.white,
+                    border: Border.all(width: 1.h, color: AppColor.cE52E4C),
+                    style: AppTextStyle.f600s16.copyWith(
+                      color: AppColor.cE52E4C,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: _buildPaymentConfirmButton(context, state),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+    
+    return SizedBox.shrink();
+  }
+
+  Widget _buildPaymentConfirmButton(BuildContext context, HomeState state) {
+    final isConfirmingPayment = state is ConfirmPaymentLoadingState;
+    final isPaid = _isPaymentPaid();
+    final isConfirmed = _isBookingConfirmed();
+    
+    if (isPaid || !isConfirmed || bookingDetail?.paymentId == null) {
+      return SizedBox.shrink();
+    }
+
+    return AppButton(
+      onTap: () {
+        if (bookingDetail?.paymentId != null) {
+          CenterDialog.confirmPaymentDialog(
+            context,
+            paymentId: bookingDetail!.paymentId!,
+            onConfirm: () {
+              context.read<HomeBloc>().add(
+                ConfirmPaymentEvent(paymentId: bookingDetail!.paymentId!),
+              );
+            },
+          );
+        }
+      },
+      text: "confirmPayment".tr(),
+      height: 48.h,
+      margin: EdgeInsets.zero,
+      loading: isConfirmingPayment,
     );
   }
 }

@@ -20,6 +20,7 @@ class ApiHelper {
   static const media = "${baseUrl}api/upload/image/user";
   static const getCompany = "${baseUrl}api/company";
   static const getMyCompany = "${baseUrl}api/user/companies";
+  static const getMyCompanies = "${baseUrl}api/company/my-companies";
   static const saveCompany = "${baseUrl}api/company";
   static const getCategory = "${baseUrl}api/categories";
   static const getMonitoring = "${baseUrl}api/booking/my-bookings";
@@ -29,6 +30,7 @@ class ApiHelper {
   static const booking = "${baseUrl}api/booking";
   static const place = "${baseUrl}api/place";
   static const getEmployee = "${baseUrl}api/employee";
+  static const getEmployeeMyCompany = "${baseUrl}api/employee/my-company";
   static const getStatistic = "${baseUrl}api/dashboard/statistics";
   static const getResourceCategory = "${baseUrl}api/resource-category";
   static const getResource = "${baseUrl}api/resource";
@@ -49,4 +51,5 @@ class ApiHelper {
   static const dashboardPlacesEmpty = "${baseUrl}api/dashboard/places/empty";
   static const dashboardEmployeesEmpty = "${baseUrl}api/dashboard/employees/empty";
   static const dashboardEmployeesBooked = "${baseUrl}api/dashboard/employees/booked";
+  static const confirmPayment = "${baseUrl}api/payments/";
 }

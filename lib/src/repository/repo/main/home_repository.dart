@@ -105,6 +105,15 @@ class HomeRepository implements AbstractHomeRepository {
     return await homeProvider.getEmployee();
   }
 
+  @override
+  Future<HttpResult> getMyCompany() async {
+    return await homeProvider.getMyCompany();
+  }
+
+  @override
+  Future<HttpResult> getMyCompanies() async {
+    return await homeProvider.getMyCompanies();
+  }
 
   @override
   Future<HttpResult> deleteEmployee({required int id}) async {
@@ -221,6 +230,35 @@ class HomeRepository implements AbstractHomeRepository {
   @override
   Future<HttpResult> getResource({required int id}) async {
     return await homeProvider.getResource(id: id);
+  }
+
+  @override
+  Future<HttpResult> updateResource({
+    required int id,
+    required String name,
+    required int companyId,
+    required int price,
+    required int resourceCategoryId,
+    Map<String, dynamic>? metadata,
+    required bool isBookable,
+    required bool isTimeSlotBased,
+    required int timeSlotDurationMinutes,
+    required List<Map<String, dynamic>> images,
+    List<int>? employeeIds,
+  }) async {
+    return await homeProvider.updateResource(
+      id: id,
+      name: name,
+      companyId: companyId,
+      price: price,
+      resourceCategoryId: resourceCategoryId,
+      metadata: metadata,
+      isBookable: isBookable,
+      isTimeSlotBased: isTimeSlotBased,
+      timeSlotDurationMinutes: timeSlotDurationMinutes,
+      images: images,
+      employeeIds: employeeIds,
+    );
   }
 
   @override
@@ -387,5 +425,10 @@ class HomeRepository implements AbstractHomeRepository {
       date: date,
       clientDateTime: clientDateTime,
     );
+  }
+
+  @override
+  Future<HttpResult> confirmPayment({required int id}) async {
+    return await homeProvider.confirmPayment(id: id);
   }
 }

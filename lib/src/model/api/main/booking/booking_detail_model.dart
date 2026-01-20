@@ -34,6 +34,8 @@ class BookingDetailData {
   List<BookingDetailItem> bookingItems;
   List<dynamic> places;
   List<dynamic> feedbacks;
+  List<BookingDetailPayment> payments;
+  int? paymentId;
   BookingDetailUser user;
   BookingDetailCompany company;
 
@@ -55,6 +57,8 @@ class BookingDetailData {
     required this.bookingItems,
     required this.places,
     required this.feedbacks,
+    required this.payments,
+    this.paymentId,
     required this.user,
     required this.company,
   });
@@ -91,6 +95,11 @@ class BookingDetailData {
                 json["bookingItems"].map((x) => BookingDetailItem.fromJson(x))),
         places: json["places"] ?? [],
         feedbacks: json["feedbacks"] ?? [],
+        payments: json["payments"] == null || json["payments"] is! List
+            ? []
+            : List<BookingDetailPayment>.from(
+                json["payments"].map((x) => BookingDetailPayment.fromJson(x))),
+        paymentId: json["paymentId"],
         user: json["user"] == null
             ? BookingDetailUser.empty()
             : BookingDetailUser.fromJson(json["user"]),
@@ -117,8 +126,63 @@ class BookingDetailData {
         bookingItems: [],
         places: [],
         feedbacks: [],
+        payments: [],
+        paymentId: null,
         user: BookingDetailUser.empty(),
         company: BookingDetailCompany.empty(),
+      );
+}
+
+class BookingDetailPayment {
+  int id;
+  String? providerTransactionId;
+  String amount;
+  String provider;
+  int state;
+  String status;
+  String createTime;
+  String performTime;
+  String cancelTime;
+  String? reason;
+  String? cardMask;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  BookingDetailPayment({
+    required this.id,
+    this.providerTransactionId,
+    required this.amount,
+    required this.provider,
+    required this.state,
+    required this.status,
+    required this.createTime,
+    required this.performTime,
+    required this.cancelTime,
+    this.reason,
+    this.cardMask,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory BookingDetailPayment.fromJson(Map<String, dynamic> json) =>
+      BookingDetailPayment(
+        id: json["id"] ?? 0,
+        providerTransactionId: json["providerTransactionId"],
+        amount: json["amount"]?.toString() ?? "0",
+        provider: json["provider"]?.toString() ?? "",
+        state: json["state"] ?? 0,
+        status: json["status"]?.toString() ?? "",
+        createTime: json["createTime"]?.toString() ?? "0",
+        performTime: json["performTime"]?.toString() ?? "0",
+        cancelTime: json["cancelTime"]?.toString() ?? "0",
+        reason: json["reason"],
+        cardMask: json["cardMask"],
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.tryParse(json["createdAt"] ?? ""),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.tryParse(json["updatedAt"] ?? ""),
       );
 }
 

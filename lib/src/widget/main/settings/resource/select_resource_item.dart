@@ -11,8 +11,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SelectResourceWidget extends StatefulWidget {
   final Function(int)? onCategorySelected;
+  final int? initialCategoryId;
 
-  const SelectResourceWidget({super.key, this.onCategorySelected});
+  const SelectResourceWidget({super.key, this.onCategorySelected, this.initialCategoryId});
 
   @override
   State<SelectResourceWidget> createState() => _SelectResourceWidgetState();
@@ -120,6 +121,73 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
         _filterItems(0);
       });
     }
+
+    if (widget.initialCategoryId != null && widget.initialCategoryId! > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _selectInitialCategory(categoryMap, widget.initialCategoryId!);
+      });
+    }
+  }
+
+  void _selectInitialCategory(Map<int, CategoryItem> categoryMap, int categoryId) {
+    if (!categoryMap.containsKey(categoryId)) return;
+    
+    final targetCategory = categoryMap[categoryId]!;
+    
+    CategoryItem? findCategoryInTree(List<CategoryItem> items, int id) {
+      for (var item in items) {
+        if (item.id == id) return item;
+        final found = findCategoryInTree(item.children, id);
+        if (found != null) return found;
+      }
+      return null;
+    }
+    
+    final found = findCategoryInTree(selectionLevels[0].items, categoryId);
+    if (found == null) return;
+    
+    final path = <CategoryItem>[];
+    CategoryItem? current = found;
+    
+    while (current != null) {
+      path.insert(0, current);
+      bool foundParent = false;
+      for (var item in categoryMap.values) {
+        if (item.children.any((child) => child.id == current!.id)) {
+          current = item;
+          foundParent = true;
+          break;
+        }
+      }
+      if (!foundParent) break;
+    }
+    
+    if (path.isEmpty) return;
+    
+    Future.delayed(Duration(milliseconds: 300), () {
+      for (int i = 0; i < path.length; i++) {
+        final category = path[i];
+        final level = i;
+        
+        if (level == 0) {
+          final item = selectionLevels[0].items.firstWhere(
+            (item) => item.id == category.id,
+            orElse: () => CategoryItem(id: 0, name: '', children: []),
+          );
+          if (item.id > 0) {
+            setState(() {
+              searchControllers[0]!.text = item.name;
+              selectionLevels[0].selectedItem = item;
+            });
+            if (item.children.isNotEmpty && i < path.length - 1) {
+              selectItem(item, 0);
+            } else if (widget.onCategorySelected != null) {
+              widget.onCategorySelected!(item.id);
+            }
+          }
+        }
+      }
+    });
   }
 
   void _createSearchController(int level) {

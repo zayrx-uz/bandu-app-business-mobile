@@ -74,7 +74,8 @@ class User {
   String gender;
   bool verified;
   bool isBlocked;
-  String role;
+  String role; // For backward compatibility
+  List<String> roles; // New roles array
   int? companyId;
   String fcmToken;
   String? telegramId;
@@ -94,6 +95,7 @@ class User {
     required this.verified,
     required this.isBlocked,
     required this.role,
+    required this.roles,
     this.companyId,
     required this.fcmToken,
     this.telegramId,
@@ -102,29 +104,58 @@ class User {
     this.deletedAt,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"] is int ? json["id"] : (json["id"] is String ? int.tryParse(json["id"]) ?? 0 : 0),
-    email: json["email"]?.toString(),
-    fullName: json["fullName"] ?? "",
-    firstName: json["firstName"]?.toString(),
-    lastName: json["lastName"]?.toString(),
-    profilePicture: json["profilePicture"] ?? "",
-    birthDate: json["birthDate"]?.toString(),
-    gender: json["gender"] ?? "",
-    verified: json["verified"] ?? false,
-    isBlocked: json["isBlocked"] ?? false,
-    role: json["role"] ?? "",
-    companyId: json["companyId"] is int ? json["companyId"] : (json["companyId"] is String ? int.tryParse(json["companyId"]) : null),
-    fcmToken: json["fcmToken"] ?? "",
-    telegramId: json["telegramId"]?.toString(),
-    createdAt: json["createdAt"] == null
-        ? null
-        : DateTime.tryParse(json["createdAt"]),
-    updatedAt: json["updatedAt"] == null
-        ? null
-        : DateTime.tryParse(json["updatedAt"]),
-    deletedAt: json["deletedAt"]?.toString(),
-  );
+  factory User.fromJson(Map<String, dynamic> json) {
+    // Handle roles array - if roles exists, use it, otherwise use role field
+    List<String> rolesList = [];
+    if (json["roles"] != null && json["roles"] is List) {
+      rolesList = List<String>.from(json["roles"].map((x) => x.toString()));
+    } else if (json["role"] != null && json["role"].toString().isNotEmpty) {
+      rolesList = [json["role"].toString()];
+    }
+    
+    // For backward compatibility, use first role or empty string
+    String roleString = rolesList.isNotEmpty ? rolesList.first : (json["role"]?.toString() ?? "");
+    
+    return User(
+      id: json["id"] is int ? json["id"] : (json["id"] is String ? int.tryParse(json["id"]) ?? 0 : 0),
+      email: json["email"]?.toString(),
+      fullName: json["fullName"] ?? "",
+      firstName: json["firstName"]?.toString(),
+      lastName: json["lastName"]?.toString(),
+      profilePicture: json["profilePicture"] ?? "",
+      birthDate: json["birthDate"]?.toString(),
+      gender: json["gender"] ?? "",
+      verified: json["verified"] ?? false,
+      isBlocked: json["isBlocked"] ?? false,
+      role: roleString,
+      roles: rolesList,
+      companyId: json["companyId"] is int ? json["companyId"] : (json["companyId"] is String ? int.tryParse(json["companyId"]) : null),
+      fcmToken: json["fcmToken"] ?? "",
+      telegramId: json["telegramId"]?.toString(),
+      createdAt: json["createdAt"] == null
+          ? null
+          : DateTime.tryParse(json["createdAt"]),
+      updatedAt: json["updatedAt"] == null
+          ? null
+          : DateTime.tryParse(json["updatedAt"]),
+      deletedAt: json["deletedAt"]?.toString(),
+    );
+  }
+  
+  // Helper method to check if user has a specific role
+  bool hasRole(String roleToCheck) {
+    return roles.contains(roleToCheck.toUpperCase());
+  }
+  
+  // Helper method to check if user is employee (WORKER, MODERATOR, MANAGER)
+  bool isEmployee() {
+    return hasRole("WORKER") || hasRole("MODERATOR") || hasRole("MANAGER");
+  }
+  
+  // Helper method to check if user is business owner
+  bool isBusinessOwner() {
+    return hasRole("BUSINESS_OWNER");
+  }
 }
 
 class Tokens {

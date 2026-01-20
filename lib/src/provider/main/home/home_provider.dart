@@ -120,6 +120,16 @@ class HomeProvider extends ApiProvider {
     );
   }
 
+  ///get my company (for employee)
+  Future<HttpResult> getMyCompany() async {
+    return await getRequest(ApiHelper.getEmployeeMyCompany);
+  }
+
+  ///get my companies (for BUSINESS_OWNER)
+  Future<HttpResult> getMyCompanies() async {
+    return await getRequest(ApiHelper.getMyCompanies);
+  }
+
   ///remove employee
   Future<HttpResult> deleteEmployee({required int id }) async {
     return await deleteRequest(
@@ -222,6 +232,39 @@ class HomeProvider extends ApiProvider {
   ///delete resource
   Future<HttpResult> deleteResource({required int id}) async {
     return await deleteRequest("${ApiHelper.getResource}/$id");
+  }
+
+  ///update resource
+  Future<HttpResult> updateResource({
+    required int id,
+    required String name,
+    required int companyId,
+    required int price,
+    required int resourceCategoryId,
+    Map<String, dynamic>? metadata,
+    required bool isBookable,
+    required bool isTimeSlotBased,
+    required int timeSlotDurationMinutes,
+    required List<Map<String, dynamic>> images,
+    List<int>? employeeIds,
+  }) async {
+    var body = {
+      "name": name,
+      "companyId": companyId,
+      "price": price,
+      "resourceCategoryId": resourceCategoryId,
+      "isBookable": isBookable,
+      "isTimeSlotBased": isTimeSlotBased,
+      "timeSlotDurationMinutes": timeSlotDurationMinutes,
+      "images": images,
+    };
+    if (metadata != null) {
+      body["metadata"] = metadata;
+    }
+    if (employeeIds != null && employeeIds.isNotEmpty) {
+      body["employeeIds"] = employeeIds;
+    }
+    return await patchRequest("${ApiHelper.getResource}/$id", body);
   }
 
   ///confirm booking
@@ -546,5 +589,9 @@ class HomeProvider extends ApiProvider {
       path = "";
     }
     return await getRequest("${ApiHelper.dashboardEmployeesBooked}$path");
+  }
+
+  Future<HttpResult> confirmPayment({required int id}) async {
+    return await postRequest("${ApiHelper.confirmPayment}$id/confirm", {});
   }
 }

@@ -58,6 +58,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<DeletePlaceEvent>(_deletePlace);
     on<GetStatisticEvent>(_onGetStatistic);
     on<GetEmployeeEvent>(_onGetEmployee);
+    on<GetMyCompanyEvent>(_onGetMyCompany);
+    on<GetMyCompaniesEvent>(_onGetMyCompanies);
     on<DeleteEmployeeEvent>(_onDeleteEmployee);
     on<SaveCompanyEvent>(_onSaveCompany);
     on<UpdateCompanyEvent>(_onUpdateCompany);
@@ -71,6 +73,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<CreateResourceCategoryEvent>(_onCreateResourceCategory);
     on<UploadResourceImageEvent>(_onUploadResourceImage);
     on<CreateResourceEvent>(_onCreateResource);
+    on<EditResourceEvent>(_onEditResource);
     on<GetResourceEvent>(_onGetResourceEvent);
     on<DeleteResourceEvent>(_onDeleteResourceEvent);
     on<DeleteResourceCategoryEvent>(_onDeleteResourceCategory);
@@ -79,6 +82,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetBookingDetailEvent>(_onGetBookingDetail);
     on<UpdateBookingStatusEvent>(_onUpdateBookingStatus);
     on<CancelBookingEvent>(_onCancelBooking);
+    on<ConfirmPaymentEvent>(_onConfirmPayment);
     on<GetEmptyPlacesEvent>(_onGetEmptyPlaces);
     on<GetBookedPlacesEvent>(_onGetBookedPlaces);
     on<GetEmptyEmployeesEvent>(_onGetEmptyEmployees);
@@ -297,7 +301,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           filePath: data.profilePicture,
         );
         if (response.isSuccess) {
-          data.profilePicture = response.result['data']['data']['url'];
+          data.profilePicture = response.result['data']['url'];
         } else {
           emit(
             HomeErrorState(message: HelperFunctions.errorText(response.result)),
@@ -474,6 +478,41 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+  void _onGetMyCompany(GetMyCompanyEvent event, Emitter<HomeState> emit) async {
+    emit(GetMyCompanyLoadingState());
+    try {
+      final result = await homeRepository.getMyCompany();
+      if (result.isSuccess) {
+        final companyData = CompanyData.fromJson(result.result["data"]);
+        emit(GetMyCompanySuccessState(data: companyData));
+      } else {
+        emit(HomeErrorState(message: result.error.toString()));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: e.toString()));
+    }
+  }
+
+  void _onGetMyCompanies(GetMyCompaniesEvent event, Emitter<HomeState> emit) async {
+    emit(GetCompanyLoadingState());
+    try {
+      final result = await homeRepository.getMyCompanies();
+      if (result.isSuccess) {
+        final companyModel = CompanyModel.fromJson(result.result);
+        final companyDataList = CompanyDataList(
+          data: companyModel.data,
+          meta: Meta.empty(),
+          message: companyModel.message,
+        );
+        emit(GetCompanySuccessState(data: companyDataList));
+      } else {
+        emit(HomeErrorState(message: result.error.toString()));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: e.toString()));
+    }
+  }
+
   void _onDeleteEmployee(
     DeleteEmployeeEvent event,
     Emitter<HomeState> emit,
@@ -538,7 +577,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           final response = await homeRepository.uploadImage(filePath: img.url);
           if (response.isSuccess) {
             data.images[i] = ImageCreateModel(
-              url: response.result['data']['data']['url'],
+              url: response.result['data']['url'],
               index: img.index,
               isMain: img.isMain,
             );
@@ -887,6 +926,43 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+  void _onEditResource(
+    EditResourceEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(EditResourceLoadingState());
+    try {
+      final result = await homeRepository.updateResource(
+        id: event.id,
+        name: event.name,
+        companyId: event.companyId,
+        price: event.price,
+        resourceCategoryId: event.resourceCategoryId,
+        metadata: event.metadata,
+        isBookable: event.isBookable,
+        isTimeSlotBased: event.isTimeSlotBased,
+        timeSlotDurationMinutes: event.timeSlotDurationMinutes,
+        images: event.images,
+        employeeIds: event.employeeIds,
+      );
+      if (result.isSuccess) {
+        emit(EditResourceSuccessState());
+        int companyId = CacheService.getInt("select_company") ?? 0;
+        if (companyId > 0) {
+          final refreshResult = await homeRepository.getResource(id: companyId);
+          if (refreshResult.isSuccess) {
+            final data = resource_model.ResourceModel.fromJson(refreshResult.result);
+            emit(GetResourceSuccessState(data: data));
+          }
+        }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
   void _onGetResourceEvent(
     GetResourceEvent event,
     Emitter<HomeState> emit,
@@ -963,7 +1039,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     DeleteResourceEvent event,
     Emitter<HomeState> emit,
   ) async {
-    // Get current resource data to update optimistically
     final currentState = state;
     resource_model.ResourceModel? currentResourceData;
     
@@ -975,22 +1050,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final result = await homeRepository.deleteResource(id: event.id);
       if (result.isSuccess) {
-        // Optimistically update the resource list by removing deleted item
-        if (currentResourceData != null) {
-          final updatedData = resource_model.ResourceModel(
-            data: currentResourceData.data
-                .where((item) => item.id != event.id)
-                .toList(),
-            message: currentResourceData.message,
-          );
-          // Emit updated resource state - this keeps the UI showing the updated list
-          emit(GetResourceSuccessState(data: updatedData));
-        } else {
-          // If no current data, just emit success state
-          emit(DeleteResourceSuccessState(resourceId: event.id));
+        emit(DeleteResourceSuccessState(resourceId: event.id));
+        int companyId = CacheService.getInt("select_company") ?? 0;
+        if (companyId > 0) {
+          final refreshResult = await homeRepository.getResource(id: companyId);
+          if (refreshResult.isSuccess) {
+            final data = resource_model.ResourceModel.fromJson(refreshResult.result);
+            emit(GetResourceSuccessState(data: data));
+          }
         }
       } else {
-        // On error, restore previous state
         if (currentResourceData != null) {
           emit(GetResourceSuccessState(data: currentResourceData));
         } else {
@@ -998,7 +1067,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       }
     } catch (e) {
-      // On error, restore previous state
       if (currentResourceData != null) {
         emit(GetResourceSuccessState(data: currentResourceData));
       } else {
@@ -1143,6 +1211,32 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               limit: 10,
               companyId: companyId,
             ));
+          }
+        }
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onConfirmPayment(
+    ConfirmPaymentEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(ConfirmPaymentLoadingState(paymentId: event.paymentId));
+    try {
+      final result = await homeRepository.confirmPayment(id: event.paymentId);
+      if (result.isSuccess) {
+        emit(ConfirmPaymentSuccessState(paymentId: event.paymentId));
+        final currentState = state;
+        if (currentState is GetBookingDetailSuccessState) {
+          final bookingId = currentState.data.id;
+          final refreshResult = await homeRepository.getBookingDetail(bookingId: bookingId);
+          if (refreshResult.isSuccess) {
+            final bookingDetailModel = BookingDetailModel.fromJson(refreshResult.result);
+            emit(GetBookingDetailSuccessState(data: bookingDetailModel.data));
           }
         }
       } else {

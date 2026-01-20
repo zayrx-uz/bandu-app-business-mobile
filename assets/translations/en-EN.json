@@ -324,6 +324,7 @@
   "no" : "No",
   "invalidQrCode" : "Invalid QR code or could not read data",
   "resources" : "Resources",
+  "editResource" : "Edit Resource",
   "markAsRead" : "Mark as Read",
   "notifications" : "Notifications",
   "next" : "Next",
@@ -333,5 +334,13 @@
   "onboardingHairSalonTitle" : "Book hair salons online",
   "onboardingCarWashTitle" : "Don't wait in line at the car wash",
   "onboardingClinicTitle" : "Register for the clinic online",
-  "comment" : "Comment"
+  "comment" : "Comment",
+  "confirmPayment" : "Confirm Payment",
+  "areYouSureConfirmPayment" : "Are you sure you want to confirm the payment?",
+  "paymentStatusPending" : "Pending",
+  "paymentStatusProcessing" : "Processing",
+  "paymentStatusPaid" : "Paid",
+  "paymentStatusFailed" : "Failed",
+  "paymentStatusCanceled" : "Canceled",
+  "paymentStatusRefunded" : "Refunded"
 }

@@ -34,6 +34,26 @@ extension StringFormat on String {
     }
   }
 
+  String getLocalizedPaymentStatus() {
+    switch (toUpperCase()) {
+      case 'PENDING':
+        return "paymentStatusPending".tr();
+      case 'PROCESSING':
+        return "paymentStatusProcessing".tr();
+      case 'PAID':
+        return "paymentStatusPaid".tr();
+      case 'FAILED':
+        return "paymentStatusFailed".tr();
+      case 'CANCELED':
+      case 'CANCELLED':
+        return "paymentStatusCanceled".tr();
+      case 'REFUNDED':
+        return "paymentStatusRefunded".tr();
+      default:
+        return this;
+    }
+  }
+
   String phoneFormat() {
     try {
       String numbers = replaceAll(RegExp(r'[^0-9+]'), '');

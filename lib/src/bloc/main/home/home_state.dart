@@ -325,6 +325,10 @@ class DeleteResourceSuccessState extends HomeState {
   List<Object?> get props => [resourceId];
 }
 
+class EditResourceLoadingState extends HomeState {}
+
+class EditResourceSuccessState extends HomeState {}
+
 class CheckAlicePaymentLoadingState extends HomeState {}
 
 class CheckAlicePaymentSuccessState extends HomeState {
@@ -357,6 +361,17 @@ class GetEmployeeSuccessState extends HomeState {
   final List<EmployeeItemData> data;
 
   GetEmployeeSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}
+
+class GetMyCompanyLoadingState extends HomeState {}
+
+class GetMyCompanySuccessState extends HomeState {
+  final CompanyData data;
+
+  GetMyCompanySuccessState({required this.data});
 
   @override
   List<Object?> get props => [data];
@@ -425,6 +440,24 @@ class CancelBookingSuccessState extends HomeState {
 
   @override
   List<Object?> get props => [bookingId];
+}
+
+class ConfirmPaymentLoadingState extends HomeState {
+  final int paymentId;
+
+  ConfirmPaymentLoadingState({required this.paymentId});
+
+  @override
+  List<Object?> get props => [paymentId];
+}
+
+class ConfirmPaymentSuccessState extends HomeState {
+  final int paymentId;
+
+  ConfirmPaymentSuccessState({required this.paymentId});
+
+  @override
+  List<Object?> get props => [paymentId];
 }
 
 class GetEmptyPlacesLoadingState extends HomeState {}

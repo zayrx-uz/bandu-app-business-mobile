@@ -3,8 +3,12 @@ import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
   import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart'
       hide Image;
+import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
+import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:bandu_business/src/ui/main/settings/resource/edit_resource_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -85,11 +89,73 @@ class ResourceWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              SvgPicture.asset(AppIcons.threeDot , width: 20.w,fit : BoxFit.cover)
+              GestureDetector(
+                onTapDown: (TapDownDetails details) {
+                  _showPopupMenu(context, details.globalPosition);
+                },
+                child: SvgPicture.asset(AppIcons.threeDot , width: 20.w,fit : BoxFit.cover)
+              )
             ],
           ),
         );
       },
+    );
+  }
+
+  void _showPopupMenu(BuildContext context, Offset position) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        MediaQuery.of(context).size.width - position.dx,
+        MediaQuery.of(context).size.height - position.dy,
+      ),
+      color: Colors.white,
+      items: [
+        PopupMenuItem(
+          child: Row(
+            children: [
+              SvgPicture.asset(AppIcons.edit2, width: 20.w),
+              SizedBox(width: 12.w),
+              Text("edit".tr()),
+            ],
+          ),
+          onTap: () {
+            Future.delayed(Duration.zero, () {
+              AppService.changePage(
+                context,
+                BlocProvider.value(
+                  value: homeBloc,
+                  child: EditResourceScreen(resourceData: data),
+                ),
+              );
+            });
+          },
+        ),
+        PopupMenuItem(
+          child: Row(
+            children: [
+              SvgPicture.asset(AppIcons.delete, width: 20.w),
+              SizedBox(width: 12.w),
+              Text("delete".tr()),
+            ],
+          ),
+          onTap: () {
+            Future.delayed(Duration.zero, () {
+              CenterDialog.deleteResourceDialog(
+                context,
+                name: data.name,
+                id: data.id,
+                onTapDelete: () {
+                  homeBloc.add(DeleteResourceEvent(id: data.id));
+                },
+              );
+            });
+          },
+        ),
+      ],
     );
   }
 }
