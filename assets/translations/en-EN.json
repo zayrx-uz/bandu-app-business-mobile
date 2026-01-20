@@ -332,5 +332,6 @@
   "onboardingRestaurantTitle" : "Make a reservation at the restaurant",
   "onboardingHairSalonTitle" : "Book hair salons online",
   "onboardingCarWashTitle" : "Don't wait in line at the car wash",
-  "onboardingClinicTitle" : "Register for the clinic online"
+  "onboardingClinicTitle" : "Register for the clinic online",
+  "comment" : "Comment"
 }

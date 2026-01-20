@@ -16,6 +16,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 class BookingDetailBottomSheet extends StatefulWidget {
   final int bookingId;
@@ -33,6 +35,7 @@ class BookingDetailBottomSheet extends StatefulWidget {
 
 class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
   BookingDetailData? bookingDetail;
+  bool _timezoneInitialized = false;
 
   @override
   void initState() {
@@ -42,13 +45,34 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
 
   String _formatDateTime(DateTime? dateTime, DateTime? endTime) {
     if (dateTime == null) return "";
-    final startTime = dateTime.toString().substring(11, 16);
+
+    _ensureTimezoneInitialized();
+    final tashkent = tz.getLocation('Asia/Tashkent');
+
+    final tashkentTime = tz.TZDateTime.from(dateTime, tashkent);
+    final date = tashkentTime.toDDMMYYY();
+    final startTime = tashkentTime.toString().substring(11, 16);
+
     if (endTime != null) {
-      final endTimeStr = endTime.toString().substring(11, 16);
-      return "$startTime - $endTimeStr";
+      final tashkentEndTime = tz.TZDateTime.from(endTime, tashkent);
+      final endTimeStr = tashkentEndTime.toString().substring(11, 16);
+      return "$date ($startTime - $endTimeStr)";
     }
-    return startTime;
+
+    return "$date ($startTime)";
   }
+
+  void _ensureTimezoneInitialized() {
+    if (!_timezoneInitialized) {
+      try {
+        tz_data.initializeTimeZones();
+        _timezoneInitialized = true;
+      } catch (e) {
+        _timezoneInitialized = true;
+      }
+    }
+  }
+
 
   String _formatDate(DateTime? dateTime) {
     if (dateTime == null) return "";
@@ -247,7 +271,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                                 child: Text(
-                                  _formatDate(bookingDetail!.bookingTime),
+                                  // _formatDate(bookingDetail!.bookingTime),
+                                  bookingDetail!.bookingTime != null ? _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime) : "",
                                   style: AppTextStyle.f500s16,
                                 ),
                               ),
@@ -284,6 +309,43 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                 ),
                                 child: Text(
                                   _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime),
+                                  style: AppTextStyle.f500s16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: 12.h),
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: AppColor.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "comment".tr(),
+                                style: AppTextStyle.f500s16.copyWith(
+                                  color: AppColor.black,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  border: Border.all(
+                                    width: 1.w,
+                                    color: AppColor.cE5E7E5,
+                                  ),
+                                ),
+                                child: Text(
+                                 bookingDetail!.note,
                                   style: AppTextStyle.f500s16,
                                 ),
                               ),

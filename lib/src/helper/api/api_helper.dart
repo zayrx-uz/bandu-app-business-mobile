@@ -6,7 +6,7 @@ class ApiHelper {
 
 
 
-  static const baseUrl = devUrl;
+  static const baseUrl = prodUrl;
 
   static const uploadUrl = prodUrl;
 

@@ -204,7 +204,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final result = await authRepository.forgotPassword(phoneNumber: event.phoneNumber);
       if (result.isSuccess) {
-        final otpToken = result.result["data"]["data"]["otpToken"];
+        final otpToken = result.result["data"]["otpToken"];
         emit(ForgotPasswordSuccessState(otpToken: otpToken));
       } else {
         emit(AuthErrorState(message: result.result['message']));
@@ -223,7 +223,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         otpToken: event.otpToken,
       );
       if (result.isSuccess) {
-        final resetToken = result.result["data"]["data"]["resetToken"];
+        final resetToken = result.result["data"]["resetToken"];
         emit(VerifyResetCodeSuccessState(resetToken: resetToken));
       } else {
         emit(AuthErrorState(message: result.result['message']));

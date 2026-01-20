@@ -237,10 +237,11 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                     CenterDialog.errorDialog(context, "companyNotSelected".tr());
                     return;
                   }
+                  print(int.parse(priceController.text.replaceAll(" ", "")));
                   context.read<HomeBloc>().add(CreateResourceEvent(
                     name: nameController.text,
                     companyId: companyId,
-                    price: int.tryParse(priceController.text) ?? 0,
+                    price: int.parse(priceController.text.replaceAll(" ", "")),
                     resourceCategoryId: selectedCategoryId,
                     isBookable: isBookable,
                     isTimeSlotBased: isTimeSlotBased,

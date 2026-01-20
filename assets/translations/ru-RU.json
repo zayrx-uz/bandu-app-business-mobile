@@ -332,7 +332,8 @@
   "onboardingRestaurantTitle" : "Забронировать место в ресторане",
   "onboardingHairSalonTitle" : "Забронировать парикмахерские онлайн",
   "onboardingCarWashTitle" : "Не ждите в очереди на автомойке",
-  "onboardingClinicTitle" : "Записаться в клинику онлайн"
+  "onboardingClinicTitle" : "Записаться в клинику онлайн",
+  "comment" : "Комментарий"
 }
 
 

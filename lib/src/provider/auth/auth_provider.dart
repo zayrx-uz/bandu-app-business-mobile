@@ -61,7 +61,7 @@ class AuthProvider extends ApiProvider {
 
   ///forgot password
   Future<HttpResult> forgotPassword(String phoneNumber) async {
-    final body = {'phoneNumber': phoneNumber};
+    final body = {'phoneNumber': phoneNumber ,   "useType": "BUSINESS"};
     return await postRequest(ApiHelper.forgotPassword, body);
   }
 
@@ -71,6 +71,7 @@ class AuthProvider extends ApiProvider {
       'phoneNumber': phoneNumber,
       'code': code,
       'otpToken': otpToken,
+      "useType": "BUSINESS"
     };
     return await postRequest(ApiHelper.verifyResetCode, body);
   }
