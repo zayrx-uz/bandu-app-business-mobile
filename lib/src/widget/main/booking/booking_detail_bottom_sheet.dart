@@ -511,45 +511,45 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ],
                                 ),
                               ),
-                              Container(
-                                height: 40.h,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  color: AppColor.white,
-                                  border: Border.all(width: 1.h, color: AppColor.greyE5),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: 40.h,
-                                      width: 40.h,
-                                      color: Colors.transparent,
-                                      child: Center(
-                                        child: AppSvgAsset(AppIcons.minus, color: AppColor.cE5E7E5),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 40.h,
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        item.quantity.toString(),
-                                        style: AppTextStyle.f600s16.copyWith(
-                                          color: AppColor.cE5E7E5,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      height: 40.h,
-                                      width: 40.h,
-                                      color: Colors.transparent,
-                                      child: Center(
-                                        child: AppSvgAsset(AppIcons.plus, color: AppColor.cE5E7E5),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // Container(
+                              //   height: 40.h,
+                              //   decoration: BoxDecoration(
+                              //     borderRadius: BorderRadius.circular(12.r),
+                              //     color: AppColor.white,
+                              //     border: Border.all(width: 1.h, color: AppColor.greyE5),
+                              //   ),
+                              //   child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     children: [
+                              //       Container(
+                              //         height: 40.h,
+                              //         width: 40.h,
+                              //         color: Colors.transparent,
+                              //         child: Center(
+                              //           child: AppSvgAsset(AppIcons.minus, color: AppColor.cE5E7E5),
+                              //         ),
+                              //       ),
+                              //       Container(
+                              //         width: 40.h,
+                              //         alignment: Alignment.center,
+                              //         child: Text(
+                              //           item.quantity.toString(),
+                              //           style: AppTextStyle.f600s16.copyWith(
+                              //             color: AppColor.cE5E7E5,
+                              //           ),
+                              //         ),
+                              //       ),
+                              //       Container(
+                              //         height: 40.h,
+                              //         width: 40.h,
+                              //         color: Colors.transparent,
+                              //         child: Center(
+                              //           child: AppSvgAsset(AppIcons.plus, color: AppColor.cE5E7E5),
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                             ],
                           ),
                         );

@@ -8,7 +8,7 @@ class AppSvgAsset extends StatelessWidget {
   final double? height;
   final BoxFit? fit;
 
-  const AppSvgAsset(
+  const   AppSvgAsset(
     this.icon, {
     super.key,
     this.color,

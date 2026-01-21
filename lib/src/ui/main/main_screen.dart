@@ -153,8 +153,8 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 Image.asset(
                   imagePath,
-                  width: 24.w,
-                  height: 24.w,
+                  width: isTablet(context) ? 20.sp : 24.w,
+                  height: isTablet(context) ? 20.sp : 24.w,
                   fit: BoxFit.cover,
                 ),
                 SizedBox(height: 4.h),
@@ -183,7 +183,7 @@ class _MainScreenState extends State<MainScreen> {
           color: Colors.transparent,
           child: Column(
             children: [
-              AppSvgAsset(isSelected ? iconSelect[index] : icon[index]),
+              AppSvgAsset(isSelected ? iconSelect[index] : icon[index] , width : isTablet(context) ? 20.sp : 24.w , height: isTablet(context) ? 20.sp : 24.w,),
               SizedBox(height: 4.h),
               Text(
                 text,

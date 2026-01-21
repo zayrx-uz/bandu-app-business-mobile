@@ -1,4 +1,5 @@
 import 'package:bandu_business/src/theme/app_color.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -115,7 +116,7 @@ class _SliderWidgetState extends State<SliderWidget>
                   child: Text(
                     widget.title,
                     style: TextStyle(
-                      fontSize: 20.sp,
+                      fontSize: isTablet(context) ? 16.sp : 20.sp,
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                     ),
@@ -128,7 +129,7 @@ class _SliderWidgetState extends State<SliderWidget>
                 _isTyping ? '$_displayedText...' : _displayedText,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: isTablet(context) ? 10.sp  :14.sp,
                   fontWeight: FontWeight.w400,
                   color: AppColor.c585B57,
                 ),

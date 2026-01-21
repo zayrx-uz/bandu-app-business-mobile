@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
               supportedLocales: context.supportedLocales,
               locale: context.locale,
               theme: ThemeData(
-                platform: TargetPlatform.iOS,
+                // platform: TargetPlatform.iOS,
                 fontFamily: GoogleFonts.inter().fontFamily,
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
                 appBarTheme: AppBarTheme(surfaceTintColor: Colors.transparent),

@@ -4,6 +4,7 @@ import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
+import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/top_app_name.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -79,11 +80,11 @@ class _CreateSuccessState extends State<CreateSuccess>
               scale: _scaleAnimation,
               child: Image.asset(
                 AppImages.createSuccess,
-                width: double.infinity,
+                width: isTablet(context) ? 200.w : double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 75.h),
+            SizedBox(height: isTablet(context) ? 30.h : 75.h),
             SlideTransition(
               position: _slideAnimation,
               child: Column(
@@ -92,7 +93,7 @@ class _CreateSuccessState extends State<CreateSuccess>
                     "accountVerified".tr(),
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 24.sp,
+                      fontSize: isTablet(context) ? 20.sp : 24.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -103,7 +104,7 @@ class _CreateSuccessState extends State<CreateSuccess>
                       "accountVerifiedDescription".tr(),
                       style: TextStyle(
                         color: AppColor.c717784,
-                        fontSize: 16.sp,
+                        fontSize: isTablet(context) ? 12.sp : 16.sp,
                         fontWeight: FontWeight.w400,
                       ),
                       textAlign: TextAlign.center,
