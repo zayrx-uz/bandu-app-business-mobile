@@ -35,6 +35,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
   int? deletingId;
   int? updatingId;
   List<String>? userRoles;
+  bool _isLoadingData = false;
 
   @override
   void initState() {
@@ -49,6 +50,9 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
   }
 
   void getData() {
+    if (_isLoadingData) return;
+    _isLoadingData = true;
+    
     if (userRoles == null || userRoles!.isEmpty) {
       // If no roles, get all companies (fallback)
       BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
@@ -78,12 +82,17 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
         if (state is GetMeSuccessState) {
-          userRoles = state.data.data.user.roles;
-          getData();
+          if (userRoles == null || userRoles != state.data.data.user.roles) {
+            userRoles = state.data.data.user.roles;
+            _isLoadingData = false;
+            getData();
+          }
         } else if (state is GetCompanySuccessState) {
+          _isLoadingData = false;
           data = state.data.data;
           setState(() {});
         } else if (state is GetMyCompanySuccessState) {
+          _isLoadingData = false;
           // For BUSINESS_OWNER, convert single company to list
           data = [state.data];
           setState(() {});
@@ -110,13 +119,16 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
         } else if (state is UpdateCompanySuccessState) {
           updatingId = null;
           AppService.successToast(context, "companyUpdated".tr());
+          _isLoadingData = false;
           getData();
         } else if (state is HomeErrorState) {
+          _isLoadingData = false;
           deletingId = null;
           updatingId = null;
           setState(() {});
         }
         if (state is SaveCompanySuccessState) {
+          _isLoadingData = false;
           getData();
         }
 
@@ -204,7 +216,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                       motion: const ScrollMotion(),
                                       extentRatio: 0.5,
                                       children: [
-                                        CustomSlidableAction(
+                                        CacheService.getString("user_role") == "BUSINESS_OWNER" ? CustomSlidableAction(
                                           onPressed: (context) {
                                             if (updatingId == data![index].id ||
                                                 deletingId == data![index].id) {
@@ -255,8 +267,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                               ],
                                             ),
                                           ),
-                                        ),
-                                        CustomSlidableAction(
+                                        ) : SizedBox(),
+                                        CacheService.getString("user_role") == "BUSINESS_OWNER" ? CustomSlidableAction(
                                           onPressed: (context) {
                                             if (deletingId == data![index].id ||
                                                 updatingId == data![index].id) {
@@ -302,7 +314,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                               ],
                                             ),
                                           ),
-                                        ),
+                                        ) : SizedBox(),
                                       ],
                                     ),
                                     child: CupertinoButton(
@@ -387,8 +399,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                   ),
               ],
             ),
-            floatingActionButton: CupertinoButton(
-              onPressed: () async {
+            floatingActionButton: CacheService.getString("user_role") == "BUSINESS_OWNER" ? CupertinoButton(
+              onPressed: () {
                 AppService.changePage(
                   context,
                   BlocProvider.value(
@@ -396,7 +408,6 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                     child: const CreateCompanyScreen(),
                   ),
                 );
-                getData();
               },
               padding: EdgeInsets.zero,
               child: Container(
@@ -413,7 +424,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                   child: AppSvgAsset(AppIcons.plus, color: AppColor.white),
                 ),
               ),
-            ),
+            ) : SizedBox(),
           ),
         );
       },

@@ -1,5 +1,6 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -95,7 +96,7 @@ class _EmployerScreenState extends State<EmployerScreen> {
         },
       ),
 
-      floatingActionButton: CupertinoButton(
+      floatingActionButton: CacheService.getString("user_role") == "BUSINESS_OWNER" || CacheService.getString("user_role") == "MANAGER" ? CupertinoButton(
         onPressed: () {
           CupertinoScaffold.showCupertinoModalBottomSheet(
             context: context,
@@ -121,7 +122,7 @@ class _EmployerScreenState extends State<EmployerScreen> {
             child: AppSvgAsset(AppIcons.plus, color: AppColor.white),
           ),
         ),
-      ),
+      ) : SizedBox(),
     );
   }
 }

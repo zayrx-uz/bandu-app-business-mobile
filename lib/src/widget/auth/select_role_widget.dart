@@ -9,16 +9,34 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SelectRoleWidget extends StatelessWidget {
   final Function(String) role;
+  final bool excludeOwnerAndModerator;
+  final bool onlyWorker;
 
-  const SelectRoleWidget({super.key, required this.role});
+  const SelectRoleWidget({
+    super.key,
+    required this.role,
+    this.excludeOwnerAndModerator = false,
+    this.onlyWorker = false,
+  });
 
-  // English role names - always in English regardless of app language
   static const List<String> _englishRoles = [
     "Business Owner",
     "Moderator",
     "Manager",
     "Worker",
   ];
+
+  List<String> get _filteredRoles {
+    if (onlyWorker) {
+      return ["Worker"];
+    }
+    if (excludeOwnerAndModerator) {
+      return _englishRoles.where((role) => 
+        role != "Business Owner" && role != "Moderator"
+      ).toList();
+    }
+    return _englishRoles;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +60,7 @@ class SelectRoleWidget extends StatelessWidget {
               closedBorder: Border.all(width: 1.h, color: AppColor.greyE5),
               headerStyle: AppTextStyle.f500s16,
             ),
-            items: _englishRoles,
+            items: _filteredRoles,
             listItemBuilder: (a, b, s, d) {
               return Container(
                 color: Colors.transparent,

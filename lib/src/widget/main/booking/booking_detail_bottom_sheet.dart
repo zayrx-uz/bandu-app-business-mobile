@@ -75,10 +75,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
   }
 
 
-  String _formatDate(DateTime? dateTime) {
-    if (dateTime == null) return "";
-    return dateTime.toDDMMYYY();
-  }
 
   Color _getPaymentStatusColor(String status) {
     switch (status.toUpperCase()) {
@@ -196,7 +192,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
       },
       builder: (context, state) {
         final isLoading = state is GetBookingDetailLoadingState;
-        final isUpdating = state is UpdateBookingStatusLoadingState || state is CancelBookingLoadingState;
         
         return Container(
           constraints: BoxConstraints(

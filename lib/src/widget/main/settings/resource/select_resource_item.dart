@@ -27,6 +27,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
   Map<int, TextEditingController> searchControllers = {};
   Map<int, List<CategoryItem>> filteredItems = {};
   List<resource_category.ResourceCategoryData>? categories;
+  bool _isLoadingCategories = false;
 
   void _loadCategories(List<resource_category.ResourceCategoryData> data) {
     categories = data;
@@ -131,8 +132,6 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
 
   void _selectInitialCategory(Map<int, CategoryItem> categoryMap, int categoryId) {
     if (!categoryMap.containsKey(categoryId)) return;
-    
-    final targetCategory = categoryMap[categoryId]!;
     
     CategoryItem? findCategoryInTree(List<CategoryItem> items, int id) {
       for (var item in items) {
@@ -381,10 +380,22 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
   @override
   void initState() {
     super.initState();
-    final companyId = HelperFunctions.getCompanyId() ?? 0;
-    if (companyId > 0) {
-      context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final companyId = HelperFunctions.getCompanyId() ?? 0;
+        if (companyId > 0 && !_isLoadingCategories) {
+          // Check if data is already loaded or loading
+          final currentState = context.read<HomeBloc>().state;
+          if (currentState is GetResourceCategorySuccessState) {
+            _isLoadingCategories = false;
+            _loadCategories(currentState.data);
+          } else if (currentState is! GetResourceCategoryLoadingState) {
+            _isLoadingCategories = true;
+            context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -401,21 +412,39 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeBloc, HomeState>(
+      listenWhen: (previous, current) {
+        return current is GetResourceCategorySuccessState ||
+               current is CreateResourceCategorySuccessState ||
+               current is DeleteResourceCategorySuccessState ||
+               current is GetResourceCategoryLoadingState;
+      },
       listener: (context, state) {
         if (state is GetResourceCategorySuccessState) {
+          _isLoadingCategories = false;
           _loadCategories(state.data);
         }
         if (state is CreateResourceCategorySuccessState) {
-          final companyId = HelperFunctions.getCompanyId() ?? 0;
-          if (companyId > 0) {
-            context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+          final currentBlocState = context.read<HomeBloc>().state;
+          if (currentBlocState is! GetResourceCategoryLoadingState) {
+            _isLoadingCategories = true;
+            final companyId = HelperFunctions.getCompanyId() ?? 0;
+            if (companyId > 0) {
+              context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+            }
           }
         }
         if (state is DeleteResourceCategorySuccessState) {
-          final companyId = HelperFunctions.getCompanyId() ?? 0;
-          if (companyId > 0) {
-            context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+          final currentBlocState = context.read<HomeBloc>().state;
+          if (currentBlocState is! GetResourceCategoryLoadingState) {
+            _isLoadingCategories = true;
+            final companyId = HelperFunctions.getCompanyId() ?? 0;
+            if (companyId > 0) {
+              context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
+            }
           }
+        }
+        if (state is GetResourceCategoryLoadingState) {
+          _isLoadingCategories = true;
         }
       },
       child: BlocBuilder<HomeBloc, HomeState>(

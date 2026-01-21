@@ -721,6 +721,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     GetResourceCategoryEvent event,
     Emitter<HomeState> emit,
   ) async {
+    // Prevent duplicate requests if already loading
+    if (state is GetResourceCategoryLoadingState) {
+      return;
+    }
+    
     emit(GetResourceCategoryLoadingState());
     try {
       final result = await homeRepository.getResourceCategory(companyId: event.companyId);

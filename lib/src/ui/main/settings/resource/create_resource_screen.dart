@@ -267,103 +267,174 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     int hours = timeSlotDurationMinutes ~/ 60;
     int minutes = timeSlotDurationMinutes % 60;
     int selectedHours = hours.clamp(0, 100);
-    int selectedMinutes = minutes.clamp(0, 100);
+    int selectedMinutes = minutes.clamp(0, 59);
     
     showCupertinoModalPopup(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20.r),
-                  topLeft: Radius.circular(20.r),
+            return Material(
+              color: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20.r),
+                    topLeft: Radius.circular(20.r),
+                  ),
                 ),
-              ),
-              height: 400.h,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        SizedBox(width: 100.w,),
-                        Expanded(
-                          child: CupertinoPicker(
-                            scrollController: FixedExtentScrollController(initialItem: selectedHours),
-                            itemExtent: 50.h,
-                            onSelectedItemChanged: (int index) {
-                              setModalState(() {
-                                selectedHours = index;
-                              });
-                            },
-                            children: List<Widget>.generate(101, (int index) {
-                              return Center(
-                                child: Text(
-                                  index.toString(),
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              );
-                            }),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppColor.greyE5,
+                              width: 1.h,
+                            ),
                           ),
                         ),
-                        Expanded(
-                          child: CupertinoPicker(
-                            scrollController: FixedExtentScrollController(initialItem: selectedMinutes),
-                            itemExtent: 50.h,
-                            onSelectedItemChanged: (int index) {
-                              setModalState(() {
-                                selectedMinutes = index;
-                              });
-                            },
-                            children: List<Widget>.generate(60, (int index) {
-                              return Center(
-                                child: Text(
-                                  index.toString(),
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(width: 24.w,),
+                            Expanded(
+                              child: Text(
+                                "selectTime".tr(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColor.black09,
                                 ),
-                              );
-                            }),
-                          ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Icon(
+                                Icons.close,
+                                size: 24.sp,
+                                color: AppColor.black09,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 100.w,),
-                      ],
-                    ),
+                      ),
+                      Container(
+                        height: 250.h,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: CupertinoPicker(
+                                scrollController: FixedExtentScrollController(initialItem: selectedHours),
+                                itemExtent: 50.h,
+                                onSelectedItemChanged: (int index) {
+                                  setModalState(() {
+                                    selectedHours = index;
+                                  });
+                                },
+                                children: List<Widget>.generate(101, (int index) {
+                                  return Center(
+                                    child: Text(
+                                      index.toString(),
+                                      style: TextStyle(
+                                        fontSize: 22.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.black09,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: Text(
+                                "hours".tr(),
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.grey77,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              flex: 2,
+                              child: CupertinoPicker(
+                                scrollController: FixedExtentScrollController(initialItem: selectedMinutes),
+                                itemExtent: 50.h,
+                                onSelectedItemChanged: (int index) {
+                                  setModalState(() {
+                                    selectedMinutes = index;
+                                  });
+                                },
+                                children: List<Widget>.generate(60, (int index) {
+                                  return Center(
+                                    child: Text(
+                                      index.toString(),
+                                      style: TextStyle(
+                                        fontSize: 22.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.black09,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: Text(
+                                "minutesShort".tr(),
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.grey77,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                        child: AppButton(
+                          onTap: () {
+                            int totalMinutes = selectedHours * 60 + selectedMinutes;
+                            
+                            setState(() {
+                              if (totalMinutes == 0) {
+                                isTimeSlotBased = false;
+                                timeSlotDurationMinutes = 0;
+                                timeSlotController.text = "";
+                              } else {
+                                String timeText = "$selectedHours ${"hours".tr()} $selectedMinutes ${"minutesShort".tr()}";
+                                isTimeSlotBased = true;
+                                timeSlotDurationMinutes = totalMinutes;
+                                timeSlotController.text = timeText;
+                              }
+                            });
+                            Navigator.pop(context);
+                          },
+                          text: "save".tr(),
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: AppButton(
-                      onTap: () {
-                        int totalMinutes = selectedHours * 60 + selectedMinutes;
-                        
-                        setState(() {
-                          if (totalMinutes == 0) {
-                            // Agar vaqt tanlanmasa, time slot based ni o'chirish
-                            isTimeSlotBased = false;
-                            timeSlotDurationMinutes = 0;
-                            timeSlotController.text = "";
-                          } else {
-                            // Agar vaqt tanlansa, saqlash
-                            String timeText = "$selectedHours ${"hours".tr()} $selectedMinutes ${"minutesShort".tr()}";
-                            isTimeSlotBased = true;
-                            timeSlotDurationMinutes = totalMinutes;
-                            timeSlotController.text = timeText;
-                          }
-                        });
-                        Navigator.pop(context);
-                      },
-                      text: "save".tr(),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                ],
+                ),
               ),
             );
           },

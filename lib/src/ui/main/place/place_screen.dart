@@ -135,7 +135,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
         },
       ),
 
-      floatingActionButton: CupertinoButton(
+      floatingActionButton: CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER"  ? CupertinoButton(
         onPressed: () {
           CupertinoScaffold.showCupertinoModalBottomSheet(
             context: context,
@@ -161,7 +161,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
             child: AppSvgAsset(AppIcons.plus, color: AppColor.white),
           ),
         ),
-      ),
+      ) : SizedBox(),
     );
   }
 

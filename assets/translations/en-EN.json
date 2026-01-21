@@ -262,6 +262,7 @@
   "companyNotSelected" : "Company not selected",
   "hours" : "hours",
   "minutesShort" : "min",
+  "selectTime" : "Select Time",
   "deleteResource" : "Delete Resource",
   "deleteResourceConfirm" : "Are you sure you want to delete this resource",
   "resourceCategory" : "Resource Category",
@@ -342,5 +343,11 @@
   "paymentStatusPaid" : "Paid",
   "paymentStatusFailed" : "Failed",
   "paymentStatusCanceled" : "Canceled",
-  "paymentStatusRefunded" : "Refunded"
+  "paymentStatusRefunded" : "Refunded",
+  "noNotifications" : "No notifications available",
+  "yesterday" : "Yesterday",
+  "pleaseEnterCompanyName" : "Please enter company name",
+  "pleaseSelectLocation" : "Please select location",
+  "pleaseSetWorkingHours" : "Please set working hours",
+  "resourceCategories" : "Resource Categories"
 }

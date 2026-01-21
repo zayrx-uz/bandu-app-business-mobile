@@ -146,10 +146,13 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
 
                   InputPasswordWidget(
                     controller: password1,
+                    showValidation: true,
                   ),
                   SizedBox(height: 12.h),
                   InputPasswordWidget(
                     controller: password2,
+                    showMatchValidation: true,
+                    compareController: password1,
                   ),
                   Spacer(),
                   SizedBox(height: 24.h),

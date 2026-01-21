@@ -37,6 +37,14 @@ class HelperFunctions {
     if (data.data.phoneNumber.isNotEmpty) {
       CacheService.saveString("phone", data.data.phoneNumber);
     }
+    if (data.data.user.role.isNotEmpty) {
+      CacheService.saveString("user_role", data.data.user.role);
+      print("User role saqlandi: ${data.data.user.role}");
+    }
+    if (data.data.user.roles.isNotEmpty) {
+      CacheService.saveStringList("user_roles", data.data.user.roles);
+      print("User roles saqlandi: ${data.data.user.roles.join(", ")}");
+    }
   }
 
   static String errorText(dynamic dt) {

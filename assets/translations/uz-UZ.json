@@ -262,6 +262,7 @@
   "companyNotSelected" : "Kompaniya tanlanmagan",
   "hours" : "soat",
   "minutesShort" : "min",
+  "selectTime" : "Vaqtni tanlang",
   "deleteResource" : "Resursni o'chirish",
   "deleteResourceConfirm" : "Resursni o'chirmoqchimisiz",
   "resourceCategory" : "Resurs kategoriyasi",
@@ -342,5 +343,11 @@
   "paymentStatusPaid" : "To'langan",
   "paymentStatusFailed" : "Muvaffaqiyatsiz",
   "paymentStatusCanceled" : "Bekor qilingan",
-  "paymentStatusRefunded" : "Qaytarilgan"
+  "paymentStatusRefunded" : "Qaytarilgan",
+  "noNotifications" : "Bildirishnomalar mavjud emas",
+  "yesterday" : "Kecha",
+  "pleaseEnterCompanyName" : "Iltimos, kompaniya nomini kiriting",
+  "pleaseSelectLocation" : "Iltimos, joylashuvni tanlang",
+  "pleaseSetWorkingHours" : "Iltimos, ish vaqtini belgilang",
+  "resourceCategories" : "Resurs kategoriyalari"
 }

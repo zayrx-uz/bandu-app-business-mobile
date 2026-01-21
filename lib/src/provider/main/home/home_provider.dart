@@ -594,4 +594,16 @@ class HomeProvider extends ApiProvider {
   Future<HttpResult> confirmPayment({required int id}) async {
     return await postRequest("${ApiHelper.confirmPayment}$id/confirm", {});
   }
+
+  Future<HttpResult> getNotifications({
+    required int page,
+    required int limit,
+  }) async {
+    String path = "?page=$page&limit=$limit";
+    return await getRequest("${ApiHelper.getNotifications}$path");
+  }
+
+  Future<HttpResult> markNotificationAsRead({required int notificationId}) async {
+    return await patchRequest("${ApiHelper.markNotificationRead}$notificationId/read", {});
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
@@ -171,7 +172,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                     ),
                   ),
                   Spacer(),
-                  Row(
+                  CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER"  ? Row(
                     children: [
                       Expanded(
                         child: AppButton(
@@ -220,7 +221,7 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                       ),
                       SizedBox(width: 14.w)
                     ],
-                  ),
+                  ) : SizedBox(),
                   SizedBox(height: 24.h),
                 ],
               ),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart'
     hide Image;
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -194,7 +195,7 @@ class _ResourceScreenState extends State<ResourceScreen> {
           ),
         ],
       ),
-      floatingActionButton: CupertinoButton(
+      floatingActionButton: CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER"  ? CupertinoButton(
         onPressed: () async {
           final bloc = BlocProvider.of<HomeBloc>(context);
           final result = await Navigator.push(
@@ -223,7 +224,7 @@ class _ResourceScreenState extends State<ResourceScreen> {
             child: AppSvgAsset(AppIcons.plus, color: AppColor.white),
           ),
         ),
-      ),
+      ) : SizedBox(),
     );
   }
 }

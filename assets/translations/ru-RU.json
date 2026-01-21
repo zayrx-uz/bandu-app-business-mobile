@@ -262,6 +262,7 @@
   "companyNotSelected" : "Компания не выбрана",
   "hours" : "час",
   "minutesShort" : "мин",
+  "selectTime" : "Выберите время",
   "deleteResource" : "Удалить ресурс",
   "deleteResourceConfirm" : "Вы уверены, что хотите удалить этот ресурс",
   "resourceCategory" : "Категория ресурса",
@@ -342,7 +343,13 @@
   "paymentStatusPaid" : "Оплачено",
   "paymentStatusFailed" : "Не удалось",
   "paymentStatusCanceled" : "Отменено",
-  "paymentStatusRefunded" : "Возвращено"
+  "paymentStatusRefunded" : "Возвращено",
+  "noNotifications" : "Уведомления отсутствуют",
+  "yesterday" : "Вчера",
+  "pleaseEnterCompanyName" : "Пожалуйста, введите название компании",
+  "pleaseSelectLocation" : "Пожалуйста, выберите местоположение",
+  "pleaseSetWorkingHours" : "Пожалуйста, установите рабочие часы",
+  "resourceCategories" : "Категории ресурсов"
 }
 
 

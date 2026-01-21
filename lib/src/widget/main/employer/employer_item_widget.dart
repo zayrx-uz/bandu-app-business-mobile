@@ -2,6 +2,7 @@ import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -118,7 +119,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                   RotationTransition(
                     turns: _rotateAnimation,
                     child: AppIconButton(icon: AppIcons.bottom, onTap: toggle),
-                  ),
+                  ) ,
                 ],
               ),
             ),
@@ -226,7 +227,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                                 ),
                               ),
                               SizedBox(width: 4.w),
-                              AppIconButton(
+                              CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER" ? AppIconButton(
                                 icon: AppIcons.edit2,
                                 onTap: () {
                                   CupertinoScaffold.showCupertinoModalBottomSheet(
@@ -251,9 +252,9 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                                 backColor: Colors.orange,
                                 height: 40.h,
                                 width: 40.h,
-                              ),
-                              SizedBox(width: 4.w),
-                              AppIconButton(
+                              ) : SizedBox(),
+                              SizedBox(width: CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER" ? 4.w : 0),
+                              CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER" ?  AppIconButton(
                                 icon: AppIcons.delete,
                                 loading: state is DeleteEmployeeLoadingState,
                                 onTap: () {
@@ -273,7 +274,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                                 backColor: Colors.red,
                                 height: 40.h,
                                 width: 40.h,
-                              ),
+                              ) : SizedBox(),
                             ],
                           ),
                         );

@@ -61,13 +61,13 @@ class BottomDialog {
 
                         GestureDetector(
                           onTap: () {
-                            CacheService.saveString('language', "en");
+                            CacheService.saveString('language', "uz");
                             if (EasyLocalization.of(parentContext) != null) {
-                              parentContext.setLocale(const Locale("en", "EN"));
+                              parentContext.setLocale(const Locale("uz", "UZ"));
                               RxBus.post(tag: "language_changed", 1);
                             }
                             setState(() {
-                              currentLang = "en";
+                              currentLang = "uz";
                             });
                           },
                           child: Container(
@@ -77,16 +77,16 @@ class BottomDialog {
                               color: AppColor.white,
                               border: Border.all(
                                 width: 1.h,
-                                color: currentLang == "en" ? AppColor.yellowFFC : AppColor.greyE5,
+                                color: currentLang == "uz" ? AppColor.yellowFFC : AppColor.greyE5,
                               ),
                             ),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
-                                    "english".tr(),
+                                    "uzbek".tr(),
                                     style: AppTextStyle.f500s16.copyWith(
-                                      fontWeight: currentLang == "en" ? FontWeight.w600 : FontWeight.w500,
+                                      fontWeight: currentLang == "uz" ? FontWeight.w600 : FontWeight.w500,
                                     ),
                                   ),
                                 ),
@@ -96,8 +96,8 @@ class BottomDialog {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      width: currentLang == "en" ? 6.h : 2.h,
-                                      color: currentLang == "en" ? AppColor.yellowFFC : AppColor.greyE5,
+                                      width: currentLang == "uz" ? 6.h : 2.h,
+                                      color: currentLang == "uz" ? AppColor.yellowFFC : AppColor.greyE5,
                                     ),
                                   ),
                                 ),
@@ -107,7 +107,6 @@ class BottomDialog {
                         ),
 
                         SizedBox(height: 10.h),
-
                         GestureDetector(
                           onTap: () {
                             CacheService.saveString('language', "ru");
@@ -156,16 +155,15 @@ class BottomDialog {
                         ),
 
                         SizedBox(height: 10.h),
-
                         GestureDetector(
                           onTap: () {
-                            CacheService.saveString('language', "uz");
+                            CacheService.saveString('language', "en");
                             if (EasyLocalization.of(parentContext) != null) {
-                              parentContext.setLocale(const Locale("uz", "UZ"));
+                              parentContext.setLocale(const Locale("en", "EN"));
                               RxBus.post(tag: "language_changed", 1);
                             }
                             setState(() {
-                              currentLang = "uz";
+                              currentLang = "en";
                             });
                           },
                           child: Container(
@@ -175,16 +173,16 @@ class BottomDialog {
                               color: AppColor.white,
                               border: Border.all(
                                 width: 1.h,
-                                color: currentLang == "uz" ? AppColor.yellowFFC : AppColor.greyE5,
+                                color: currentLang == "en" ? AppColor.yellowFFC : AppColor.greyE5,
                               ),
                             ),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
-                                    "uzbek".tr(),
+                                    "english".tr(),
                                     style: AppTextStyle.f500s16.copyWith(
-                                      fontWeight: currentLang == "uz" ? FontWeight.w600 : FontWeight.w500,
+                                      fontWeight: currentLang == "en" ? FontWeight.w600 : FontWeight.w500,
                                     ),
                                   ),
                                 ),
@@ -194,8 +192,8 @@ class BottomDialog {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      width: currentLang == "uz" ? 6.h : 2.h,
-                                      color: currentLang == "uz" ? AppColor.yellowFFC : AppColor.greyE5,
+                                      width: currentLang == "en" ? 6.h : 2.h,
+                                      color: currentLang == "en" ? AppColor.yellowFFC : AppColor.greyE5,
                                     ),
                                   ),
                                 ),
@@ -203,8 +201,7 @@ class BottomDialog {
                             ),
                           ),
                         ),
-
-                        SizedBox(height: 24.h),
+                        SizedBox(height: 24.h,),
 
                         AppButton(
                           onTap: () {
@@ -235,8 +232,6 @@ class BottomDialog {
       },
     );
   }
-
-
 
   static void serverError(BuildContext context,) {
 

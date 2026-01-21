@@ -52,4 +52,6 @@ class ApiHelper {
   static const dashboardEmployeesEmpty = "${baseUrl}api/dashboard/employees/empty";
   static const dashboardEmployeesBooked = "${baseUrl}api/dashboard/employees/booked";
   static const confirmPayment = "${baseUrl}api/payments/";
+  static const getNotifications = "${baseUrl}api/notification/my";
+  static const markNotificationRead = "${baseUrl}api/notification/";
 }

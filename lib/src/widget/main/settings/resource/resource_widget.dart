@@ -1,6 +1,7 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
   import 'package:bandu_business/src/model/api/main/resource_category_model/resource_model.dart'
       hide Image;
 import 'package:bandu_business/src/helper/service/app_service.dart';
@@ -90,10 +91,10 @@ class ResourceWidget extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTapDown: (TapDownDetails details) {
+                onTapDown: CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER"  ? (TapDownDetails details) {
                   _showPopupMenu(context, details.globalPosition);
-                },
-                child: SvgPicture.asset(AppIcons.threeDot , width: 20.w,fit : BoxFit.cover)
+                } : (TapDownDetails details){},
+                child: CacheService.getString("user_role") == "BUSINESS_OWNER" ||  CacheService.getString("user_role") == "MANAGER"  ? SvgPicture.asset(AppIcons.threeDot , width: 20.w,fit : BoxFit.cover) : SizedBox()
               )
             ],
           ),

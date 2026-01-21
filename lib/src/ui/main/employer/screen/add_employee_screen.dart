@@ -27,11 +27,30 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String role = "";
+  bool isManager = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeBloc>().add(GetMeEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
+        if (state is GetMeSuccessState) {
+          final userRoles = state.data.data.user.roles;
+          final isUserManager = userRoles.contains("MANAGER");
+          if (mounted) {
+            setState(() {
+              isManager = isUserManager;
+              if (isUserManager) {
+                role = "Worker";
+              }
+            });
+          }
+        }
         if (state is SaveEmployeeSuccessState) {
           AppService.successToast(context, "employeeAdded".tr());
           Navigator.pop(context);
@@ -88,9 +107,14 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                         SizedBox(height: 12.h),
                         InputPhoneWidget(controller: phoneController),
                         SizedBox(height: 12.h),
-                        InputPasswordWidget(controller: passwordController),
+                        InputPasswordWidget(
+                          controller: passwordController,
+                          showValidation: true,
+                        ),
                         SizedBox(height: 12.h),
                         SelectRoleWidget(
+                          excludeOwnerAndModerator: !isManager,
+                          onlyWorker: isManager,
                           role: (d) {
                             role = d;
                             setState(() {});
