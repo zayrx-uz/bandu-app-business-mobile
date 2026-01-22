@@ -8,6 +8,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/place/screen/edit_people_screen.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
+import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -65,8 +66,8 @@ class _EmptyPlacesScreenState extends State<EmptyPlacesScreen> {
                 TopBarWidget(),
                 Expanded(
                   child: Center(
-                    child: CircularProgressIndicator.adaptive(
-                      backgroundColor: AppColor.black,
+                    child: CupertinoActivityIndicator(
+                      color: AppColor.black,
                     ),
                   ),
                 ),
@@ -196,22 +197,9 @@ class _EmptyPlacesScreenState extends State<EmptyPlacesScreen> {
     return false;
   }
 
-  String _getCategoryImage(int categoryId) {
-    switch (categoryId) {
-      case 1:
-        return AppImages.restaurantSelect;
-      case 24:
-        return AppImages.barberSelect;
-      case 37:
-        return AppImages.carwashSelect;
-      default:
-        return AppImages.restaurantSelect;
-    }
-  }
-
   Widget item(DashboardEmptyPlace place) {
-    final categoryId = CacheService.getCategoryId() ?? 1;
-    final imagePath = _getCategoryImage(categoryId);
+    final ikpuCode = CacheService.getCategoryIkpuCode();
+    final imagePath = HelperFunctions.getCategoryIconByIkpuCode(ikpuCode);
     
     return CupertinoButton(
       onPressed: () {
@@ -258,12 +246,18 @@ class _EmptyPlacesScreenState extends State<EmptyPlacesScreen> {
               ),
             ),
             SizedBox(height: 6.h),
-            Image.asset(
-              imagePath,
-              width: 40.w,
-              height: 40.w,
-              fit: BoxFit.cover,
-            ),
+            imagePath.contains('assets/images/')
+                ? Image.asset(
+                    imagePath,
+                    width: 40.w,
+                    height: 40.w,
+                    fit: BoxFit.cover,
+                  )
+                : AppSvgAsset(
+                    imagePath,
+                    width: 40.w,
+                    height: 40.w,
+                  ),
             SizedBox(height: 4.h),
           ],
         ),

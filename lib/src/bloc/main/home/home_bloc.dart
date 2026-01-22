@@ -212,24 +212,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  // void _getImage(GetImageEvent event, Emitter<HomeState> emit) async {
-  //   final pick = ImagePicker();
-  //   try {
-  //     if (event.isSelfie) {
-  //       final img = await pick.pickImage(source: ImageSource.camera);
-  //       if (img != null) {
-  //         emit(GetImageSuccessState(img: img));
-  //       }
-  //     } else {
-  //       final img = await pick.pickImage(source: ImageSource.gallery);
-  //       if (img != null) {
-  //         emit(GetImageSuccessState(img: img));
-  //       }
-  //     }
-  //   } catch (e) {
-  //     emit(HomeErrorState(message: e.toString()));
-  //   }
-  // }
 
   void _getImage(GetImageEvent event, Emitter<HomeState> emit) async {
     final pick = ImagePicker();
@@ -405,6 +387,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       if (result.isSuccess) {
         emit(UpdatePlaceSuccessState());
+        final companyId = HelperFunctions.getCompanyId() ?? 0;
+        if (companyId > 0) {
+          add(GetPlaceBusinessEvent(companyId: companyId));
+        }
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -419,6 +405,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.deletePlace(id: event.id);
       if (result.isSuccess) {
         emit(DeletePlaceSuccessState());
+        final companyId = HelperFunctions.getCompanyId() ?? 0;
+        if (companyId > 0) {
+          add(GetPlaceBusinessEvent(companyId: companyId));
+        }
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }
@@ -536,7 +526,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       var data = event.data;
       
-      // Upload image only if provided
       if (data.images.isNotEmpty && !data.images[0].url.startsWith("http")) {
         var imgUrl = "";
         final response = await homeRepository.uploadImage(
@@ -721,7 +710,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     GetResourceCategoryEvent event,
     Emitter<HomeState> emit,
   ) async {
-    // Prevent duplicate requests if already loading
     if (state is GetResourceCategoryLoadingState) {
       return;
     }
@@ -811,7 +799,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       
       if (result.isSuccess) {
-        // Parse the created category from response if available
         resource_category.ResourceCategoryData? createdCategory;
         if (result.result is Map<String, dynamic> && 
             result.result.containsKey('data') &&
@@ -832,11 +819,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             );
             emit(CreateResourceCategorySuccessState(data: createdCategory));
           } catch (e) {
-            // If parsing fails, continue with refresh
           }
         }
         
-        // Refresh the category list
         final refreshResult = await homeRepository.getResourceCategory(companyId: event.companyId);
         if (refreshResult.isSuccess) {
           if (refreshResult.result is Map<String, dynamic>) {

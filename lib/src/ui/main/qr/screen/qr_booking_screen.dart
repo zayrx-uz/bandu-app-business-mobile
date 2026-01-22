@@ -9,6 +9,7 @@ import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:bandu_business/src/widget/main/qr/alice_checker_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +69,8 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
         bool loading = state is ConfirmBookLoadingState;
         if (data == null) {
           return Center(
-            child: CircularProgressIndicator.adaptive(
-              backgroundColor: AppColor.black,
+            child: CupertinoActivityIndicator(
+              color: AppColor.black,
             ),
           );
         }
@@ -148,10 +149,14 @@ class _QrBookingScreenState extends State<QrBookingScreen> {
                     children: [
                       AppButton(
                         onTap: () {
+                          final homeBloc = BlocProvider.of<HomeBloc>(context);
                           showCupertinoModalBottomSheet(
                             context: context,
-                            builder: (context) => AliceCheckerWidget(
-                              bookingId: data!.id,
+                            builder: (modalContext) => BlocProvider.value(
+                              value: homeBloc,
+                              child: AliceCheckerWidget(
+                                bookingId: data!.id,
+                              ),
                             ),
                           );
                         },

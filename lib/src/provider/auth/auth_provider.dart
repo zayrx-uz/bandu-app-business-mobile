@@ -1,4 +1,5 @@
 import 'package:bandu_business/src/helper/api/api_helper.dart';
+import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/response/http_result.dart';
 import 'package:bandu_business/src/provider/api_provider.dart';
@@ -8,12 +9,13 @@ import 'package:http/http.dart' as http;
 class AuthProvider extends ApiProvider {
   ///login
   Future<HttpResult> login(String phone, String password, String role) async {
-    String? d = CacheService.getString("fcm_token");
+    // Get FCM token - will fetch from Firebase if not in cache
+    String? fcmToken = await FirebaseHelper.getFcmToken();
     final body = {
       'phoneNumber': phone,
       'password': password,
       "useType": "BUSINESS",
-      "fcmToken": d,
+      "fcmToken": fcmToken ?? "",
     };
     return await postRequest(ApiHelper.login, body);
   }

@@ -1,6 +1,6 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
-import 'package:bandu_business/src/helper/constants/app_images.dart';
+import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/helper/service/rx_bus.dart';
@@ -124,25 +124,14 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  String _getCategoryImage(int categoryId, bool isSelected) {
-    switch (categoryId) {
-      case 1:
-        return isSelected ? AppImages.restaurantSelect : AppImages.restaurantUnselect;
-      case 24:
-        return isSelected ? AppImages.barberSelect : AppImages.barberUnselect;
-      case 37:
-        return isSelected ? AppImages.carwashSelect : AppImages.carwashUnselect;
-      default:
-        return isSelected ? AppImages.restaurantSelect : AppImages.restaurantUnselect;
-    }
-  }
-
   Widget buttons(String text, int index) {
     final isSelected = select == index;
     
     if (index == 1) {
-      final categoryId = CacheService.getCategoryId() ?? 1;
-      final imagePath = _getCategoryImage(categoryId, isSelected);
+      final ikpuCode = CacheService.getCategoryIkpuCode();
+      final imagePath = ikpuCode.isNotEmpty 
+          ? HelperFunctions.getCategoryIconByIkpuCodeWithSelection(ikpuCode, isSelected)
+          : (isSelected ? AppIcons.placeSelect : AppIcons.place);
       
       return Expanded(
         child: CupertinoButton(
@@ -151,12 +140,18 @@ class _MainScreenState extends State<MainScreen> {
             color: Colors.transparent,
             child: Column(
               children: [
-                Image.asset(
-                  imagePath,
-                  width: isTablet(context) ? 20.sp : 24.w,
-                  height: isTablet(context) ? 20.sp : 24.w,
-                  fit: BoxFit.cover,
-                ),
+                imagePath.contains('assets/images/')
+                    ? Image.asset(
+                        imagePath,
+                        width: isTablet(context) ? 20.sp : 24.w,
+                        height: isTablet(context) ? 20.sp : 24.w,
+                        fit: BoxFit.cover,
+                      )
+                    : AppSvgAsset(
+                        imagePath,
+                        width: isTablet(context) ? 20.sp : 24.w,
+                        height: isTablet(context) ? 20.sp : 24.w,
+                      ),
                 SizedBox(height: 4.h),
                 Text(
                   text,

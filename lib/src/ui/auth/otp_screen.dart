@@ -68,7 +68,7 @@ class _OtpScreenState extends State<OtpScreen> {
   void _resendOtp() {
     if (_canResend) {
       _authBloc.add(
-        RegisterEvent(phone: "998${widget.phoneNumber}"),
+        RegisterEvent(phone: "998${widget.phoneNumber.replaceAll(" ", "")}"),
       );
     }
   }

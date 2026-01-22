@@ -47,14 +47,16 @@ class _PlaceScreenState extends State<PlaceScreen> {
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is GetPlaceBusinessSuccessState) {
-            data = state.data;
+            setState(() {
+              data = state.data;
+            });
           }
         },
         builder: (context, state) {
           if (state is GetPlaceBusinessLoadingState && data == null) {
             return Center(
-              child: CircularProgressIndicator.adaptive(
-                backgroundColor: AppColor.black,
+              child: CupertinoActivityIndicator(
+                color: AppColor.black,
               ),
             );
           }
@@ -165,22 +167,9 @@ class _PlaceScreenState extends State<PlaceScreen> {
     );
   }
 
-  String _getCategoryImage(int categoryId) {
-    switch (categoryId) {
-      case 1:
-        return AppImages.restaurantSelect;
-      case 24:
-        return AppImages.barberSelect;
-      case 37:
-        return AppImages.carwashSelect;
-      default:
-        return AppImages.restaurantSelect;
-    }
-  }
-
   Widget item(PlaceBusinessItemData item) {
-    final categoryId = CacheService.getCategoryId() ?? 1;
-    final imagePath = _getCategoryImage(categoryId);
+    final ikpuCode = CacheService.getCategoryIkpuCode();
+    final imagePath = HelperFunctions.getCategoryIconByIkpuCode(ikpuCode);
     
     return CupertinoButton(
       onPressed: () {
@@ -227,12 +216,18 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ),
             ),
             SizedBox(height: 6.h),
-            Image.asset(
-              imagePath,
-              width: 40.w,
-              height: 40.w,
-              fit: BoxFit.cover,
-            ),
+            imagePath.contains('assets/images/')
+                ? Image.asset(
+                    imagePath,
+                    width: 40.w,
+                    height: 40.w,
+                    fit: BoxFit.cover,
+                  )
+                : AppSvgAsset(
+                    imagePath,
+                    width: 40.w,
+                    height: 40.w,
+                  ),
             SizedBox(height: 4.h),
           ],
         ),

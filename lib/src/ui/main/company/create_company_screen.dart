@@ -34,7 +34,7 @@ class CreateCompanyScreen extends StatefulWidget {
 
 class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   TextEditingController nameController = TextEditingController();
-  List<int> selectedCategoryIds = [];
+  int? selectedCategoryId;
   bool isOpen24 = false;
   List<int> resourceCategoryIds = [];
 
@@ -72,8 +72,6 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   void getData() {
     context.read<HomeBloc>().add(GetCategoryEvent());
     final companyId = HelperFunctions.getCompanyId() ?? 0;
-    // Only fetch resource categories in create mode (when companyId is null)
-    // In edit mode, SelectResourceWidget will handle fetching resource categories
     if (companyId > 0 && widget.companyId == null) {
       context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
     }
@@ -81,7 +79,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
 
   void _loadCompanyData(CompanyDetailData company) {
     nameController.text = company.name;
-    selectedCategoryIds = company.categories.map((e) => e.id).toList();
+    selectedCategoryId = company.categories.isNotEmpty ? company.categories.first.id : null;
     open24 = company.isOpen247;
     isOpen24 = company.isOpen247;
     selectedLat = company.location.latitude;
@@ -190,7 +188,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
           
           bool isFormValid() {
             if (nameController.text.isEmpty) return false;
-            if (selectedCategoryIds.isEmpty) return false;
+            if (selectedCategoryId == null) return false;
             if (selectedLat == null || selectedLon == null) return false;
             if (widget.companyId == null && img == null) return false;
             if (!open24) {
@@ -240,18 +238,16 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                       if (categoryData != null)
                         SelectCategoryWidget(
                           onSelect: (d) {
-                            if (d > 0) {
-                              setState(() {
-                                if (selectedCategoryIds.contains(d)) {
-                                  selectedCategoryIds.clear();
-                                } else {
-                                  selectedCategoryIds = [d];
-                                }
-                              });
-                            }
+                            setState(() {
+                              if (selectedCategoryId == d) {
+                                selectedCategoryId = null;
+                              } else {
+                                selectedCategoryId = d;
+                              }
+                            });
                           },
                           item: categoryData!,
-                          selectedId: selectedCategoryIds.isNotEmpty ? selectedCategoryIds.first : null,
+                          selectedId: selectedCategoryId,
                         ),
                       SizedBox(height: 20.h),
                       if (widget.companyId != null)
@@ -354,7 +350,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                     );
                     return;
                   }
-                  if (selectedCategoryIds.isEmpty) {
+                  if (selectedCategoryId == null) {
                     AppService.errorToast(
                       context,
                       "pleaseSelectCategory".tr(),
@@ -398,7 +394,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                       return;
                     }
                   }
-                  final List<int> categoryIdsList = selectedCategoryIds;
+                  final List<int> categoryIdsList = selectedCategoryId != null ? [selectedCategoryId!] : [];
                   
                   create_model.WorkingHours? workingHoursValue;
                   if (!open24 && day.isNotEmpty) {

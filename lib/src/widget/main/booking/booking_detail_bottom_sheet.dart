@@ -1,6 +1,5 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
-import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/model/api/main/booking/booking_detail_model.dart';
@@ -11,7 +10,9 @@ import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:bandu_business/src/widget/main/booking/book_cancel.dart';
+import 'package:bandu_business/src/widget/main/qr/alice_checker_widget.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -121,19 +122,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
       return AppIcons.placeSelect;
     }
 
-    final firstCategory = bookingDetail!.company.categories.first.name.toLowerCase();
-    
-    if (firstCategory.contains("car") && firstCategory.contains("wash")) {
-      return AppImages.carwashSelect;
-    } else if (firstCategory.contains("restaurant")) {
-      return AppImages.restaurantSelect;
-    } else if (firstCategory.contains("barber")) {
-      return AppImages.barberSelect;
-    } else if (firstCategory.contains("clinic")) {
-      return AppIcons.placeSelect;
-    }
-    
-    return AppIcons.placeSelect;
+    final firstCategory = bookingDetail!.company.categories.first;
+    return HelperFunctions.getCategoryIconByIkpuCode(firstCategory.ikpuCode);
   }
 
   @override
@@ -158,7 +148,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
             });
           }
         } else if (state is CancelBookingSuccessState) {
-          // Close BookingDetailBottomSheet (BookCancel should already be closed)
           Navigator.pop(context);
           if (widget.parentBloc != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -185,6 +174,22 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 ));
               }
             });
+          }
+        } else if (state is CheckAlicePaymentSuccessState) {
+          if (state.isPaid) {
+            context.read<HomeBloc>().add(GetBookingDetailEvent(bookingId: widget.bookingId));
+            if (widget.parentBloc != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final companyId = HelperFunctions.getCompanyId() ?? 0;
+                if (companyId > 0) {
+                  widget.parentBloc!.add(GetOwnerBookingsEvent(
+                    page: 1,
+                    limit: 10,
+                    companyId: companyId,
+                  ));
+                }
+              });
+            }
           }
         } else if (state is HomeErrorState) {
           CenterDialog.errorDialog(context, state.message);
@@ -262,8 +267,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 if (isLoading)
                   Padding(
                     padding: EdgeInsets.all(40.h),
-                    child: CircularProgressIndicator.adaptive(
-                      backgroundColor: AppColor.black0D,
+                    child: CupertinoActivityIndicator(
+                      color: AppColor.black0D,
                     ),
                   )
                 else if (bookingDetail != null) ...[
@@ -346,7 +351,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                                 child: Text(
-                                  // _formatDate(bookingDetail!.bookingTime),
                                   bookingDetail!.bookingTime != null ? _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime) : "",
                                   style: AppTextStyle.f500s16,
                                 ),
@@ -506,45 +510,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ],
                                 ),
                               ),
-                              // Container(
-                              //   height: 40.h,
-                              //   decoration: BoxDecoration(
-                              //     borderRadius: BorderRadius.circular(12.r),
-                              //     color: AppColor.white,
-                              //     border: Border.all(width: 1.h, color: AppColor.greyE5),
-                              //   ),
-                              //   child: Row(
-                              //     mainAxisAlignment: MainAxisAlignment.center,
-                              //     children: [
-                              //       Container(
-                              //         height: 40.h,
-                              //         width: 40.h,
-                              //         color: Colors.transparent,
-                              //         child: Center(
-                              //           child: AppSvgAsset(AppIcons.minus, color: AppColor.cE5E7E5),
-                              //         ),
-                              //       ),
-                              //       Container(
-                              //         width: 40.h,
-                              //         alignment: Alignment.center,
-                              //         child: Text(
-                              //           item.quantity.toString(),
-                              //           style: AppTextStyle.f600s16.copyWith(
-                              //             color: AppColor.cE5E7E5,
-                              //           ),
-                              //         ),
-                              //       ),
-                              //       Container(
-                              //         height: 40.h,
-                              //         width: 40.h,
-                              //         color: Colors.transparent,
-                              //         child: Center(
-                              //           child: AppSvgAsset(AppIcons.plus, color: AppColor.cE5E7E5),
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
                             ],
                           ),
                         );
@@ -594,12 +559,10 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
     final isPending = _isBookingPending();
     final isConfirmed = _isBookingConfirmed();
     
-    // If booking is cancelled, show no buttons
     if (_isBookingCancelled()) {
       return SizedBox.shrink();
     }
     
-    // If booking is pending: Show "Reject" and "Accept" buttons
     if (isPending) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -661,7 +624,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
       );
     }
     
-    // If booking is confirmed: Show "Reject" and "Paid" buttons
     if (isConfirmed) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -704,6 +666,10 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 ),
               ],
             ),
+            // if (!_isPaymentPaid() && bookingDetail?.paymentId != null) ...[
+            //   SizedBox(height: 12.h),
+            //   _buildPaymentConfirmButton(context, state),
+            // ],
           ],
         ),
       );

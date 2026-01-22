@@ -1,3 +1,4 @@
+import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/auth/login_model.dart';
@@ -133,14 +134,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ) async {
     emit(RegisterCompleteLoadingState());
     try {
-      String fcmToken = CacheService.getString("fcm_token");
+      // Get FCM token - will fetch from Firebase if not in cache
+      String? fcmToken = await FirebaseHelper.getFcmToken();
 
       final result = await authRepository.registerComplete(
         role: event.role,
         fullName: event.fullName,
         token: event.token,
         password: event.password,
-        fcmToken: fcmToken,
+        fcmToken: fcmToken ?? "",
       );
       if (result.isSuccess) {
         final responseData = result.result;

@@ -45,8 +45,6 @@ class CompanyDataList {
   }
 }
 
-// ---------------------------------------------------------
-
 class CompanyData {
   final int id;
   final String name;
@@ -103,27 +101,26 @@ class CompanyData {
   }
 }
 
-// ---------------------------------------------------------
-
 class Category {
   final int id;
   final String name;
   final String description;
+  final String ikpuCode;
 
   Category({
     required this.id,
     required this.name,
     required this.description,
+    required this.ikpuCode,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
     id: json["id"] ?? 0,
     name: json["name"] ?? "",
     description: json["description"] ?? "",
+    ikpuCode: json["ikpuCode"] ?? "",
   );
 }
-
-// ---------------------------------------------------------
 
 class ImageModel {
   final int id;
@@ -165,8 +162,6 @@ class ImageModel {
   );
 }
 
-// ---------------------------------------------------------
-
 class Location {
   final int id;
   final String address;
@@ -194,8 +189,6 @@ class Location {
     longitude: (json["longitude"] ?? 0).toDouble(),
   );
 }
-
-// ---------------------------------------------------------
 
 class WorkingHours {
   final DayHours monday;
@@ -237,8 +230,6 @@ class WorkingHours {
   );
 }
 
-// ---------------------------------------------------------
-
 class DayHours {
   final String? open;
   final String? close;
@@ -262,8 +253,6 @@ class DayHours {
     closed: json["closed"] ?? true,
   );
 }
-
-// ---------------------------------------------------------
 
 class Meta {
   final int page;

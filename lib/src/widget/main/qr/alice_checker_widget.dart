@@ -1,4 +1,5 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
+import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
@@ -45,34 +46,90 @@ class _AliceCheckerWidgetState extends State<AliceCheckerWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeBloc, HomeState>(
+      listenWhen: (previous, current) {
+        if (current is CheckAlicePaymentLoadingState) return true;
+        if (current is CheckAlicePaymentSuccessState) return true;
+        if (current is HomeErrorState) {
+          return _isChecking;
+        }
+        return false;
+      },
       listener: (context, state) {
         if (state is CheckAlicePaymentLoadingState) {
-          setState(() {
-            _isChecking = true;
-          });
-        } else if (state is CheckAlicePaymentSuccessState) {
-          setState(() {
-            _isChecking = false;
-          });
-          if (state.isPaid) {
-            CenterDialog.successDialog(
-              context,
-              state.message.isNotEmpty
-                  ? state.message
-                  : "paymentVerifiedSuccessfully".tr(),
-              () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-            );
-          } else {
-            CenterDialog.errorDialog(context, state.message);
+          if (mounted) {
+            setState(() {
+              _isChecking = true;
+            });
           }
-        } else if (state is HomeErrorState) {
-          setState(() {
-            _isChecking = false;
+        } else if (state is CheckAlicePaymentSuccessState) {
+          if (mounted) {
+            setState(() {
+              _isChecking = false;
+            });
+          }
+          Future.delayed(Duration(milliseconds: 50), () {
+            if (mounted && context.mounted) {
+              if (state.isPaid) {
+                AppService.successToast(
+                  context,
+                  state.message.isNotEmpty
+                      ? state.message
+                      : "paymentVerifiedSuccessfully".tr(),
+                );
+                Future.delayed(Duration(milliseconds: 300), () {
+                  if (mounted && context.mounted) {
+                    CenterDialog.successDialog(
+                      context,
+                      state.message.isNotEmpty
+                          ? state.message
+                          : "paymentVerifiedSuccessfully".tr(),
+                      () {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        }
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        }
+                      },
+                    );
+                  }
+                });
+              } else {
+                AppService.errorToast(
+                  context,
+                  state.message.isNotEmpty
+                      ? state.message
+                      : "To'lov tasdiqlanmadi",
+                );
+                Future.delayed(Duration(milliseconds: 300), () {
+                  if (mounted && context.mounted) {
+                    CenterDialog.errorDialog(
+                      context,
+                      state.message.isNotEmpty
+                          ? state.message
+                          : "To'lov tasdiqlanmadi",
+                    );
+                  }
+                });
+              }
+            }
           });
-          CenterDialog.errorDialog(context, state.message);
+        } else if (state is HomeErrorState) {
+          if (_isChecking && mounted) {
+            setState(() {
+              _isChecking = false;
+            });
+            Future.delayed(Duration(milliseconds: 50), () {
+              if (mounted && context.mounted) {
+                AppService.errorToast(context, state.message);
+                Future.delayed(Duration(milliseconds: 300), () {
+                  if (mounted && context.mounted) {
+                    CenterDialog.errorDialog(context, state.message);
+                  }
+                });
+              }
+            });
+          }
         }
       },
       child: Container(

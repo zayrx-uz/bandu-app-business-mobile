@@ -2,12 +2,13 @@ import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
-import 'package:bandu_business/src/model/api/main/dashboard/dashboard_revenue_series_model.dart';
+import 'package:bandu_business/src/model/api/main/dashboard/dashboard_revenue_series_model.dart' show DashboardRevenueSeriesData, SeriesItem;
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,9 +22,12 @@ class RevenueStatisticScreen extends StatefulWidget {
 
 class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
   int selectedIndex = 0;
-  double maxAmount = 0;
   DashboardRevenueSeriesData? data;
   List<double> amounts = [];
+  List<SeriesItem> seriesOrdered = [];
+
+  static const double _maxY = 10_000_000;
+  static const double _interval = 1_000_000;
 
   @override
   void initState() {
@@ -36,7 +40,7 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
     final now = DateTime.now();
     final formattedDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     final clientDateTime = now.toIso8601String();
-    
+
     BlocProvider.of<HomeBloc>(context).add(
       GetRevenueSeriesEvent(
         companyId: companyId,
@@ -53,20 +57,15 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
       listener: (context, state) {
         if (state is GetRevenueSeriesSuccessState) {
           data = state.data;
-          maxAmount = 0;
           amounts = [];
-          
+          seriesOrdered = [];
+
           if (data!.series.isNotEmpty) {
-            for (var item in data!.series) {
+            seriesOrdered = List<SeriesItem>.from(data!.series).reversed.toList();
+            for (var item in seriesOrdered) {
               amounts.add(item.amount);
-              if (maxAmount < item.amount) {
-                maxAmount = item.amount;
-              }
             }
-            if (maxAmount == 0) {
-              maxAmount = 1000000;
-            }
-            selectedIndex = amounts.length > 0 ? amounts.length - 1 : 0;
+            selectedIndex = 0;
           }
           setState(() {});
         }
@@ -77,8 +76,8 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
             child: Container(
               color: AppColor.white,
               child: Center(
-                child: CircularProgressIndicator.adaptive(
-                  backgroundColor: AppColor.black,
+                child: CupertinoActivityIndicator(
+                  color: AppColor.black,
                 ),
               ),
             ),
@@ -181,13 +180,13 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                       children: [
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(5, (i) {
-                            final value = (maxAmount / 4) * (4 - i);
+                          children: List.generate(10, (i) {
+                            final value = 10 - i;
                             return SizedBox(
-                              height: (280.h - 40.h) / 4,
+                              height: (280.h - 40.h) / 9,
                               child: Center(
                                 child: Text(
-                                  "${(value / 1000000).toStringAsFixed(value >= 1000000 ? 0 : 1)} ${"mln".tr()}",
+                                  "$value ${"mln".tr()}",
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     color: Colors.black,
@@ -207,12 +206,12 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                               child: BarChart(
                                 BarChartData(
                                   minY: 0,
-                                  maxY: maxAmount * 1.1,
+                                  maxY: _maxY,
                                   borderData: FlBorderData(show: false),
                                   backgroundColor: Colors.transparent,
                                   gridData: FlGridData(
                                     drawVerticalLine: false,
-                                    horizontalInterval: maxAmount / 4,
+                                    horizontalInterval: _interval,
                                     getDrawingHorizontalLine: (value) => FlLine(
                                       color: Colors.grey.shade300,
                                       strokeWidth: 1,
@@ -220,13 +219,14 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                                   ),
                                   barGroups: List.generate(amounts.length, (i) {
                                     final isSelected = selectedIndex == i;
+                                    final clamped = amounts[i].clamp(0.0, _maxY);
                                     return BarChartGroupData(
                                       x: i,
                                       groupVertically: true,
                                       barsSpace: 0.w,
                                       barRods: [
                                         BarChartRodData(
-                                          toY: amounts[i],
+                                          toY: clamped,
                                           width: 42.w,
                                           borderRadius: BorderRadius.circular(10),
                                           color: !isSelected
@@ -245,11 +245,11 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                                         showTitles: true,
                                         reservedSize: 28.h,
                                         getTitlesWidget: (v, meta) {
-                                          if (v.toInt() >= 0 && v.toInt() < data!.series.length) {
+                                          if (v.toInt() >= 0 && v.toInt() < seriesOrdered.length) {
                                             return Padding(
                                               padding: EdgeInsets.only(top: 8.h),
                                               child: Text(
-                                                data!.series[v.toInt()].label,
+                                                seriesOrdered[v.toInt()].label,
                                                 style: AppTextStyle.f400s14.copyWith(
                                                   color: selectedIndex == v.toInt()
                                                       ? AppColor.black
@@ -258,7 +258,7 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                                               ),
                                             );
                                           }
-                                          return SizedBox();
+                                          return const SizedBox.shrink();
                                         },
                                       ),
                                     ),
@@ -266,16 +266,23 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                                   barTouchData: BarTouchData(
                                     enabled: true,
                                     touchTooltipData: BarTouchTooltipData(
-                                      tooltipPadding: const EdgeInsets.all(12),
+                                      tooltipPadding: const EdgeInsets.all(8),
                                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                        final value = groupIndex >= 0 && groupIndex < amounts.length
+                                            ? amounts[groupIndex].toInt()
+                                            : rod.toY.toInt();
                                         return BarTooltipItem(
                                           "${"revenue".tr()}\n",
-                                          AppTextStyle.f500s16,
+                                          TextStyle(
+                                            fontSize: 11.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black87,
+                                          ),
                                           children: [
                                             TextSpan(
-                                              text: "${rod.toY.toInt().priceFormat()} UZS",
+                                              text: "${value.priceFormat()} UZS",
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 11.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),

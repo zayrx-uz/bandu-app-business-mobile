@@ -6,6 +6,7 @@ import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/settings/notification/notification_item.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -184,32 +185,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.cF4F5F4,
-      // bottomNavigationBar: _notifications.isNotEmpty
-      //     ? Column(
-      //         mainAxisSize: MainAxisSize.min,
-      //         children: [
-      //           AppButton(
-      //             onTap: () {},
-      //             text: "markAsRead".tr(),
-      //             border: Border.all(width: 1.w, color: AppColor.cE5E7E5),
-      //             isGradient: false,
-      //             backColor: Colors.white,
-      //             txtColor: Colors.black,
-      //             leftIconColor: Colors.black,
-      //             leftIcon: AppIcons.ticksIcon,
-      //           ),
-      //           SizedBox(height: 36.h),
-      //         ],
-      //       )
-      //     : null,
       body: Column(
         children: [
           TopBarWidget(text: "notifications".tr(), isBack: true),
           Expanded(
             child: _isLoading && _notifications.isEmpty
                 ? Center(
-                    child: CircularProgressIndicator.adaptive(
-                      backgroundColor: AppColor.black,
+                    child: CupertinoActivityIndicator(
+                      color: AppColor.black,
                     ),
                   )
                 : _notifications.isEmpty
@@ -236,8 +219,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               return Center(
                                 child: Padding(
                                   padding: EdgeInsets.all(16.h),
-                                  child: CircularProgressIndicator.adaptive(
-                                    backgroundColor: AppColor.black,
+                                  child: CupertinoActivityIndicator(
+                                    color: AppColor.black,
                                   ),
                                 ),
                               );

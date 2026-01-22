@@ -12,7 +12,7 @@ import 'package:bandu_business/src/ui/main/place/screen/empty_places_screen.dart
 import 'package:bandu_business/src/ui/main/place/screen/booked_places_screen.dart';
 import 'package:bandu_business/src/ui/main/employer/screen/empty_employees_screen.dart';
 import 'package:bandu_business/src/ui/main/employer/screen/booked_employees_screen.dart';
-import 'package:bandu_business/src/ui/main/statistic/screen/revenue_statistic_screen.dart';
+import 'package:bandu_business/src/ui/main/statistic/screen/balans_bottom_sheet.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
@@ -64,8 +64,8 @@ class _StatisticScreenState extends State<StatisticScreen> {
               if (state is GetStatisticLoadingState && data == null)
                 Expanded(
                   child: Center(
-                    child: CircularProgressIndicator.adaptive(
-                      backgroundColor: AppColor.black,
+                    child: CupertinoActivityIndicator(
+                      color: AppColor.black,
                     ),
                   ),
                 )
@@ -88,12 +88,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
                         onTap: () {
                           CupertinoScaffold.showCupertinoModalBottomSheet(
                             context: context,
-                            builder: (context) {
-                              return BlocProvider(
-                                create: (_) => HomeBloc(homeRepository: HomeRepository()),
-                                child: const RevenueStatisticScreen(),
-                              );
-                            },
+                            builder: (_) => BalansBottomSheet(
+                              totalRevenue: data!.totalRevenue,
+                            ),
                           );
                         },
                       ),

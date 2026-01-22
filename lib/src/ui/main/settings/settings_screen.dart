@@ -15,7 +15,9 @@ import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:bandu_business/src/widget/main/settings/profile_widget.dart';
 import 'package:bandu_business/src/widget/main/settings/settings_button_widget.dart';
+import 'package:bandu_business/src/provider/api_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     RxBus.register(tag: "settings").listen((s) async {
       await Future.delayed(Duration(milliseconds: 500));
       if (mounted) {
-        setState(() {});
+        context.read<HomeBloc>().add(GetMeEvent());
       }
     });
   }
@@ -114,6 +116,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         launchUrl(Uri.parse(help));
                       },
                     ),
+                    if (kDebugMode && ApiProvider.alice != null) ...[
+                      SizedBox(height: 16.h),
+                      SettingsButtonWidget(
+                        icon: AppIcons.monitoring,
+                        text: "HTTP Inspector",
+                        margin: EdgeInsets.zero,
+                        onTap: () {
+                          ApiProvider.alice?.showInspector();
+                        },
+                      ),
+                    ],
                     SizedBox(height: 16.h),
                     SettingsButtonWidget(
                       icon: AppIcons.money,

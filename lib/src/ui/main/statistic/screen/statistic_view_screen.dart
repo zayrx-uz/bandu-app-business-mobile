@@ -7,6 +7,7 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -69,8 +70,8 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
       builder: (context, state) {
         if (data == null) {
           return Center(
-            child: CircularProgressIndicator.adaptive(
-              backgroundColor: AppColor.black,
+            child: CupertinoActivityIndicator(
+              color: AppColor.black,
             ),
           );
         }
@@ -116,10 +117,6 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                   margin: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Row(
                     children: [
-                      // Icon(Icons.arrow_downward, color: Colors.red, size: 16),
-                      // SizedBox(width: 4),
-                      // Text("-3.5%", style: TextStyle(color: Colors.red)),
-                      // SizedBox(width: 8),
                       Text("${"lastUpdated".tr()}: ${DateTime.now().toDDMMYYY()}"),
                     ],
                   ),
@@ -136,7 +133,6 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: List.generate(5, (i) {
-                          // final value = i * 1000000;
                           return SizedBox(
                             height: (280.h - 40.h) / 4,
                             child: Center(
@@ -154,7 +150,6 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
 
                       SizedBox(width: 12.w),
 
-                      // --------------------- SCROLLABLE BAR CHART --------------------------
                       Expanded(
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -168,11 +163,9 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                                 minY: 0,
                                 maxY: 5000000,
 
-                                // No border, no background
                                 borderData: FlBorderData(show: false),
                                 backgroundColor: Colors.transparent,
 
-                                // grid lines
                                 gridData: FlGridData(
                                   drawVerticalLine: false,
                                   horizontalInterval: 1000000,
@@ -182,7 +175,6 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                                   ),
                                 ),
 
-                                // bar groups
                                 barGroups: List.generate(incomes.length, (i) {
                                   final isSelected = selectedIndex == i;
                                   return BarChartGroupData(
@@ -229,7 +221,6 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                                   ),
                                 ),
 
-                                // tooltip & selection
                                 barTouchData: BarTouchData(
                                   enabled: true,
                                   touchTooltipData: BarTouchTooltipData(

@@ -1,7 +1,11 @@
 import 'dart:io';
+import 'package:alice/alice.dart';
+import 'package:alice/model/alice_configuration.dart';
 import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
+import 'package:bandu_business/src/provider/api_provider.dart';
 import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/ui/splash/splash_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,9 +16,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheService.init();
+  
+  if (kDebugMode) {
+    ApiProvider.alice = Alice(
+      configuration: AliceConfiguration(
+        showNotification: true,
+        showInspectorOnShake: true,
+        navigatorKey: navigatorKey,
+      ),
+    );
+    ApiProvider.alice?.setNavigatorKey(navigatorKey);
+  }
   
   String savedLang = CacheService.getString('language');
   Locale startLocale = const Locale('ru', 'RU');
@@ -65,43 +82,50 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return SafeArea(
-          left: false,
-          right: false,
-          top: false,
-          bottom: Platform.isIOS ? false : true,
-          child: SafeArea(
-            bottom: false,
-            top : false,
-            child: MaterialApp(
-              title: 'Bandu Business',
-              debugShowCheckedModeBanner: false,
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
-              theme: ThemeData(
-                // platform: TargetPlatform.iOS,
-                fontFamily: GoogleFonts.inter().fontFamily,
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
-                appBarTheme: AppBarTheme(surfaceTintColor: Colors.transparent),
-              ),
-              home: MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (_) => AuthBloc(authRepository: AuthRepository()),
-                  ),
-                ],
-                child: const SplashScreen(),
+    return AnnotatedRegion(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return SafeArea(
+            left: false,
+            right: false,
+            top: false,
+            bottom: Platform.isIOS ? false : true,
+            child: SafeArea(
+              bottom: false,
+              top : false,
+              child: MaterialApp(
+                title: 'Bandu Business',
+                debugShowCheckedModeBanner: false,
+                navigatorKey: navigatorKey,
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
+                theme: ThemeData(
+                  fontFamily: GoogleFonts.inter().fontFamily,
+                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
+                  appBarTheme: AppBarTheme(surfaceTintColor: Colors.transparent),
+                ),
+                home: MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (_) => AuthBloc(authRepository: AuthRepository()),
+                    ),
+                  ],
+                  child: const SplashScreen(),
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/helper/service/rx_bus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -173,5 +174,88 @@ class FirebaseHelper {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage event) {
       RxBus.post(tag: "notification", event.data["verifyUrl"]);
     });
+  }
+
+  /// Get FCM token - checks cache first, then fetches from Firebase if needed
+  /// Works for both Android and iOS
+  static Future<String?> getFcmToken() async {
+    try {
+      // First check cache
+      String? cachedToken = CacheService.getString("fcm_token");
+      if (cachedToken != null && cachedToken.isNotEmpty) {
+        print('🔑 FCM Token (cache): $cachedToken');
+        return cachedToken;
+      }
+
+      // If not in cache, fetch from Firebase
+      print('📱 FCM Token cache da topilmadi, Firebase dan olinmoqda...');
+      final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+      if (Platform.isIOS) {
+        // iOS specific handling
+        await messaging.setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
+        int retryCount = 0;
+        const maxRetries = 5;
+        String? token;
+
+        while (retryCount < maxRetries && token == null) {
+          await Future.delayed(Duration(milliseconds: 500 * (retryCount + 1)));
+
+          try {
+            token = await messaging.getToken();
+            if (token != null) {
+              break;
+            }
+          } catch (e) {
+            print('⏳ APNS token kutilmoqda... (${retryCount + 1}/$maxRetries)');
+          }
+
+          retryCount++;
+        }
+
+        if (token != null && token.isNotEmpty) {
+          print('🔑 FCM Token (iOS): $token');
+          CacheService.saveString("fcm_token", token);
+
+          // Setup token refresh listener if not already set
+          messaging.onTokenRefresh.listen((newToken) {
+            print('🔄 FCM Token yangilandi: $newToken');
+            CacheService.saveString("fcm_token", newToken);
+          });
+
+          return token;
+        } else {
+          print('❌ APNS token olishda xatolik. Token olinmadi.');
+          return null;
+        }
+      } else {
+        // Android handling
+        String? token = await messaging.getToken();
+
+        if (token != null && token.isNotEmpty) {
+          print('🔑 FCM Token (Android): $token');
+          CacheService.saveString("fcm_token", token);
+
+          // Setup token refresh listener if not already set
+          messaging.onTokenRefresh.listen((newToken) {
+            print('🔄 FCM Token yangilandi: $newToken');
+            CacheService.saveString("fcm_token", newToken);
+          });
+
+          return token;
+        } else {
+          print('❌ FCM token olishda xatolik');
+          return null;
+        }
+      }
+    } catch (e) {
+      print('❌ FCM token olishda xatolik: $e');
+      return null;
+    }
   }
 }

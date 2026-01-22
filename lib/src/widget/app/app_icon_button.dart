@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppIconButton extends StatelessWidget {
   final String icon;
-  final double? height, width, borderRadius;
+  final double? height, width, borderRadius , iconWidth;
   final Color? backColor, iconColor;
   final bool? loading;
   final Function() onTap;
@@ -20,7 +20,7 @@ class AppIconButton extends StatelessWidget {
     this.borderRadius,
     this.backColor,
     this.iconColor,
-    this.loading,
+    this.loading, this.iconWidth,
 
   });
 
@@ -47,12 +47,10 @@ class AppIconButton extends StatelessWidget {
         ),
         child: Center(
           child: isLoading 
-              ? CircularProgressIndicator.adaptive(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    iconColor ?? AppColor.black,
-                  ),
+              ? CupertinoActivityIndicator(
+                  color: iconColor ?? AppColor.black,
                 )
-              : AppSvgAsset(icon, color: iconColor ?? AppColor.black),
+              : AppSvgAsset(icon, color: iconColor ?? AppColor.black ,width: iconWidth,),
         ),
       ),
     );

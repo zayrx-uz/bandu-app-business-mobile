@@ -43,14 +43,16 @@ class _EmployerScreenState extends State<EmployerScreen> {
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is GetEmployeeSuccessState) {
-            data = state.data;
+            setState(() {
+              data = state.data;
+            });
           }
         },
         builder: (context, state) {
           if (state is GetEmployeeLoadingState && data == null) {
             return Center(
-              child: CircularProgressIndicator.adaptive(
-                backgroundColor: AppColor.black,
+              child: CupertinoActivityIndicator(
+                color: AppColor.black,
               ),
             );
           }

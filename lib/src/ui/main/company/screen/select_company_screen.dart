@@ -45,7 +45,6 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
   }
 
   void _checkUserRoleAndGetData() {
-    // First get user info to check roles
     BlocProvider.of<HomeBloc>(context).add(GetMeEvent());
   }
 
@@ -54,25 +53,20 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
     _isLoadingData = true;
     
     if (userRoles == null || userRoles!.isEmpty) {
-      // If no roles, get all companies (fallback)
       BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
       return;
     }
     
-    // Check if user is BUSINESS_OWNER, WORKER, MODERATOR, or MANAGER
     final isBusinessOwner = userRoles!.contains("BUSINESS_OWNER");
     final isEmployee = userRoles!.contains("WORKER") || 
                        userRoles!.contains("MODERATOR") || 
                        userRoles!.contains("MANAGER");
     
     if (isBusinessOwner) {
-      // For BUSINESS_OWNER - use new endpoint api/company/my-companies
       BlocProvider.of<HomeBloc>(context).add(GetMyCompaniesEvent());
     } else if (isEmployee) {
-      // For WORKER, MODERATOR, MANAGER - get my company
       BlocProvider.of<HomeBloc>(context).add(GetMyCompanyEvent());
     } else {
-      // For other roles, get all companies
       BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
     }
   }
@@ -93,7 +87,6 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
           setState(() {});
         } else if (state is GetMyCompanySuccessState) {
           _isLoadingData = false;
-          // For BUSINESS_OWNER, convert single company to list
           data = [state.data];
           setState(() {});
         } else if (state is DeleteCompanyLoadingState) {
@@ -112,7 +105,6 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
           });
         } else if (state is DeleteCompanySuccessState) {
           deletingId = null;
-          // getData();
         } else if (state is UpdateCompanyLoadingState) {
           updatingId = state.companyId;
           setState(() {});
@@ -153,7 +145,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                 if (isLoading)
                   const Expanded(
                     child: Center(
-                      child: CircularProgressIndicator.adaptive(),
+                      child: CupertinoActivityIndicator(),
                     ),
                   )
                 else if (data!.isEmpty)
@@ -253,8 +245,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                                   SizedBox(
                                                     width: 18.sp,
                                                     height: 18.sp,
-                                                    child: const CircularProgressIndicator.adaptive(
-                                                      strokeWidth: 2,
+                                                    child: const CupertinoActivityIndicator(
+                                                      radius: 9,
                                                     ),
                                                   )
                                                 else ...[
@@ -300,8 +292,8 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                                   SizedBox(
                                                     width: 18.sp,
                                                     height: 18.sp,
-                                                    child: const CircularProgressIndicator.adaptive(
-                                                      strokeWidth: 2,
+                                                    child: const CupertinoActivityIndicator(
+                                                      radius: 9,
                                                     ),
                                                   )
                                                 else ...[
@@ -388,6 +380,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                             final firstCategory = selectedCompany.categories.first;
                             CacheService.saveCategoryId(firstCategory.id);
                             CacheService.saveCategoryName(firstCategory.name);
+                            CacheService.saveCategoryIkpuCode(firstCategory.ikpuCode);
                           }
                           
                           Navigator.popUntil(context, (route) => route.isFirst);

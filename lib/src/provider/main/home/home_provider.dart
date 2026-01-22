@@ -10,29 +10,24 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class HomeProvider extends ApiProvider {
-  ///get company
   Future<HttpResult> getCompany() async {
     String url = ApiHelper.getMyCompany;
 
     return await getRequest(url);
   }
 
-  ///save company
   Future<HttpResult> saveCompany(CreateCompanyModel data) async {
     return await postRequest(ApiHelper.saveCompany, data.toJson());
   }
 
-  ///update company
   Future<HttpResult> updateCompany(int id, UpdateCompanyModel data) async {
     return await patchRequest("${ApiHelper.getCompany}/$id", data.toJson());
   }
 
-  ///delete company
   Future<HttpResult> deleteCompany(int id) async {
     return await deleteRequest("${ApiHelper.getCompany}/$id");
   }
 
-  ///get company by category
   Future<HttpResult> getCompanyByCategory(
     int page,
     int? categoryId,
@@ -48,42 +43,34 @@ class HomeProvider extends ApiProvider {
     return await getRequest("${ApiHelper.getCompany}$path");
   }
 
-  ///get categories
   Future<HttpResult> getCategories() async {
     return await getRequest(ApiHelper.getCategory);
   }
 
-  ///get company detail
   Future<HttpResult> getCompanyDetail(int companyId) async {
     return await getRequest("${ApiHelper.getCompany}/$companyId");
   }
 
-  ///get monitoring
   Future<HttpResult> getMonitoring() async {
     return await getRequest(ApiHelper.getMonitoring);
   }
 
-  ///get me
   Future<HttpResult> getMe() async {
     return await getRequest(ApiHelper.getMe);
   }
 
-  ///update user info
   Future<HttpResult> updateUserInfo(UserUpdateModel data) async {
     return await patchRequest(ApiHelper.getMe, data.toJson());
   }
 
-  ///get place
   Future<HttpResult> getPlace(int companyId) async {
     return await getRequest("${ApiHelper.getPlace}$companyId");
   }
 
-  ///get place
   Future<HttpResult> place(int companyId) async {
     return await getRequest("${ApiHelper.getPlace}$companyId");
   }
 
-  ///set place
   Future<HttpResult> setPlace(String name, int number) async {
     var body = {
       "companyId": HelperFunctions.getCompanyId(),
@@ -94,7 +81,6 @@ class HomeProvider extends ApiProvider {
   }
 
 
-  ///update place
   Future<HttpResult> updatePlace(int number , int id) async {
     var body = {
       "capacity": number,
@@ -103,51 +89,42 @@ class HomeProvider extends ApiProvider {
   }
 
 
-  ///delete place
   Future<HttpResult> deletePlace(int id) async {
     return await deleteRequest("${ApiHelper.place}/$id");
   }
 
-  ///booking
   Future<HttpResult> booking(BookingSendModel data) async {
     return await postRequest(ApiHelper.booking, data.toJson());
   }
 
-  ///get employee
   Future<HttpResult> getEmployee() async {
     return await getRequest(
       "${ApiHelper.getEmployee}?companyId=${HelperFunctions.getCompanyId()}",
     );
   }
 
-  ///get my company (for employee)
   Future<HttpResult> getMyCompany() async {
     return await getRequest(ApiHelper.getEmployeeMyCompany);
   }
 
-  ///get my companies (for BUSINESS_OWNER)
   Future<HttpResult> getMyCompanies() async {
     return await getRequest(ApiHelper.getMyCompanies);
   }
 
-  ///remove employee
   Future<HttpResult> deleteEmployee({required int id }) async {
     return await deleteRequest(
       "${ApiHelper.getCompany}/${HelperFunctions.getCompanyId()}/members/$id",
     );
   }
 
-  ///get qr code
   Future<HttpResult> getQrCode(String url) async {
     return await getRequest(url);
   }
 
-  ///get resource category
   Future<HttpResult> getResourceCategory({required int companyId}) async {
     return await getRequest("${ApiHelper.getResourceCategory}/company/$companyId");
   }
 
-  ///create resource category
   Future<HttpResult> createResourceCategory({
     required String name,
     String? description,
@@ -171,12 +148,10 @@ class HomeProvider extends ApiProvider {
     return await postRequest(ApiHelper.createResourceCategory, body);
   }
 
-  ///delete resource category
   Future<HttpResult> deleteResourceCategory({required int id}) async {
     return await deleteRequest("${ApiHelper.deleteResourceCategory}$id");
   }
 
-  ///upload resource image
   Future<HttpResult> uploadResourceImage(String filePath) async {
     var request = http.MultipartRequest('POST', Uri.parse(ApiHelper.uploadResourceImage));
 
@@ -191,7 +166,6 @@ class HomeProvider extends ApiProvider {
     return await postMultiRequest(request);
   }
 
-  ///create resource
   Future<HttpResult> createResource({
     required String name,
     required int companyId,
@@ -223,18 +197,15 @@ class HomeProvider extends ApiProvider {
     return await postRequest(ApiHelper.createResource, body);
   }
 
-  ///get resource
   Future<HttpResult> getResource({required int id}) async {
     return await getRequest("${ApiHelper.getResource}/company/$id");
   }
 
 
-  ///delete resource
   Future<HttpResult> deleteResource({required int id}) async {
     return await deleteRequest("${ApiHelper.getResource}/$id");
   }
 
-  ///update resource
   Future<HttpResult> updateResource({
     required int id,
     required String name,
@@ -267,13 +238,11 @@ class HomeProvider extends ApiProvider {
     return await patchRequest("${ApiHelper.getResource}/$id", body);
   }
 
-  ///confirm booking
   Future<HttpResult> confirmBook(int bookId) async {
     var body = {"status": "confirmed", "note": ""};
     return await patchRequest("${ApiHelper.confirmBook}$bookId/status", body);
   }
 
-  ///save employee
   Future<HttpResult> savEmploye(
     String name,
     String phone,
@@ -291,7 +260,6 @@ class HomeProvider extends ApiProvider {
   }
 
 
-  ///update employee
   Future<HttpResult> updateEmployee(
     String name,
     String phone,
@@ -307,10 +275,8 @@ class HomeProvider extends ApiProvider {
     return await patchRequest("${ApiHelper.saveCompany}/${HelperFunctions.getCompanyId()}/members/$id", body);
   }
 
-  ///get statistic
   Future<HttpResult> getStatistic(DateTime date, String period) async {
     String formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-    // clientDateTime should be the current time when making the request, not the query date
     String clientDateTime = DateTime.now().toIso8601String();
     int? companyId = HelperFunctions.getCompanyId();
     if (companyId != null && companyId > 0) {
@@ -327,7 +293,6 @@ class HomeProvider extends ApiProvider {
     }
   }
 
-  ///media
   Future<HttpResult> uploadImage(String filePath) async {
     var request = http.MultipartRequest('POST', Uri.parse(ApiHelper.media));
 

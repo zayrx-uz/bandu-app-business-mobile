@@ -6,6 +6,7 @@ import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/booking/booking_item_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -127,8 +128,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
               builder: (context, state) {
                 if (state is GetOwnerBookingsLoadingState && _bookings.isEmpty) {
                   return Center(
-                    child: CircularProgressIndicator.adaptive(
-                      backgroundColor: AppColor.black,
+                    child: CupertinoActivityIndicator(
+                      color: AppColor.black,
                     ),
                   );
                 }
@@ -153,8 +154,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         return Center(
                           child: Padding(
                             padding: EdgeInsets.all(16.h),
-                            child: CircularProgressIndicator.adaptive(
-                              backgroundColor: AppColor.black,
+                            child: CupertinoActivityIndicator(
+                              color: AppColor.black,
                             ),
                           ),
                         );

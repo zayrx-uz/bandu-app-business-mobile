@@ -93,12 +93,14 @@ class Category {
   int id;
   String name;
   String description;
+  String ikpuCode;
   CategoryMetadata? metadata;
 
   Category({
     required this.id,
     required this.name,
     required this.description,
+    required this.ikpuCode,
     this.metadata,
   });
 
@@ -106,6 +108,7 @@ class Category {
     id: json["id"] ?? 0,
     name: json["name"] ?? "",
     description: json["description"] ?? "",
+    ikpuCode: json["ikpuCode"] ?? "",
     metadata: json["metadata"] == null
         ? null
         : CategoryMetadata.fromJson(json["metadata"]),

@@ -14,7 +14,9 @@ import 'package:bandu_business/src/widget/auth/input_phone_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:bandu_business/src/widget/auth/select_gender_widget.dart';
 import 'package:bandu_business/src/widget/auth/set_image_widget.dart';
+import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -133,6 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             });
             check();
           } else if (state is HomeErrorState) {
+            CenterDialog.errorDialog(context, state.message);
             setState(() {
               errorText = state.message;
               isLoadingData = false;
@@ -142,6 +145,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               shouldCloseAfterRefresh = true;
             });
             AppService.successToast(context, "edited".tr());
+            BlocProvider.of<HomeBloc>(context).add(GetMeEvent());
           } else if (state is GetMeSuccessState) {
             final user = state.data.data.user;
             final phoneData = state.data.data.phoneNumber;
@@ -198,8 +202,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Expanded(
                   child: gettingData
                       ? Center(
-                          child: CircularProgressIndicator.adaptive(
-                            backgroundColor: AppColor.black,
+                          child: CupertinoActivityIndicator(
+                            color: AppColor.black,
                           ),
                         )
                       : SingleChildScrollView(

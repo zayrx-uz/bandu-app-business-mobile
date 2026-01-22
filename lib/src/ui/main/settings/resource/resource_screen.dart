@@ -65,7 +65,7 @@ class _ResourceScreenState extends State<ResourceScreen> {
                 if (state is GetResourceLoadingState &&
                     lastResourceData == null) {
                   return const Center(
-                    child: CircularProgressIndicator.adaptive(),
+                    child: CupertinoActivityIndicator(),
                   );
                 }
 
@@ -188,7 +188,7 @@ class _ResourceScreenState extends State<ResourceScreen> {
                 }
 
                 return const Center(
-                  child: CircularProgressIndicator.adaptive(),
+                  child: CupertinoActivityIndicator(),
                 );
               },
             ),

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/auth/login_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,17 +13,30 @@ import 'package:url_launcher/url_launcher.dart';
 class HelperFunctions {
   HelperFunctions._();
 
-  /// Request location permission
   static Future<bool> requestLocationPermission() async {
-    final status = await Permission.locationWhenInUse.request();
-    if (status.isGranted) {
-      return true;
-    } else if (status.isDenied) {
+    try {
+      PermissionStatus status = await Permission.locationWhenInUse.status;
+      
+      if (status.isGranted) {
+        return true;
+      }
+      
+      if (status.isDenied) {
+        status = await Permission.locationWhenInUse.request();
+        if (status.isGranted) {
+          return true;
+        }
+      }
+      
+      if (status.isPermanentlyDenied) {
+        return false;
+      }
+      
+      return status.isGranted;
+    } catch (e) {
+      debugPrint('Error requesting location permission: $e');
       return false;
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
     }
-    return false;
   }
 
   static void saveLoginData(LoginModel data) {
@@ -134,5 +149,39 @@ class HelperFunctions {
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
     return byteData!.buffer.asUint8List();
+  }
+
+  static String getCategoryIconByIkpuCode(String ikpuCode) {
+    switch (ikpuCode) {
+      case "11702002001000000":
+        return AppImages.barberSelect;
+      case "07615002001000000":
+        return AppImages.carwashSelect;
+      case "10902003001000000":
+        return AppIcons.placeSelect;
+      case "02106999999000000":
+        return AppImages.restaurantSelect;
+      default:
+        return AppIcons.placeSelect;
+    }
+  }
+
+  static String getCategoryIconByIkpuCodeWithSelection(String ikpuCode, bool isSelected) {
+    if (ikpuCode.isEmpty) {
+      return isSelected ? AppIcons.placeOn : AppIcons.place;
+    }
+    
+    switch (ikpuCode) {
+      case "11702002001000000":
+        return isSelected ? AppImages.barberSelect : AppImages.barberUnselect;
+      case "07615002001000000":
+        return isSelected ? AppImages.carwashSelect : AppImages.carwashUnselect;
+      case "10902003001000000":
+        return isSelected ? AppIcons.placeOn : AppIcons.place;
+      case "02106999999000000":
+        return isSelected ? AppImages.restaurantSelect : AppImages.restaurantUnselect;
+      default:
+        return isSelected ? AppIcons.placeOn : AppIcons.place;
+    }
   }
 }

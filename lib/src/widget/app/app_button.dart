@@ -68,8 +68,8 @@ class AppButton extends StatelessWidget {
         ),
         child: loading
             ? Center(
-                child: CircularProgressIndicator.adaptive(
-                  backgroundColor: AppColor.white,
+                child: CupertinoActivityIndicator(
+                  // backgroundColor: AppColor.white,
                 ),
               )
             : child ??

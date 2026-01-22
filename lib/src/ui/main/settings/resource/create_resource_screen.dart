@@ -160,13 +160,26 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "resourceTimeDate".tr(),
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColor.black09,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  "resourceTimeDate".tr(),
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColor.black09,
+                                  ),
+                                ),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  "(${"optional".tr()})",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColor.grey77,
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(height: 8.h),
                             GestureDetector(
@@ -187,7 +200,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                                       child: Text(
                                         timeSlotController.text.isNotEmpty 
                                             ? timeSlotController.text 
-                                            : "select".tr(),
+                                            : "${"select".tr()} (${"optional".tr()})",
                                         style: TextStyle(
                                           color: timeSlotController.text.isNotEmpty 
                                               ? AppColor.black09 

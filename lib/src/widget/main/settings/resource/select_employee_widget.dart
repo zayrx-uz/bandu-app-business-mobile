@@ -4,6 +4,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -69,7 +70,7 @@ class _SelectEmployeeWidgetState extends State<SelectEmployeeWidget> {
               margin: EdgeInsets.symmetric(horizontal: 16.w),
               padding: EdgeInsets.all(16.w),
               child: Center(
-                child: CircularProgressIndicator(
+                child: CupertinoActivityIndicator(
                   color: AppColor.yellowFFC,
                 ),
               ),

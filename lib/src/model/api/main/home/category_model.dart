@@ -36,16 +36,19 @@ class CategoryData {
   int id;
   String name;
   String description;
+  String ikpuCode;
 
   CategoryData({
     required this.id,
     required this.name,
     required this.description,
+    required this.ikpuCode,
   });
 
   factory CategoryData.fromJson(Map<String, dynamic> json) => CategoryData(
     id: json["id"] ?? 0,
     name: json["name"] ?? "",
     description: json["description"] ?? "",
+    ikpuCode: json["ikpuCode"] ?? "",
   );
 }

@@ -96,4 +96,5 @@ class AppIcons {
   static const String closeIcon = 'assets/icons/close.svg';
   static const String copy = 'assets/icons/edit.svg';
   static const String refresh = 'assets/icons/edit2.svg';
+  static const String arrowTopRight = 'assets/icons/arrow_top_right.svg';
 }

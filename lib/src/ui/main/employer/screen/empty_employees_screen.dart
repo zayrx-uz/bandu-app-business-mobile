@@ -8,6 +8,7 @@ import 'package:bandu_business/src/widget/app/empty_widget.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
 import 'package:bandu_business/src/widget/main/employer/empty_employee_item_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -63,8 +64,8 @@ class _EmptyEmployeesScreenState extends State<EmptyEmployeesScreen> {
                 ),
                 Expanded(
                   child: Center(
-                    child: CircularProgressIndicator.adaptive(
-                      backgroundColor: AppColor.black,
+                    child: CupertinoActivityIndicator(
+                      color: AppColor.black,
                     ),
                   ),
                 ),

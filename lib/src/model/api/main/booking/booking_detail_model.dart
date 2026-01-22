@@ -407,12 +407,14 @@ class BookingDetailCategory {
   int id;
   String name;
   String? description;
+  String ikpuCode;
   dynamic metadata;
 
   BookingDetailCategory({
     required this.id,
     required this.name,
     this.description,
+    required this.ikpuCode,
     this.metadata,
   });
 
@@ -421,6 +423,7 @@ class BookingDetailCategory {
         id: json["id"] ?? 0,
         name: json["name"] ?? "",
         description: json["description"],
+        ikpuCode: json["ikpuCode"] ?? "",
         metadata: json["metadata"],
       );
 }

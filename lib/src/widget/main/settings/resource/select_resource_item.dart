@@ -5,6 +5,7 @@ import 'package:bandu_business/src/model/api/main/home/resource_category_model.d
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -453,7 +454,7 @@ class _SelectResourceWidgetState extends State<SelectResourceWidget> with Ticker
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Center(
-                child: CircularProgressIndicator(),
+                child: CupertinoActivityIndicator(),
               ),
             );
           }

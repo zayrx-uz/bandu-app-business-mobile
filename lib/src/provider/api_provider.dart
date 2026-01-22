@@ -5,6 +5,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:alice/alice.dart';
+import 'package:alice/model/alice_http_call.dart';
+import 'package:alice/model/alice_http_request.dart';
+import 'package:alice/model/alice_http_response.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/response/http_result.dart';
 import 'package:flutter/foundation.dart';
@@ -13,9 +17,9 @@ import 'package:http/http.dart' as http;
 import '../helper/service/rx_bus.dart';
 
 class ApiProvider {
+  static Alice? alice;
   static const Duration _timeout = Duration(seconds: 120);
 
-  /// 🔹 POST request
   Future<HttpResult> postRequest(
     String url,
     dynamic body, {
@@ -24,12 +28,25 @@ class ApiProvider {
     final headers = _header();
     _logRequest('POST', url, headers, body);
 
+    final requestBody = json.encode(body);
+    final uri = Uri.parse(url);
+
+    final requestTime = DateTime.now();
     try {
       final response = await http
-          .post(Uri.parse(url), headers: headers, body: json.encode(body))
+          .post(uri, headers: headers, body: requestBody)
           .timeout(_timeout);
 
-
+      if (kDebugMode && alice != null) {
+        _addAliceCall(
+          method: 'POST',
+          uri: uri,
+          headers: headers,
+          requestBody: requestBody,
+          response: response,
+          requestTime: requestTime,
+        );
+      }
 
       return _result(response);
     } on TimeoutException catch (_) {
@@ -39,7 +56,6 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 Multipart POST request
   Future<HttpResult> postMultiRequest(http.MultipartRequest request) async {
     request.headers.addAll(_header(isMultipart: true));
     _logRequest(
@@ -49,24 +65,54 @@ class ApiProvider {
       request.fields,
     );
 
+    final requestTime = DateTime.now();
     final streamedResponse = await request.send().timeout(
       Duration(seconds: 120),
     );
     final response = await http.Response.fromStream(streamedResponse);
 
+    if (kDebugMode && alice != null) {
+      final requestBody = request.fields.toString();
+      _addAliceCall(
+        method: 'POST',
+        uri: request.url,
+        headers: request.headers,
+        requestBody: requestBody,
+        response: response,
+        requestTime: requestTime,
+      );
+    }
+
     _logResponse(response);
     return _result(response);
   }
 
-  /// 🔹 GET request
   Future<HttpResult> getRequest(String url, {bool withHeader = true}) async {
     final headers = withHeader ? _header() : null;
     _logRequest('GET', url, headers);
 
     try {
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(_timeout);
+      final uri = Uri.parse(url);
+      final request = http.Request('GET', uri);
+      if (headers != null) {
+        request.headers.addAll(headers);
+      }
+      
+      final requestTime = DateTime.now();
+      final streamedResponse = await request.send().timeout(_timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      if (kDebugMode && alice != null) {
+        _addAliceCall(
+          method: 'GET',
+          uri: uri,
+          headers: headers ?? {},
+          requestBody: null,
+          response: response,
+          requestTime: requestTime,
+        );
+      }
+      
       return _result(response);
     } on TimeoutException catch (_) {
       return _networkError();
@@ -75,15 +121,30 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 DELETE request
   Future<HttpResult> deleteRequest(String url) async {
     final headers = _header();
     _logRequest('DELETE', url, headers);
 
     try {
-      final response = await http
-          .delete(Uri.parse(url), headers: headers)
-          .timeout(_timeout);
+      final uri = Uri.parse(url);
+      final request = http.Request('DELETE', uri);
+      request.headers.addAll(headers);
+      
+      final requestTime = DateTime.now();
+      final streamedResponse = await request.send().timeout(_timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      if (kDebugMode && alice != null) {
+        _addAliceCall(
+          method: 'DELETE',
+          uri: uri,
+          headers: headers,
+          requestBody: null,
+          response: response,
+          requestTime: requestTime,
+        );
+      }
+      
       return _result(response);
     } on TimeoutException catch (_) {
       return _networkError();
@@ -92,16 +153,32 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 PUT request
   Future<HttpResult> putRequest(String url, dynamic body) async {
     final headers = _header();
     _logRequest('PUT', url, headers, body);
 
     try {
-      final response = await http
-          .put(Uri.parse(url), headers: headers, body: json.encode(body))
-          .timeout(_timeout);
-
+      final uri = Uri.parse(url);
+      final requestBody = json.encode(body);
+      final request = http.Request('PUT', uri);
+      request.headers.addAll(headers);
+      request.body = requestBody;
+      
+      final requestTime = DateTime.now();
+      final streamedResponse = await request.send().timeout(_timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      if (kDebugMode && alice != null) {
+        _addAliceCall(
+          method: 'PUT',
+          uri: uri,
+          headers: headers,
+          requestBody: requestBody,
+          response: response,
+          requestTime: requestTime,
+        );
+      }
+      
       return _result(response);
     } on TimeoutException catch (_) {
       return _internetError();
@@ -110,16 +187,32 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 PATCH request
   Future<HttpResult> patchRequest(String url, dynamic body) async {
     final headers = _header();
     _logRequest('PATCH', url, headers, body);
 
     try {
-      final response = await http
-          .patch(Uri.parse(url), headers: headers, body: json.encode(body))
-          .timeout(_timeout);
-
+      final uri = Uri.parse(url);
+      final requestBody = json.encode(body);
+      final request = http.Request('PATCH', uri);
+      request.headers.addAll(headers);
+      request.body = requestBody;
+      
+      final requestTime = DateTime.now();
+      final streamedResponse = await request.send().timeout(_timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      if (kDebugMode && alice != null) {
+        _addAliceCall(
+          method: 'PATCH',
+          uri: uri,
+          headers: headers,
+          requestBody: requestBody,
+          response: response,
+          requestTime: requestTime,
+        );
+      }
+      
       return _result(response);
     } on TimeoutException catch (_) {
       return _internetError();
@@ -128,7 +221,6 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 HTTP javobni qayta ishlash
   HttpResult _result(http.Response response) {
     _logResponse(response);
 
@@ -173,7 +265,6 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 Headerlarni tayyorlash
   Map<String, String> _header({bool isMultipart = false}) {
     final token = CacheService.getString('access_token');
     final headers = <String, String>{
@@ -191,7 +282,6 @@ class ApiProvider {
     return headers;
   }
 
-  /// 🔹 Request log
   void _logRequest(String method, String url, dynamic headers, [dynamic body]) {
     if (kDebugMode) {
       log('//// ==== $method REQUEST ==== ////');
@@ -201,7 +291,6 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 Response log
   void _logResponse(http.Response response) {
     if (kDebugMode) {
       log('//// ==== RESPONSE ==== ////');
@@ -210,11 +299,62 @@ class ApiProvider {
     }
   }
 
-  /// 🔹 Network xatolik
   HttpResult _networkError() =>
       HttpResult(isSuccess: false, status: -1, result: "Network");
 
-  /// 🔹 Internet xatolik
   HttpResult _internetError() =>
       HttpResult(isSuccess: false, status: -1, result: "Internet error");
+
+  void _addAliceCall({
+    required String method,
+    required Uri uri,
+    required Map<String, String> headers,
+    dynamic requestBody,
+    required http.Response response,
+    required DateTime requestTime,
+  }) {
+    if (alice == null) return;
+
+    final call = AliceHttpCall(uri.hashCode)
+      ..client = 'HttpClient (http package)'
+      ..method = method
+      ..uri = uri.toString()
+      ..endpoint = uri.path.isEmpty ? '/' : uri.path
+      ..server = uri.host
+      ..secure = uri.scheme == 'https';
+
+    final httpRequest = AliceHttpRequest()
+      ..time = requestTime
+      ..headers = headers
+      ..contentType = headers['content-type'] ?? headers['Content-Type'] ?? 'application/json'
+      ..queryParameters = uri.queryParameters;
+
+    if (requestBody != null) {
+      final bodyStr = requestBody is String ? requestBody : json.encode(requestBody);
+      httpRequest
+        ..body = bodyStr
+        ..size = utf8.encode(bodyStr).length;
+    } else {
+      httpRequest
+        ..body = ''
+        ..size = 0;
+    }
+
+    final responseTime = DateTime.now();
+    final responseBody = utf8.decode(response.bodyBytes);
+    final httpResponse = AliceHttpResponse()
+      ..status = response.statusCode
+      ..body = responseBody
+      ..size = utf8.encode(responseBody).length
+      ..time = responseTime
+      ..headers = Map<String, String>.from(response.headers);
+
+    call
+      ..request = httpRequest
+      ..response = httpResponse
+      ..loading = false
+      ..duration = responseTime.millisecondsSinceEpoch - requestTime.millisecondsSinceEpoch;
+
+    alice!.addHttpCall(call);
+  }
 }
