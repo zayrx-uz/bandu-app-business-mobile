@@ -25,13 +25,13 @@ class SelectTypeWidget extends StatelessWidget {
           SizedBox(height: 6.h),
           Row(
             children: [
-              selectButton(context, "available".tr(), isAvaible, () {
+              selectButton(context, "active".tr(), isAvaible, () {
                 onTap(true);
               }),
               SizedBox(width: 8.w),
               selectButton(
                 context,
-                "booked".tr(),
+                "inactive".tr(),
                 isAvaible != null ? !isAvaible! : null,
                     () {
                   onTap(false);

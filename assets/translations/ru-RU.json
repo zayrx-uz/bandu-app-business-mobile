@@ -350,7 +350,9 @@
   "pleaseEnterCompanyName" : "Пожалуйста, введите название компании",
   "pleaseSelectLocation" : "Пожалуйста, выберите местоположение",
   "pleaseSetWorkingHours" : "Пожалуйста, установите рабочие часы",
-  "resourceCategories" : "Категории ресурсов"
+  "resourceCategories" : "Категории ресурсов",
+  "active" : "Активный",
+  "inactive" : "Неактивный"
 }
 
 

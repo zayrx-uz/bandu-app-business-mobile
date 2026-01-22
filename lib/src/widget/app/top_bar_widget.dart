@@ -47,15 +47,22 @@ class TopBarWidget extends StatelessWidget {
       child: Row(
         children: [
           if (isBack) BackButtons(),
+          SizedBox(width: 10.w,),
           if (left != null) left!,
-          Spacer(),
           if (isAppName)
             TopAppName()
           else
-            Text(text, style: AppTextStyle.f600s20.copyWith(
-              fontSize: isTablet(context) ? 14.sp : 20.sp
-            )),
-          Spacer(),
+            Expanded(
+              child: Center(
+                child: Text(text, style: AppTextStyle.f600s20.copyWith(
+                  fontSize: isTablet(context) ? 14.sp : 20.sp
+                ),
+                maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          // Spacer(),
           if (right != null) right!,
           if (isBack) SizedBox(width: 56.h),
         ],

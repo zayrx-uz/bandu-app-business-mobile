@@ -55,7 +55,7 @@ class ResourceWidgetGrid extends StatelessWidget {
                 data.name,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 24.sp,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.w800,
                 ),
                 maxLines: 1,

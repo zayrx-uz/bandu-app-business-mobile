@@ -20,8 +20,6 @@ class SelectRoleWidget extends StatelessWidget {
   });
 
   static const List<String> _englishRoles = [
-    "Business Owner",
-    "Moderator",
     "Manager",
     "Worker",
   ];

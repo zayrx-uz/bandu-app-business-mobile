@@ -383,7 +383,7 @@ class CenterDialog {
               child: Text(
                 "confirm".tr(),
                 style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.yellowFFC,
+                  color: AppColor.black,
                   fontSize: isTablet(context) ? 12.sp : 16.sp,
                 ),
               ),

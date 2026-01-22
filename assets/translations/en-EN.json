@@ -350,5 +350,7 @@
   "pleaseEnterCompanyName" : "Please enter company name",
   "pleaseSelectLocation" : "Please select location",
   "pleaseSetWorkingHours" : "Please set working hours",
-  "resourceCategories" : "Resource Categories"
+  "resourceCategories" : "Resource Categories",
+  "active" : "Active",
+  "inactive" : "Inactive"
 }

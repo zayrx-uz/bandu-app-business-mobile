@@ -58,12 +58,16 @@ class ResourceWidget extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          data.name,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w800,
+                        Expanded(
+                          child: Text(
+                            data.name,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w800,
+                            ),
+                             maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         SizedBox(width: 18.w,),

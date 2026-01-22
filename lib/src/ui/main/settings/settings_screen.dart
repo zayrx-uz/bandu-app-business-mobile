@@ -183,9 +183,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       margin: EdgeInsets.zero,
                       onTap: () async {
                         if (Platform.isAndroid) {
-                          CenterDialog.showCustomRateDialog(context);
+                          await launchUrl(
+                            Uri.parse(
+                              'https://play.google.com/store/apps/details?id=uz.mobile.bandu&hl=ru',
+                            ),
+                            mode: LaunchMode.externalApplication,
+                          );
                         } else {
-                          await review.requestReview();
+                          await launchUrl(
+                            Uri.parse(
+                              'https://apps.apple.com/us/app/bandu/id6757488779',
+                            ),
+                            mode: LaunchMode.externalApplication,
+                          );
                         }
                       },
                     ),

@@ -350,5 +350,7 @@
   "pleaseEnterCompanyName" : "Iltimos, kompaniya nomini kiriting",
   "pleaseSelectLocation" : "Iltimos, joylashuvni tanlang",
   "pleaseSetWorkingHours" : "Iltimos, ish vaqtini belgilang",
-  "resourceCategories" : "Resurs kategoriyalari"
+  "resourceCategories" : "Resurs kategoriyalari",
+  "active" : "Faol",
+  "inactive" : "No faol"
 }

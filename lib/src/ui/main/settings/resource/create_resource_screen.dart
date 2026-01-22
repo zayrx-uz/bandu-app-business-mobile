@@ -37,7 +37,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   int timeSlotDurationMinutes = 0;
   List<Map<String, dynamic>> uploadedImages = [];
   List<int> selectedEmployeeIds = [];
-  
+
   XFile? img;
   String? _networkImageUrl;
 
@@ -45,6 +45,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   void initState() {
     super.initState();
     getData();
+    nameController.addListener(() => setState(() {}));
+    priceController.addListener(() => setState(() {}));
   }
 
   void getData() {
@@ -53,6 +55,12 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
       context.read<HomeBloc>().add(GetResourceCategoryEvent(companyId: companyId));
       context.read<HomeBloc>().add(GetEmployeeEvent());
     }
+  }
+
+  bool get isFormValid {
+    return nameController.text.isNotEmpty &&
+        selectedCategoryId != -1 &&
+        priceController.text.isNotEmpty;
   }
 
   @override
@@ -83,7 +91,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
             CenterDialog.successDialog(
               context,
               "success".tr(),
-              () {
+                  () {
                 Navigator.of(context).pop(true);
               },
             );
@@ -133,7 +141,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                         inputType: TextInputType.number,
                         title: "price".tr(),
                         hint: "priceHint".tr(),
-                        format: [    FilteringTextInputFormatter.digitsOnly,
+                        format: [
+                          FilteringTextInputFormatter.digitsOnly,
                           ThousandsFormatter(),
                         ],
                       ),
@@ -170,15 +179,6 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                                     color: AppColor.black09,
                                   ),
                                 ),
-                                SizedBox(width: 4.w),
-                                Text(
-                                  "(${"optional".tr()})",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColor.grey77,
-                                  ),
-                                ),
                               ],
                             ),
                             SizedBox(height: 8.h),
@@ -198,12 +198,12 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        timeSlotController.text.isNotEmpty 
-                                            ? timeSlotController.text 
-                                            : "${"select".tr()} (${"optional".tr()})",
+                                        timeSlotController.text.isNotEmpty
+                                            ? timeSlotController.text
+                                            : "select".tr(),
                                         style: TextStyle(
-                                          color: timeSlotController.text.isNotEmpty 
-                                              ? AppColor.black09 
+                                          color: timeSlotController.text.isNotEmpty
+                                              ? AppColor.black09
                                               : AppColor.grey77,
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.w500,
@@ -226,49 +226,53 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 12.h),
+                      AppButton(
+                        onTap: () {
+                          if (!isFormValid) {
+                            return;
+                          }
+                          if (nameController.text.isEmpty) {
+                            CenterDialog.errorDialog(context, "pleaseEnterResourceName".tr());
+                            return;
+                          }
+                          if (selectedCategoryId == -1) {
+                            CenterDialog.errorDialog(context, "pleaseSelectCategory".tr());
+                            return;
+                          }
+                          if (priceController.text.isEmpty) {
+                            CenterDialog.errorDialog(context, "pleaseEnterPrice".tr());
+                            return;
+                          }
+                          final companyId = HelperFunctions.getCompanyId() ?? 0;
+                          if (companyId == 0) {
+                            CenterDialog.errorDialog(context, "companyNotSelected".tr());
+                            return;
+                          }
+                          print(int.parse(priceController.text.replaceAll(" ", "")));
+                          context.read<HomeBloc>().add(CreateResourceEvent(
+                            name: nameController.text,
+                            companyId: companyId,
+                            price: int.parse(priceController.text.replaceAll(" ", "")),
+                            resourceCategoryId: selectedCategoryId,
+                            isBookable: isBookable,
+                            isTimeSlotBased: isTimeSlotBased,
+                            timeSlotDurationMinutes: timeSlotDurationMinutes,
+                            images: uploadedImages,
+                            employeeIds: selectedEmployeeIds.isNotEmpty ? selectedEmployeeIds : null,
+                          ));
+                        },
+                        leftIcon: AppIcons.plus,
+                        leftIconColor: Colors.white,
+                        loading: loading,
+                        text: "save".tr(),
+                        isGradient: isFormValid,
+                      ),
+                      SizedBox(height: 24.h),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 12.h),
-              AppButton(
-                onTap: () {
-                  if (nameController.text.isEmpty) {
-                    CenterDialog.errorDialog(context, "pleaseEnterResourceName".tr());
-                    return;
-                  }
-                  if (selectedCategoryId == -1) {
-                    CenterDialog.errorDialog(context, "pleaseSelectCategory".tr());
-                    return;
-                  }
-                  if (priceController.text.isEmpty) {
-                    CenterDialog.errorDialog(context, "pleaseEnterPrice".tr());
-                    return;
-                  }
-                  final companyId = HelperFunctions.getCompanyId() ?? 0;
-                  if (companyId == 0) {
-                    CenterDialog.errorDialog(context, "companyNotSelected".tr());
-                    return;
-                  }
-                  print(int.parse(priceController.text.replaceAll(" ", "")));
-                  context.read<HomeBloc>().add(CreateResourceEvent(
-                    name: nameController.text,
-                    companyId: companyId,
-                    price: int.parse(priceController.text.replaceAll(" ", "")),
-                    resourceCategoryId: selectedCategoryId,
-                    isBookable: isBookable,
-                    isTimeSlotBased: isTimeSlotBased,
-                    timeSlotDurationMinutes: timeSlotDurationMinutes,
-                    images: uploadedImages,
-                    employeeIds: selectedEmployeeIds.isNotEmpty ? selectedEmployeeIds : null,
-                  ));
-                },
-                leftIcon: AppIcons.plus,
-                leftIconColor: Colors.white,
-                loading: loading,
-                text: "save".tr(),
-              ),
-              SizedBox(height: 24.h),
             ],
           );
         },
@@ -281,7 +285,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     int minutes = timeSlotDurationMinutes % 60;
     int selectedHours = hours.clamp(0, 100);
     int selectedMinutes = minutes.clamp(0, 59);
-    
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) {
@@ -427,7 +431,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                         child: AppButton(
                           onTap: () {
                             int totalMinutes = selectedHours * 60 + selectedMinutes;
-                            
+
                             setState(() {
                               if (totalMinutes == 0) {
                                 isTimeSlotBased = false;
@@ -464,9 +468,6 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     super.dispose();
   }
 }
-
-
-
 
 class ThousandsFormatter extends TextInputFormatter {
   @override

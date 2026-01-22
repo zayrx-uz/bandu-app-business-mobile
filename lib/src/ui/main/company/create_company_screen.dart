@@ -219,286 +219,286 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                 isBack: true,
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 20.h),
-                      SetImageWidget(
-                        isHome: true,
-                        img: img,
-                        networkImage: _networkImageUrl,
-                      ),
-                      SizedBox(height: 20.h),
-                      InputWidget(
-                        controller: nameController,
-                        title: "companyName".tr(),
-                        hint: "companyName".tr(),
-                      ),
-                      SizedBox(height: 12.h),
-                      if (categoryData != null)
-                        SelectCategoryWidget(
-                          onSelect: (d) {
-                            setState(() {
-                              if (selectedCategoryId == d) {
-                                selectedCategoryId = null;
-                              } else {
-                                selectedCategoryId = d;
-                              }
-                            });
-                          },
-                          item: categoryData!,
-                          selectedId: selectedCategoryId,
-                        ),
-                      SizedBox(height: 20.h),
-                      if (widget.companyId != null)
-                        BlocBuilder<HomeBloc, HomeState>(
-                          buildWhen: (previous, current) {
-                            return current is GetResourceCategorySuccessState ||
-                                   current is GetResourceCategoryLoadingState ||
-                                   current is HomeErrorState;
-                          },
-                          builder: (context, state) {
-                            if (state is GetResourceCategorySuccessState) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                    child: Text(
-                                      "resourceCategories".tr(),
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8.h),
-                                  SelectResourceWidget(
-                                    onCategorySelected: (categoryId) {
-                                      if (categoryId > 0 && !resourceCategoryIds.contains(categoryId)) {
-                                        setState(() {
-                                          resourceCategoryIds.add(categoryId);
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  if (resourceCategoryIds.isNotEmpty)
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                                      child: Wrap(
-                                        spacing: 8.w,
-                                        runSpacing: 8.h,
-                                        children: resourceCategoryIds.map((catId) {
-                                          try {
-                                            final category = state.data.firstWhere(
-                                              (cat) => cat.id == catId,
-                                            );
-                                            return Chip(
-                                              label: Text(category.name),
-                                              onDeleted: () {
-                                                setState(() {
-                                                  resourceCategoryIds.remove(catId);
-                                                });
-                                              },
-                                              deleteIcon: Icon(Icons.close, size: 18.sp),
-                                            );
-                                          } catch (e) {
-                                            return SizedBox.shrink();
-                                          }
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  SizedBox(height: 20.h),
-                                ],
-                              );
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    SizedBox(height: 20.h),
+                    SetImageWidget(
+                      isHome: true,
+                      img: img,
+                      networkImage: _networkImageUrl,
+                    ),
+                    SizedBox(height: 20.h),
+                    InputWidget(
+                      controller: nameController,
+                      title: "companyName".tr(),
+                      hint: "companyName".tr(),
+                    ),
+                    SizedBox(height: 12.h),
+                    if (categoryData != null)
+                      SelectCategoryWidget(
+                        onSelect: (d) {
+                          setState(() {
+                            if (selectedCategoryId == d) {
+                              selectedCategoryId = null;
+                            } else {
+                              selectedCategoryId = d;
                             }
-                            return SizedBox.shrink();
-                          },
-                        ),
-                      Open24Item(
-                        value: open24,
-                        onChange: (v) {
-                          open24 = v;
-                          isOpen24 = v;
-                          setState(() {});
+                          });
+                        },
+                        item: categoryData!,
+                        selectedId: selectedCategoryId,
+                      ),
+                    SizedBox(height: 20.h),
+                    if (widget.companyId != null)
+                      BlocBuilder<HomeBloc, HomeState>(
+                        buildWhen: (previous, current) {
+                          return current is GetResourceCategorySuccessState ||
+                                 current is GetResourceCategoryLoadingState ||
+                                 current is HomeErrorState;
+                        },
+                        builder: (context, state) {
+                          if (state is GetResourceCategorySuccessState) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Text(
+                                    "resourceCategories".tr(),
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                SelectResourceWidget(
+                                  onCategorySelected: (categoryId) {
+                                    if (categoryId > 0 && !resourceCategoryIds.contains(categoryId)) {
+                                      setState(() {
+                                        resourceCategoryIds.add(categoryId);
+                                      });
+                                    }
+                                  },
+                                ),
+                                if (resourceCategoryIds.isNotEmpty)
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                    child: Wrap(
+                                      spacing: 8.w,
+                                      runSpacing: 8.h,
+                                      children: resourceCategoryIds.map((catId) {
+                                        try {
+                                          final category = state.data.firstWhere(
+                                            (cat) => cat.id == catId,
+                                          );
+                                          return Chip(
+                                            label: Text(category.name),
+                                            onDeleted: () {
+                                              setState(() {
+                                                resourceCategoryIds.remove(catId);
+                                              });
+                                            },
+                                            deleteIcon: Icon(Icons.close, size: 18.sp),
+                                          );
+                                        } catch (e) {
+                                          return SizedBox.shrink();
+                                        }
+                                      }).toList(),
+                                    ),
+                                  ),
+                                SizedBox(height: 20.h),
+                              ],
+                            );
+                          }
+                          return SizedBox.shrink();
                         },
                       ),
-                      SizedBox(height: 20.h),
-                      if (!open24)
-                        WeekItem(
-                          key: ValueKey(day.toString()),
-                          initialData: day,
-                          onChange: (v) {
-                            day = v;
-                            setState(() {});
-                          },
-                        ),
-                      SizedBox(height: 12.h),
-                      SizedBox(height: 20.h),
-                      _buildMapPreview(),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 12.h),
-              AppButton(
-                onTap: isValid ? () {
-                  if (nameController.text.isEmpty) {
-                    AppService.errorToast(
-                      context,
-                      "pleaseEnterCompanyName".tr(),
-                    );
-                    return;
-                  }
-                  if (selectedCategoryId == null) {
-                    AppService.errorToast(
-                      context,
-                      "pleaseSelectCategory".tr(),
-                    );
-                    return;
-                  }
-                  if (selectedLat == null || selectedLon == null) {
-                    AppService.errorToast(
-                      context,
-                      "pleaseSelectLocation".tr(),
-                    );
-                    return;
-                  }
-                  if (!open24) {
-                    if (day.isEmpty) {
-                      AppService.errorToast(
-                        context,
-                        "pleaseSetWorkingHours".tr(),
-                      );
-                      return;
-                    }
-                    bool hasOpenDay = false;
-                    for (var dayKey in day.keys) {
-                      final dayData = day[dayKey];
-                      if (dayData != null && dayData["closed"] == false) {
-                        if (dayData["open"] == null || dayData["close"] == null) {
+                    Open24Item(
+                      value: open24,
+                      onChange: (v) {
+                        open24 = v;
+                        isOpen24 = v;
+                        setState(() {});
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+                    if (!open24)
+                      WeekItem(
+                        // key: ValueKey(day.toString()),
+                        initialData: day,
+                        onChange: (v) {
+                          day = v;
+                          // setState(() {});
+                        },
+                      ),
+                    SizedBox(height: 12.h),
+                    SizedBox(height: 20.h),
+                    _buildMapPreview(),
+                    SizedBox(height: 12.h),
+                    AppButton(
+                      onTap: isValid ? () {
+                        if (nameController.text.isEmpty) {
                           AppService.errorToast(
                             context,
-                            "pleaseSetWorkingHours".tr(),
+                            "pleaseEnterCompanyName".tr(),
                           );
                           return;
                         }
-                        hasOpenDay = true;
-                      }
-                    }
-                    if (!hasOpenDay) {
-                      AppService.errorToast(
-                        context,
-                        "pleaseSetWorkingHours".tr(),
-                      );
-                      return;
-                    }
-                  }
-                  final List<int> categoryIdsList = selectedCategoryId != null ? [selectedCategoryId!] : [];
-                  
-                  create_model.WorkingHours? workingHoursValue;
-                  if (!open24 && day.isNotEmpty) {
-                    workingHoursValue = create_model.WorkingHours(
-                      monday: create_model.Day(
-                        open: (day["monday"]?["closed"] == true) ? null : day["monday"]?["open"],
-                        close: (day["monday"]?["closed"] == true) ? null : day["monday"]?["close"],
-                        closed: day["monday"]?["closed"] ?? false,
-                      ),
-                      tuesday: create_model.Day(
-                        open: (day["tuesday"]?["closed"] == true) ? null : day["tuesday"]?["open"],
-                        close: (day["tuesday"]?["closed"] == true) ? null : day["tuesday"]?["close"],
-                        closed: day["tuesday"]?["closed"] ?? false,
-                      ),
-                      wednesday: create_model.Day(
-                        open: (day["wednesday"]?["closed"] == true) ? null : day["wednesday"]?["open"],
-                        close: (day["wednesday"]?["closed"] == true) ? null : day["wednesday"]?["close"],
-                        closed: day["wednesday"]?["closed"] ?? false,
-                      ),
-                      thursday: create_model.Day(
-                        open: (day["thursday"]?["closed"] == true) ? null : day["thursday"]?["open"],
-                        close: (day["thursday"]?["closed"] == true) ? null : day["thursday"]?["close"],
-                        closed: day["thursday"]?["closed"] ?? false,
-                      ),
-                      friday: create_model.Day(
-                        open: (day["friday"]?["closed"] == true) ? null : day["friday"]?["open"],
-                        close: (day["friday"]?["closed"] == true) ? null : day["friday"]?["close"],
-                        closed: day["friday"]?["closed"] ?? false,
-                      ),
-                      saturday: create_model.Day(
-                        open: (day["saturday"]?["closed"] == true) ? null : day["saturday"]?["open"],
-                        close: (day["saturday"]?["closed"] == true) ? null : day["saturday"]?["close"],
-                        closed: day["saturday"]?["closed"] ?? false,
-                      ),
-                      sunday: create_model.Day(
-                        open: (day["sunday"]?["closed"] == true) ? null : day["sunday"]?["open"],
-                        close: (day["sunday"]?["closed"] == true) ? null : day["sunday"]?["close"],
-                        closed: day["sunday"]?["closed"] ?? false,
-                      ),
-                    );
-                  }
+                        if (selectedCategoryId == null) {
+                          AppService.errorToast(
+                            context,
+                            "pleaseSelectCategory".tr(),
+                          );
+                          return;
+                        }
+                        if (selectedLat == null || selectedLon == null) {
+                          AppService.errorToast(
+                            context,
+                            "pleaseSelectLocation".tr(),
+                          );
+                          return;
+                        }
+                        if (!open24) {
+                          if (day.isEmpty) {
+                            AppService.errorToast(
+                              context,
+                              "pleaseSetWorkingHours".tr(),
+                            );
+                            return;
+                          }
+                          bool hasOpenDay = false;
+                          for (var dayKey in day.keys) {
+                            final dayData = day[dayKey];
+                            if (dayData != null && dayData["closed"] == false) {
+                              if (dayData["open"] == null || dayData["close"] == null) {
+                                AppService.errorToast(
+                                  context,
+                                  "pleaseSetWorkingHours".tr(),
+                                );
+                                return;
+                              }
+                              hasOpenDay = true;
+                            }
+                          }
+                          if (!hasOpenDay) {
+                            AppService.errorToast(
+                              context,
+                              "pleaseSetWorkingHours".tr(),
+                            );
+                            return;
+                          }
+                        }
+                        final List<int> categoryIdsList = selectedCategoryId != null ? [selectedCategoryId!] : [];
 
-                  List<create_model.ImageCreateModel> imagesList = [];
-                  if (img != null) {
-                    imagesList.add(
-                      create_model.ImageCreateModel(
-                        url: img!.path,
-                        index: 1,
-                        isMain: true,
-                      ),
-                    );
-                  } else if (widget.companyId != null && _networkImageUrl != null && _networkImageUrl!.isNotEmpty) {
-                    imagesList.add(
-                      create_model.ImageCreateModel(
-                        url: _networkImageUrl!,
-                        index: 1,
-                        isMain: true,
-                      ),
-                    );
-                  }
+                        create_model.WorkingHours? workingHoursValue;
+                        if (!open24 && day.isNotEmpty) {
+                          workingHoursValue = create_model.WorkingHours(
+                            monday: create_model.Day(
+                              open: (day["monday"]?["closed"] == true) ? null : day["monday"]?["open"],
+                              close: (day["monday"]?["closed"] == true) ? null : day["monday"]?["close"],
+                              closed: day["monday"]?["closed"] ?? false,
+                            ),
+                            tuesday: create_model.Day(
+                              open: (day["tuesday"]?["closed"] == true) ? null : day["tuesday"]?["open"],
+                              close: (day["tuesday"]?["closed"] == true) ? null : day["tuesday"]?["close"],
+                              closed: day["tuesday"]?["closed"] ?? false,
+                            ),
+                            wednesday: create_model.Day(
+                              open: (day["wednesday"]?["closed"] == true) ? null : day["wednesday"]?["open"],
+                              close: (day["wednesday"]?["closed"] == true) ? null : day["wednesday"]?["close"],
+                              closed: day["wednesday"]?["closed"] ?? false,
+                            ),
+                            thursday: create_model.Day(
+                              open: (day["thursday"]?["closed"] == true) ? null : day["thursday"]?["open"],
+                              close: (day["thursday"]?["closed"] == true) ? null : day["thursday"]?["close"],
+                              closed: day["thursday"]?["closed"] ?? false,
+                            ),
+                            friday: create_model.Day(
+                              open: (day["friday"]?["closed"] == true) ? null : day["friday"]?["open"],
+                              close: (day["friday"]?["closed"] == true) ? null : day["friday"]?["close"],
+                              closed: day["friday"]?["closed"] ?? false,
+                            ),
+                            saturday: create_model.Day(
+                              open: (day["saturday"]?["closed"] == true) ? null : day["saturday"]?["open"],
+                              close: (day["saturday"]?["closed"] == true) ? null : day["saturday"]?["close"],
+                              closed: day["saturday"]?["closed"] ?? false,
+                            ),
+                            sunday: create_model.Day(
+                              open: (day["sunday"]?["closed"] == true) ? null : day["sunday"]?["open"],
+                              close: (day["sunday"]?["closed"] == true) ? null : day["sunday"]?["close"],
+                              closed: day["sunday"]?["closed"] ?? false,
+                            ),
+                          );
+                        }
 
-                  final updateModel = create_model.UpdateCompanyModel(
-                    name: nameController.text,
-                    location: create_model.Location(
-                      address: selectedAddress,
-                      latitude: selectedLat!,
-                      longitude: selectedLon!,
-                    ),
-                    categoryIds: categoryIdsList,
-                    resourceCategoryIds: resourceCategoryIds,
-                    isOpen247: open24,
-                    serviceTypeId: 1,
-                    workingHours: workingHoursValue,
-                    images: imagesList,
-                  );
+                        List<create_model.ImageCreateModel> imagesList = [];
+                        if (img != null) {
+                          imagesList.add(
+                            create_model.ImageCreateModel(
+                              url: img!.path,
+                              index: 1,
+                              isMain: true,
+                            ),
+                          );
+                        } else if (widget.companyId != null && _networkImageUrl != null && _networkImageUrl!.isNotEmpty) {
+                          imagesList.add(
+                            create_model.ImageCreateModel(
+                              url: _networkImageUrl!,
+                              index: 1,
+                              isMain: true,
+                            ),
+                          );
+                        }
 
-                  if (widget.companyId != null) {
-                    context.read<HomeBloc>().add(
-                          UpdateCompanyEvent(
-                            companyId: widget.companyId!,
-                            data: updateModel,
+                        final updateModel = create_model.UpdateCompanyModel(
+                          name: nameController.text,
+                          location: create_model.Location(
+                            address: selectedAddress,
+                            latitude: selectedLat!,
+                            longitude: selectedLon!,
                           ),
+                          categoryIds: categoryIdsList,
+                          resourceCategoryIds: resourceCategoryIds,
+                          isOpen247: open24,
+                          serviceTypeId: 1,
+                          workingHours: workingHoursValue,
+                          images: imagesList,
                         );
-                  } else {
-                    final createModel = create_model.CreateCompanyModel(
-                      name: updateModel.name,
-                      location: updateModel.location,
-                      categoryIds: updateModel.categoryIds,
-                      resourceCategoryIds: [],
-                      isOpen247: updateModel.isOpen247,
-                      serviceTypeId: updateModel.serviceTypeId,
-                      workingHours: updateModel.workingHours,
-                      images: updateModel.images,
-                    );
-                    context.read<HomeBloc>().add(SaveCompanyEvent(data: createModel));
-                  }
-                } : () {},
-                loading: loading,
-                isGradient: isValid,
-                backColor: isValid ? null : AppColor.greyE5,
-                txtColor: isValid ? null : AppColor.greyA7,
-                text: widget.companyId != null ? "update".tr() : "save".tr(),
+
+                        if (widget.companyId != null) {
+                          context.read<HomeBloc>().add(
+                            UpdateCompanyEvent(
+                              companyId: widget.companyId!,
+                              data: updateModel,
+                            ),
+                          );
+                        } else {
+                          final createModel = create_model.CreateCompanyModel(
+                            name: updateModel.name,
+                            location: updateModel.location,
+                            categoryIds: updateModel.categoryIds,
+                            resourceCategoryIds: [],
+                            isOpen247: updateModel.isOpen247,
+                            serviceTypeId: updateModel.serviceTypeId,
+                            workingHours: updateModel.workingHours,
+                            images: updateModel.images,
+                          );
+                          context.read<HomeBloc>().add(SaveCompanyEvent(data: createModel));
+                        }
+                      } : () {},
+                      loading: loading,
+                      isGradient: isValid,
+                      backColor: isValid ? null : AppColor.greyE5,
+                      txtColor: isValid ? null : AppColor.greyA7,
+                      text: widget.companyId != null ? "update".tr() : "save".tr(),
+                    ),
+                    SizedBox(height: 24.h),
+                  ],
+                ),
               ),
-              SizedBox(height: 24.h),
+
             ],
           );
         },

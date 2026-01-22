@@ -36,7 +36,7 @@ class _WeekItemState extends State<WeekItem> {
     if (widget.initialData != null && widget.initialData!.isNotEmpty) {
       schedule = Map<String, Map<String, dynamic>>.from(
         widget.initialData!.map(
-          (key, value) => MapEntry(
+              (key, value) => MapEntry(
             key,
             Map<String, dynamic>.from(value as Map),
           ),
@@ -81,6 +81,8 @@ class _WeekItemState extends State<WeekItem> {
       } catch (_) {}
     }
 
+    DateTime selectedTime = initialDateTime;
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) => Container(
@@ -99,40 +101,43 @@ class _WeekItemState extends State<WeekItem> {
                 mode: CupertinoDatePickerMode.time,
                 use24hFormat: true,
                 initialDateTime: initialDateTime,
-                onDateTimeChanged: (DateTime newTime) => initialDateTime = newTime,
+                onDateTimeChanged: (DateTime newTime) {
+                  selectedTime = newTime;
+                },
               ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: AppButton(
                 onTap: () {
-                  String formattedTime = DateFormat('HH:mm').format(initialDateTime);
+                  String formattedTime = DateFormat('HH:mm').format(selectedTime);
 
-                  setState(() {
-                    String? currentOpen = isOpenTime ? formattedTime : schedule[dayKey]!["open"];
-                    String? currentClose = isOpenTime ? schedule[dayKey]!["close"] : formattedTime;
+                  String? currentOpen = isOpenTime ? formattedTime : schedule[dayKey]!["open"];
+                  String? currentClose = isOpenTime ? schedule[dayKey]!["close"] : formattedTime;
 
-                    if (currentOpen != null && currentClose != null) {
-                      if (_isValidTimeRange(currentOpen, currentClose)) {
+                  if (currentOpen != null && currentClose != null) {
+                    if (_isValidTimeRange(currentOpen, currentClose)) {
+                      setState(() {
                         schedule[dayKey]!["open"] = currentOpen;
                         schedule[dayKey]!["close"] = currentClose;
                         schedule[dayKey]!["closed"] = false;
-                        widget.onChange(Map<String, dynamic>.from(schedule));
-                        Navigator.pop(context);
-                      } else {
-                        AppService.errorToast(context, "closingTimeMustBeAfterOpeningTime".tr());
-                        return;
-                      }
+                      });
+                      widget.onChange(Map<String, dynamic>.from(schedule));
+                      Navigator.pop(context);
                     } else {
+                      AppService.errorToast(context, "closingTimeMustBeAfterOpeningTime".tr());
+                    }
+                  } else {
+                    setState(() {
                       if (isOpenTime) {
                         schedule[dayKey]!["open"] = formattedTime;
                       } else {
                         schedule[dayKey]!["close"] = formattedTime;
                       }
-                      widget.onChange(Map<String, dynamic>.from(schedule));
-                      Navigator.pop(context);
-                    }
-                  });
+                    });
+                    widget.onChange(Map<String, dynamic>.from(schedule));
+                    Navigator.pop(context);
+                  }
                 },
                 text: "save".tr(),
               ),
@@ -162,7 +167,7 @@ class _WeekItemState extends State<WeekItem> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("workingDays".tr(), style: AppTextStyle.f500s16.copyWith(
-                fontSize:  isTablet(context) ? 12.sp : 16.sp
+                  fontSize:  isTablet(context) ? 12.sp : 16.sp
               )),
               CupertinoSwitch(
                 value: isWorkingDaysEnabled,
@@ -193,11 +198,15 @@ class _WeekItemState extends State<WeekItem> {
                         children: [
                           GestureDetector(
                             behavior: HitTestBehavior.opaque,
-                            onTap: () => setState(() => expandedStates[index] = !isExpanded),
+                            onTap: () {
+                              setState(() {
+                                expandedStates[index] = !isExpanded;
+                              });
+                            },
                             child: Row(
                               children: [
                                 Text(displayDay, style: AppTextStyle.f600s16.copyWith(
-                                  fontSize: isTablet(context) ? 12.sp : 16.sp
+                                    fontSize: isTablet(context) ? 12.sp : 16.sp
                                 )),
                                 AnimatedRotation(
                                   duration: const Duration(milliseconds: 200),
@@ -205,7 +214,7 @@ class _WeekItemState extends State<WeekItem> {
                                   child: Icon(Icons.arrow_drop_down, color: Colors.black, size: isTablet(context) ? 18.sp : 25.sp),
                                 ),
                                 const Spacer(),
-                                if (isCompleted)
+                                if (isCompleted && schedule[dataKey]!["open"] != null && schedule[dataKey]!["close"] != null)
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
                                     decoration: BoxDecoration(
@@ -271,32 +280,6 @@ class _WeekItemState extends State<WeekItem> {
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "closed".tr(),
-                                        style: TextStyle(
-                                          fontSize: isTablet(context) ? 10.sp : 14.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      CupertinoSwitch(
-                                        value: schedule[dataKey]!["closed"] == true,
-                                        onChanged: (v) {
-                                          setState(() {
-                                            schedule[dataKey]!["closed"] = v;
-                                            if (v) {
-                                              schedule[dataKey]!["open"] = null;
-                                              schedule[dataKey]!["close"] = null;
-                                            }
-                                            widget.onChange(Map<String, dynamic>.from(schedule));
-                                          });
-                                        },
                                       ),
                                     ],
                                   ),

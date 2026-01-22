@@ -94,7 +94,35 @@ class BookingItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                AppIconButton(icon: AppIcons.arrowTopRight, onTap: (){} ,iconWidth: 14.w,)
+                AppIconButton(icon: AppIcons.arrowBottom, onTap: (){
+                  final homeBloc = BlocProvider.of<HomeBloc>(context);
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (bottomSheetContext) {
+                      return EasyLocalization(
+                        supportedLocales: const [
+                          Locale('en', 'EN'),
+                          Locale('ru', 'RU'),
+                          Locale('uz', 'UZ'),
+                        ],
+                        path: 'assets/translations',
+                        startLocale:
+                        EasyLocalization.of(context)?.locale ??
+                            const Locale('ru', 'RU'),
+                        fallbackLocale: const Locale('ru', 'RU'),
+                        child: BlocProvider.value(
+                          value: homeBloc,
+                          child: BookingDetailBottomSheet(
+                            bookingId: data.id,
+                            parentBloc: homeBloc,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } ,iconWidth: 14.w,)
               ],
             ),
             Container(

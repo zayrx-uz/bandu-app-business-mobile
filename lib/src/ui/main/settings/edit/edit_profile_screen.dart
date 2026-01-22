@@ -120,7 +120,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvokedWithResult: (a, b) {
-        RxBus.post(tag: "settings", 2);
+        // RxBus.post(tag: "settings", 2);
       },
       child: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
@@ -144,8 +144,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             setState(() {
               shouldCloseAfterRefresh = true;
             });
-            AppService.successToast(context, "edited".tr());
-            BlocProvider.of<HomeBloc>(context).add(GetMeEvent());
           } else if (state is GetMeSuccessState) {
             final user = state.data.data.user;
             final phoneData = state.data.data.phoneNumber;
@@ -173,10 +171,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             check();
             
             if (shouldCloseAfterRefresh) {
+              AppService.successToast(context, "edited".tr());
+              setState(() {
+                shouldCloseAfterRefresh = false;
+              });
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {
                   Navigator.pop(context);
-                  RxBus.post(tag: "settings", 2);
                 }
               });
             }

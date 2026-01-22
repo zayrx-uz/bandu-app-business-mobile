@@ -229,9 +229,13 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                       Expanded(
                         child: Row(
                           children: [
-                            Text(
-                              bookingDetail?.company.name ?? "",
-                              style: AppTextStyle.f500s20,
+                            Expanded(
+                              child: Text(
+                                bookingDetail?.user.fullName ?? "",
+                                style: AppTextStyle.f500s20,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             SizedBox(width: 10.w,),
                             if(bookingDetail != null && bookingDetail!.payments.isNotEmpty) 
@@ -395,8 +399,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                           ),
                         ),
 
-                        SizedBox(height: 12.h),
-                        Container(
+                        if(bookingDetail!.note.isNotEmpty)SizedBox(height: 12.h),
+                        if(bookingDetail!.note.isNotEmpty)Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: AppColor.white,
@@ -431,6 +435,42 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             ],
                           ),
                         ),
+                        // SizedBox(height: 12.h),
+                        // Container(
+                        //   width: double.infinity,
+                        //   decoration: BoxDecoration(
+                        //     color: AppColor.white,
+                        //     borderRadius: BorderRadius.circular(12.r),
+                        //   ),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Text(
+                        //         "callPerson".tr(),
+                        //         style: AppTextStyle.f500s16.copyWith(
+                        //           color: AppColor.black,
+                        //         ),
+                        //       ),
+                        //       SizedBox(height: 8.h),
+                        //       Container(
+                        //         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                        //         width: double.infinity,
+                        //         decoration: BoxDecoration(
+                        //           color: Colors.white,
+                        //           borderRadius: BorderRadius.circular(12.r),
+                        //           border: Border.all(
+                        //             width: 1.w,
+                        //             color: AppColor.cE5E7E5,
+                        //           ),
+                        //         ),
+                        //         child: Text(
+                        //          bookingDetail!.user,
+                        //           style: AppTextStyle.f500s16,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -501,6 +541,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                     Text(
                                       resource.name,
                                       style: AppTextStyle.f500s16,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                     SizedBox(height: 4.h),
                                     Text(
