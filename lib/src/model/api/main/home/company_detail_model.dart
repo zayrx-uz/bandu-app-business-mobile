@@ -34,6 +34,7 @@ class CompanyDetailData {
   List<Resource> resources;
   List<ImageData> images;
   List<dynamic> reviews;
+  CompanyDetailIcon? icon;
 
   CompanyDetailData({
     required this.id,
@@ -48,6 +49,7 @@ class CompanyDetailData {
     required this.resources,
     required this.images,
     required this.reviews,
+    this.icon,
   });
 
   factory CompanyDetailData.fromJson(Map<String, dynamic> json) =>
@@ -86,32 +88,100 @@ class CompanyDetailData {
         reviews: json["reviews"] == null
             ? []
             : json["reviews"],
+        icon: json["icon"] == null
+            ? null
+            : CompanyDetailIcon.fromJson(json["icon"]),
       );
+}
+
+class CompanyDetailIcon {
+  int id;
+  String url;
+  String name;
+  String createdAt;
+  String updatedAt;
+
+  CompanyDetailIcon({
+    required this.id,
+    required this.url,
+    required this.name,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory CompanyDetailIcon.fromJson(Map<String, dynamic> json) => CompanyDetailIcon(
+    id: json["id"] is int ? json["id"] : (json["id"] is String ? int.tryParse(json["id"]) ?? 0 : 0),
+    url: json["url"]?.toString() ?? "",
+    name: json["name"]?.toString() ?? "",
+    createdAt: json["createdAt"]?.toString() ?? "",
+    updatedAt: json["updatedAt"]?.toString() ?? "",
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "url": url,
+    "name": name,
+    "createdAt": createdAt,
+    "updatedAt": updatedAt,
+  };
 }
 
 class Category {
   int id;
   String name;
-  String description;
-  String ikpuCode;
+  String? description;
+  CompanyDetailServiceType? serviceType;
   CategoryMetadata? metadata;
 
   Category({
     required this.id,
     required this.name,
-    required this.description,
-    required this.ikpuCode,
+    this.description,
+    this.serviceType,
     this.metadata,
   });
+
+  String get ikpuCode => serviceType?.ikpuCode ?? "";
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
     id: json["id"] ?? 0,
     name: json["name"] ?? "",
-    description: json["description"] ?? "",
-    ikpuCode: json["ikpuCode"] ?? "",
+    description: json["description"],
+    serviceType: json["serviceType"] == null
+        ? null
+        : CompanyDetailServiceType.fromJson(json["serviceType"]),
     metadata: json["metadata"] == null
         ? null
         : CategoryMetadata.fromJson(json["metadata"]),
+  );
+}
+
+class CompanyDetailServiceType {
+  int id;
+  String name;
+  String ikpuCode;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  CompanyDetailServiceType({
+    required this.id,
+    required this.name,
+    required this.ikpuCode,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory CompanyDetailServiceType.fromJson(Map<String, dynamic> json) =>
+      CompanyDetailServiceType(
+    id: json["id"] ?? 0,
+    name: json["name"] ?? "",
+    ikpuCode: json["ikpuCode"] ?? "",
+    createdAt: json["createdAt"] == null
+        ? null
+        : DateTime.tryParse(json["createdAt"]) ?? DateTime.now(),
+    updatedAt: json["updatedAt"] == null
+        ? null
+        : DateTime.tryParse(json["updatedAt"]) ?? DateTime.now(),
   );
 }
 

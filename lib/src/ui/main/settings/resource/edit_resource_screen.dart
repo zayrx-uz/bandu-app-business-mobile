@@ -7,6 +7,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
+import 'package:bandu_business/src/widget/app/unfocus_keyboard_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:bandu_business/src/widget/auth/set_image_widget.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
@@ -40,7 +41,8 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
   late int timeSlotDurationMinutes;
   List<Map<String, dynamic>> uploadedImages = [];
   List<int> selectedEmployeeIds = [];
-  
+  List<int> replacedImageIds = [];
+
   XFile? img;
   String? _networkImageUrl;
 
@@ -72,6 +74,7 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     if (widget.resourceData.images.isNotEmpty) {
       uploadedImages = widget.resourceData.images.map((image) {
         return {
+          "id": image.id,
           "url": image.url,
           "index": image.index,
           "isMain": image.isMain,
@@ -101,25 +104,41 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      body: BlocConsumer<HomeBloc, HomeState>(
+    return UnfocusKeyboard(
+      child: Scaffold(
+        backgroundColor: AppColor.white,
+        body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is GetImageSuccessState) {
-            setState(() {
-              img = state.img;
-            });
+            setState(() => img = state.img);
             if (img != null) {
               context.read<HomeBloc>().add(UploadResourceImageEvent(filePath: img!.path));
             }
           }
           if (state is UploadResourceImageSuccessState) {
             setState(() {
-              uploadedImages.add({
-                "url": state.url,
-                "index": uploadedImages.length + 1,
-                "isMain": uploadedImages.isEmpty,
-              });
+              if (uploadedImages.isNotEmpty) {
+                final firstImage = uploadedImages.first;
+                final updatedImage = <String, dynamic>{
+                  "url": state.url,
+                  "index": firstImage['index'] ?? 1,
+                  "isMain": true,
+                };
+                if (firstImage.containsKey('id') && firstImage['id'] != null && firstImage['id'] != 0) {
+                  final id = firstImage['id'] is int ? firstImage['id'] as int : int.tryParse(firstImage['id'].toString()) ?? 0;
+                  updatedImage["id"] = id;
+                  if (id > 0 && !replacedImageIds.contains(id)) {
+                    replacedImageIds = [...replacedImageIds, id];
+                  }
+                }
+                uploadedImages = [updatedImage, ...uploadedImages.sublist(1)];
+              } else {
+                uploadedImages = [<String, dynamic>{
+                  "url": state.url,
+                  "index": 1,
+                  "isMain": true,
+                }];
+              }
               _networkImageUrl = state.url;
             });
           }
@@ -302,6 +321,7 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
                     timeSlotDurationMinutes: timeSlotDurationMinutes,
                     images: uploadedImages,
                     employeeIds: selectedEmployeeIds.isNotEmpty ? selectedEmployeeIds : null,
+                    replacedImageIds: replacedImageIds.isNotEmpty ? replacedImageIds : null,
                   ));
                 },
                 leftIcon: AppIcons.edit2,
@@ -313,6 +333,7 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
             ],
           );
         },
+      ),
       ),
     );
   }

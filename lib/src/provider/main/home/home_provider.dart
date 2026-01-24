@@ -71,19 +71,33 @@ class HomeProvider extends ApiProvider {
     return await getRequest("${ApiHelper.getPlace}$companyId");
   }
 
-  Future<HttpResult> setPlace(String name, int number) async {
+  Future<HttpResult> setPlace(String name, int number, List<int>? employeeIds) async {
     var body = {
-      "companyId": HelperFunctions.getCompanyId(),
       "name": name,
+      "companyId": HelperFunctions.getCompanyId(),
       "capacity": number,
+      "positionX": 0,
+      "positionY": 0,
+      "visualMetadata": {},
+      "employeeIds": employeeIds ?? [],
     };
     return await postRequest(ApiHelper.place, body);
   }
 
 
-  Future<HttpResult> updatePlace(int number , int id) async {
+  Future<HttpResult> updatePlace({
+    required int number,
+    required int id,
+    String? name,
+    List<int>? employeeIds,
+  }) async {
     var body = {
+      "name": name,
       "capacity": number,
+      "positionX": 0,
+      "positionY": 0,
+      "visualMetadata": {},
+      "employeeIds": employeeIds ?? [],
     };
     return await patchRequest("${ApiHelper.place}/$id", body);
   }
@@ -175,7 +189,6 @@ class HomeProvider extends ApiProvider {
     required bool isBookable,
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
-    required List<Map<String, dynamic>> images,
     List<int>? employeeIds,
   }) async {
     var body = {
@@ -185,16 +198,41 @@ class HomeProvider extends ApiProvider {
       "resourceCategoryId": resourceCategoryId,
       "isBookable": isBookable,
       "isTimeSlotBased": isTimeSlotBased,
-      "timeSlotDurationMinutes": timeSlotDurationMinutes,
-      "images": images,
     };
     if (metadata != null) {
       body["metadata"] = metadata;
+    }
+
+    if (isTimeSlotBased) {
+      body["timeSlotDurationMinutes"] = timeSlotDurationMinutes;
     }
     if (employeeIds != null && employeeIds.isNotEmpty) {
       body["employeeIds"] = employeeIds;
     }
     return await postRequest(ApiHelper.createResource, body);
+  }
+
+  Future<HttpResult> postResourceImages({
+    required int resourceId,
+    required List<Map<String, dynamic>> images,
+  }) async {
+    var body = {
+      "images": images,
+    };
+    return await postRequest(ApiHelper.postResourceImages(resourceId), body);
+  }
+
+  Future<HttpResult> patchResourceImage({
+    required int resourceId,
+    required int imageId,
+    required String url,
+    bool isMain = true,
+  }) async {
+    var body = {
+      "url": url,
+      "isMain": isMain,
+    };
+    return await patchRequest(ApiHelper.patchResourceImage(resourceId, imageId), body);
   }
 
   Future<HttpResult> getResource({required int id}) async {
@@ -216,7 +254,6 @@ class HomeProvider extends ApiProvider {
     required bool isBookable,
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
-    required List<Map<String, dynamic>> images,
     List<int>? employeeIds,
   }) async {
     var body = {
@@ -226,11 +263,12 @@ class HomeProvider extends ApiProvider {
       "resourceCategoryId": resourceCategoryId,
       "isBookable": isBookable,
       "isTimeSlotBased": isTimeSlotBased,
-      "timeSlotDurationMinutes": timeSlotDurationMinutes,
-      "images": images,
     };
     if (metadata != null) {
       body["metadata"] = metadata;
+    }
+    if (isTimeSlotBased) {
+      body["timeSlotDurationMinutes"] = timeSlotDurationMinutes;
     }
     if (employeeIds != null && employeeIds.isNotEmpty) {
       body["employeeIds"] = employeeIds;
@@ -260,19 +298,27 @@ class HomeProvider extends ApiProvider {
   }
 
 
-  Future<HttpResult> updateEmployee(
-    String name,
-    String phone,
-    int id,
-    String role,
-
-  ) async {
+  Future<HttpResult> updateEmployee({
+    required String name,
+    required String phone,
+    required int id,
+    required String role,
+    String? password,
+    List<int>? resourceIds,
+  }) async {
     var body = {
       "fullName": name,
       "phoneNumber": phone.replaceAll(" ", ""),
       "role": role,
+      "companyId": HelperFunctions.getCompanyId(),
     };
-    return await patchRequest("${ApiHelper.saveCompany}/${HelperFunctions.getCompanyId()}/members/$id", body);
+    if (password != null && password.isNotEmpty) {
+      body["password"] = password;
+    }
+    if (resourceIds != null && resourceIds.isNotEmpty) {
+      body["resourceIds"] = resourceIds;
+    }
+    return await patchRequest("${ApiHelper.getEmployee}/$id", body);
   }
 
   Future<HttpResult> getStatistic(DateTime date, String period) async {
@@ -570,5 +616,9 @@ class HomeProvider extends ApiProvider {
 
   Future<HttpResult> markNotificationAsRead({required int notificationId}) async {
     return await patchRequest("${ApiHelper.markNotificationRead}$notificationId/read", {});
+  }
+
+  Future<HttpResult> getIcons() async {
+    return await getRequest(ApiHelper.getIcons);
   }
 }

@@ -51,17 +51,17 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
   void getData() {
     if (_isLoadingData) return;
     _isLoadingData = true;
-    
+
     if (userRoles == null || userRoles!.isEmpty) {
       BlocProvider.of<HomeBloc>(context).add(GetCompanyEvent());
       return;
     }
-    
+
     final isBusinessOwner = userRoles!.contains("BUSINESS_OWNER");
-    final isEmployee = userRoles!.contains("WORKER") || 
-                       userRoles!.contains("MODERATOR") || 
+    final isEmployee = userRoles!.contains("WORKER") ||
+                       userRoles!.contains("MODERATOR") ||
                        userRoles!.contains("MANAGER");
-    
+
     if (isBusinessOwner) {
       BlocProvider.of<HomeBloc>(context).add(GetMyCompaniesEvent());
     } else if (isEmployee) {
@@ -126,11 +126,11 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
 
       },
       builder: (context, state) {
-        final isLoading = data == null || 
-                         state is GetCompanyLoadingState || 
+        final isLoading = data == null ||
+                         state is GetCompanyLoadingState ||
                          state is GetMyCompanyLoadingState ||
                          state is GetMeLoadingState;
-        
+
         return PopScope(
           canPop: widget.canPop,
           child: Scaffold(
@@ -367,22 +367,32 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                   Padding(
                     padding: EdgeInsets.only(bottom: 24.h),
                     child: AppButton(
+                      isGradient: selectedId != -1,
+                      backColor: AppColor.greyE5,
                       onTap: () {
                         if (selectedId != -1) {
                           CacheService.saveInt("select_company", selectedId);
-                          
+
                           final selectedCompany = data!.firstWhere(
                             (company) => company.id == selectedId,
                             orElse: () => data!.first,
                           );
-                          
+
                           if (selectedCompany.categories.isNotEmpty) {
                             final firstCategory = selectedCompany.categories.first;
                             CacheService.saveCategoryId(firstCategory.id);
                             CacheService.saveCategoryName(firstCategory.name);
                             CacheService.saveCategoryIkpuCode(firstCategory.ikpuCode);
+                            final iconPath = HelperFunctions.getCategoryIconByIkpuCode(firstCategory.ikpuCode);
+                            CacheService.saveCategoryIcon(iconPath);
                           }
-                          
+
+                          if (selectedCompany.icon != null && selectedCompany.icon!.url.isNotEmpty) {
+                            CacheService.savePlaceIcon(selectedCompany.icon!.url);
+                          } else {
+                            CacheService.savePlaceIcon('');
+                          }
+
                           Navigator.popUntil(context, (route) => route.isFirst);
                           AppService.replacePage(context, const MainScreen());
                         }

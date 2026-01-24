@@ -106,4 +106,9 @@ class AuthProvider extends ApiProvider {
   Future<HttpResult> deleteAccount() async {
     return await deleteRequest(ApiHelper.deleteAccount);
   }
+
+  ///logout
+  Future<HttpResult> logout() async {
+    return await postRequest(ApiHelper.logout, {});
+  }
 }

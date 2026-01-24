@@ -71,6 +71,22 @@ class CacheService {
     return preferences!.getString("selected_category_ikpu_code") ?? '';
   }
 
+  static void saveCategoryIcon(String iconPath) {
+    preferences!.setString("selected_category_icon", iconPath);
+  }
+
+  static String getCategoryIcon() {
+    return preferences!.getString("selected_category_icon") ?? '';
+  }
+
+  static void savePlaceIcon(String iconUrl) {
+    preferences!.setString("place_icon", iconUrl);
+  }
+
+  static String getPlaceIcon() {
+    return preferences!.getString("place_icon") ?? '';
+  }
+
   static Future<bool> clear() {
     return preferences!.clear();
   }

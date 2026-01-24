@@ -1,11 +1,14 @@
+import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/helper/service/rx_bus.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/auth/select_login_widget.dart';
+import 'package:bandu_business/src/widget/main/create_company/select_place_item.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../helper/constants/app_images.dart';
@@ -299,6 +302,34 @@ class BottomDialog {
                       SizedBox(height: 40.h,),
                     ],
                   )
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  static void selectPlaceIcon(BuildContext context, {Function(int, String)? onIconSelected, int? selectedIconId}) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (dialogContext) {
+        return EasyLocalization(
+          supportedLocales: const [Locale('en', 'EN'), Locale('ru', 'RU'), Locale('uz', 'UZ')],
+          path: 'assets/translations',
+          startLocale: EasyLocalization.of(context)?.locale ?? const Locale('ru', 'RU'),
+          fallbackLocale: const Locale('ru', 'RU'),
+          child: Builder(
+            builder: (localizedContext) {
+              return BlocProvider.value(
+                value: homeBloc,
+                child: SelectPlaceItem(
+                  onIconSelected: onIconSelected,
+                  selectedIconId: selectedIconId,
+                ),
               );
             },
           ),

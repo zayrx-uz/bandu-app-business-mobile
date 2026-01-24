@@ -46,7 +46,7 @@ class EmptyEmployeeItemWidget extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                         fontSize: 20.sp
                       ),),
-                      Text("+${employee.phoneNumber}" , style: TextStyle(
+                      if(employee.phoneNumber.isNotEmpty) Text("+${employee.phoneNumber}" , style: TextStyle(
                         color : Colors.black,
                         fontWeight: FontWeight.w500,
                         fontSize: 12.sp

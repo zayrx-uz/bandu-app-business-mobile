@@ -20,35 +20,55 @@ class StatisticViewScreen extends StatefulWidget {
 }
 
 class _StatisticViewScreenState extends State<StatisticViewScreen> {
-  int selectedIndex = 2;
-  int maxIndex = 0;
+  int selectedIndex = -1;
   StatisticItemData? data;
+  final ScrollController _scrollController = ScrollController();
 
   final List<String> months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
-  final List<double> incomes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  final List<double> incomes = List.filled(12, 0.0);
+
+  static const double _maxY = 5000000;
+  static const double _interval = 500000;
+  final double _itemWidth = 54.w;
 
   @override
   void initState() {
-    BlocProvider.of<HomeBloc>(
-      context,
-    ).add(GetStatisticEvent(date: DateTime.now(), period: "yearly"));
     super.initState();
+    BlocProvider.of<HomeBloc>(context).add(
+      GetStatisticEvent(date: DateTime.now(), period: "yearly"),
+    );
   }
 
-  double get average => incomes.reduce((a, b) => a + b) / incomes.length;
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToCurrentMonth() {
+    final now = DateTime.now();
+    final currentIndex = now.month - 1;
+
+    setState(() {
+      selectedIndex = currentIndex;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        final screenWidth = MediaQuery.of(context).size.width - 70.w;
+        final scrollOffset = (currentIndex * _itemWidth) - (screenWidth / 2) + (_itemWidth / 2);
+
+        _scrollController.animateTo(
+          scrollOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutQuart,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,22 +76,21 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
       listener: (context, state) {
         if (state is GetStatisticSuccessState) {
           data = state.data;
-          maxIndex = 0;
           if (data!.monthlyData != null) {
             for (int i = 0; i < data!.monthlyData!.length; i++) {
-              incomes[i] = data!.monthlyData![i].revenue.toDouble();
-              if (maxIndex < incomes[i]) {
-                maxIndex = incomes[i].toInt();
+              if (i < 12) {
+                incomes[i] = data!.monthlyData![i].revenue.toDouble();
               }
             }
           }
+          _scrollToCurrentMonth();
         }
       },
       builder: (context, state) {
         if (data == null) {
-          return Center(
-            child: CupertinoActivityIndicator(
-              color: AppColor.black,
+          return const Material(
+            child: Center(
+              child: CupertinoActivityIndicator(color: AppColor.black),
             ),
           );
         }
@@ -91,9 +110,7 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                       ),
                       AppIconButton(
                         icon: AppIcons.close,
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
+                        onTap: () => Navigator.pop(context),
                       ),
                     ],
                   ),
@@ -101,9 +118,10 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                 SizedBox(height: 12.h),
                 Container(
                   height: 0.5.h,
-                  width: MediaQuery.of(context).size.width,
+                  width: 1.sw,
                   color: AppColor.greyE5,
                 ),
+                SizedBox(height: 12.h),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Text(
@@ -112,18 +130,14 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                   ),
                 ),
                 SizedBox(height: 8.h),
-
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Row(
-                    children: [
-                      Text("${"lastUpdated".tr()}: ${DateTime.now().toDDMMYYY()}"),
-                    ],
+                  child: Text(
+                    "${"lastUpdated".tr()}: ${DateTime.now().toDDMMYYY()}",
+                    style: AppTextStyle.f400s14.copyWith(color: AppColor.grey77),
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
+                SizedBox(height: 20.h),
                 Container(
                   height: 312.h,
                   margin: EdgeInsets.symmetric(horizontal: 16.w),
@@ -132,128 +146,108 @@ class _StatisticViewScreenState extends State<StatisticViewScreen> {
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(5, (i) {
+                        children: List.generate(11, (i) {
+                          final value = (5.0 - (i * 0.5));
                           return SizedBox(
-                            height: (280.h - 40.h) / 4,
+                            height: (280.h - 40.h) / 10,
                             child: Center(
                               child: Text(
-                                "${5 - i - 1} ${"mln".tr()}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
+                                "${value % 1 == 0 ? value.toInt() : value} mln",
+                                style: TextStyle(fontSize: 10.sp, color: AppColor.grey77),
                               ),
                             ),
                           );
                         }),
                       ),
-
-                      SizedBox(width: 12.w),
-
+                      SizedBox(width: 8.w),
                       Expanded(
                         child: SingleChildScrollView(
+                          controller: _scrollController,
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
-
                           child: SizedBox(
-                            width: incomes.length * 54.w,
-
+                            width: incomes.length * _itemWidth,
                             child: BarChart(
                               BarChartData(
                                 minY: 0,
-                                maxY: 5000000,
-
+                                maxY: _maxY,
                                 borderData: FlBorderData(show: false),
-                                backgroundColor: Colors.transparent,
-
                                 gridData: FlGridData(
                                   drawVerticalLine: false,
-                                  horizontalInterval: 1000000,
+                                  horizontalInterval: _interval,
                                   getDrawingHorizontalLine: (value) => FlLine(
-                                    color: Colors.grey.shade300,
+                                    color: AppColor.greyE5,
                                     strokeWidth: 1,
                                   ),
                                 ),
-
                                 barGroups: List.generate(incomes.length, (i) {
-                                  final isSelected = selectedIndex == i;
                                   return BarChartGroupData(
                                     x: i,
-                                    groupVertically: true,
-                                    barsSpace: 0.w,
                                     barRods: [
                                       BarChartRodData(
-                                        toY: incomes[i],
-                                        width: 42.w,
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: !isSelected
-                                            ? AppColor.greyF4
-                                            : AppColor.yellowFFC,
+                                        toY: incomes[i].clamp(0.0, _maxY),
+                                        width: 38.w,
+                                        borderRadius: BorderRadius.circular(8.r),
+                                        color: selectedIndex == i
+                                            ? AppColor.yellowFFC
+                                            : AppColor.greyF4,
                                       ),
                                     ],
                                   );
                                 }),
-
                                 titlesData: FlTitlesData(
-                                  topTitles: AxisTitles(),
-                                  rightTitles: AxisTitles(),
-                                  leftTitles: AxisTitles(),
+                                  topTitles: const AxisTitles(),
+                                  rightTitles: const AxisTitles(),
+                                  leftTitles: const AxisTitles(),
                                   bottomTitles: AxisTitles(
                                     sideTitles: SideTitles(
                                       showTitles: true,
-                                      reservedSize: 28.h,
+                                      reservedSize: 30.h,
                                       getTitlesWidget: (v, meta) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(top: 8.h),
-                                          child: Text(
-                                            months[v.toInt()],
-                                            style: AppTextStyle.f400s14
-                                                .copyWith(
-                                                  color:
-                                                      selectedIndex == v.toInt()
-                                                      ? AppColor.black
-                                                      : AppColor.grey77,
-                                                ),
-                                          ),
-                                        );
+                                        int index = v.toInt();
+                                        if (index >= 0 && index < months.length) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(top: 8.h),
+                                            child: Text(
+                                              months[index],
+                                              style: AppTextStyle.f400s12.copyWith(
+                                                color: selectedIndex == index
+                                                    ? AppColor.black
+                                                    : AppColor.grey77,
+                                                fontWeight: selectedIndex == index
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        return const SizedBox.shrink();
                                       },
                                     ),
                                   ),
                                 ),
-
                                 barTouchData: BarTouchData(
-                                  enabled: true,
-                                  touchTooltipData: BarTouchTooltipData(
-                                    tooltipPadding: const EdgeInsets.all(12),
-                                    getTooltipItem:
-                                        (group, groupIndex, rod, rodIndex) {
-                                          return BarTooltipItem(
-                                            "${"revenue".tr()}\n",
-                                            AppTextStyle.f500s16,
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    "${rod.toY.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => ' ')} UZS",
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                  ),
                                   touchCallback: (event, response) {
                                     if (response != null &&
                                         response.spot != null &&
-                                        event.isInterestedForInteractions) {
+                                        event is FlTapUpEvent) {
                                       setState(() {
-                                        selectedIndex =
-                                            response.spot!.touchedBarGroupIndex;
+                                        selectedIndex = response.spot!.touchedBarGroupIndex;
                                       });
                                     }
                                   },
+                                  touchTooltipData: BarTouchTooltipData(
+                                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                      return BarTooltipItem(
+                                        "${incomes[groupIndex].toInt().priceFormat()} UZS",
+                                        TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             ),

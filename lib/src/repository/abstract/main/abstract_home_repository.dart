@@ -25,11 +25,17 @@ abstract class AbstractHomeRepository {
 
   Future<HttpResult> getPlace({required int companyId});
 
-  Future<HttpResult> setPlace({required String name, required int number});
+  Future<HttpResult> setPlace({
+    required String name,
+    required int number,
+    List<int>? employeeIds,
+  });
 
   Future<HttpResult> updatePlace({
     required int number,
     required int id,
+    String? name,
+    List<int>? employeeIds,
   });
 
   Future<HttpResult> deletePlace({
@@ -75,8 +81,19 @@ abstract class AbstractHomeRepository {
     required bool isBookable,
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
-    required List<Map<String, dynamic>> images,
     List<int>? employeeIds,
+  });
+
+  Future<HttpResult> postResourceImages({
+    required int resourceId,
+    required List<Map<String, dynamic>> images,
+  });
+
+  Future<HttpResult> patchResourceImage({
+    required int resourceId,
+    required int imageId,
+    required String url,
+    bool isMain = true,
   });
 
   Future<HttpResult> getResource({required int id});
@@ -91,7 +108,6 @@ abstract class AbstractHomeRepository {
     required bool isBookable,
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
-    required List<Map<String, dynamic>> images,
     List<int>? employeeIds,
   });
 
@@ -113,6 +129,8 @@ abstract class AbstractHomeRepository {
     required String phone,
     required String role,
     required int id,
+    String? password,
+    List<int>? resourceIds,
   });
 
   Future<HttpResult> uploadImage({required String filePath});
@@ -201,4 +219,6 @@ abstract class AbstractHomeRepository {
   });
 
   Future<HttpResult> confirmPayment({required int id});
+
+  Future<HttpResult> getIcons();
 }

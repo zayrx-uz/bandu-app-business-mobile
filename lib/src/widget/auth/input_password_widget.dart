@@ -1,4 +1,3 @@
-
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
@@ -7,6 +6,7 @@ import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bounce/bounce.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InputPasswordWidget extends StatefulWidget {
@@ -63,7 +63,7 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
 
   void _validatePassword() {
     final password = widget.controller.text;
-    
+
     if (widget.showMatchValidation && widget.compareController != null) {
       final comparePassword = widget.compareController!.text;
       if (comparePassword.isNotEmpty && comparePassword.length < 6) {
@@ -120,7 +120,6 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
                       ),
                     ),
                   ),
-
                 ],
               ),
               if (widget.trailingMessage != null)
@@ -161,16 +160,19 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
                     cursorColor: Colors.grey,
                     controller: widget.controller,
                     obscureText: isView,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                    ],
                     style: AppTextStyle.f500s16.copyWith(
-                      color: AppColor.black09,
-                      fontSize:  isTablet(context) ? 12.sp : 16.sp
+                        color: AppColor.black09,
+                        fontSize:  isTablet(context) ? 12.sp : 16.sp
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: widget.hint ?? "enterPassword".tr(),
                       hintStyle: AppTextStyle.f400s16.copyWith(
-                        color: AppColor.grey77,
-                        fontSize:   isTablet(context) ? 12.sp : 16.sp
+                          color: AppColor.grey77,
+                          fontSize:   isTablet(context) ? 12.sp : 16.sp
                       ),
                     ),
                   ),

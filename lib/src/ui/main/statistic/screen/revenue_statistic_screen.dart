@@ -25,14 +25,22 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
   DashboardRevenueSeriesData? data;
   List<double> amounts = [];
   List<SeriesItem> seriesOrdered = [];
+  final ScrollController _scrollController = ScrollController();
 
-  static const double _maxY = 10_000_000;
-  static const double _interval = 1_000_000;
+  static const double _maxY = 5_000_000;
+  static const double _interval = 500_000;
+  final double _itemWidth = 54.w;
 
   @override
   void initState() {
     getData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void getData() {
@@ -51,6 +59,115 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
     );
   }
 
+  void _scrollToCurrentMonth() {
+    if (seriesOrdered.isEmpty) return;
+
+    final now = DateTime.now();
+    final currentYear = now.year;
+    final currentMonth = now.month;
+    
+    // Try to find current month by parsing the key (format: "YYYY-MM" or similar)
+    int currentIndex = -1;
+    for (int i = 0; i < seriesOrdered.length; i++) {
+      final item = seriesOrdered[i];
+      // Try to parse key as date (format: "YYYY-MM" or "YYYY-MM-DD")
+      final parts = item.key.split('-');
+      if (parts.length >= 2) {
+        final year = int.tryParse(parts[0]);
+        final month = int.tryParse(parts[1]);
+        if (year != null && month != null && year == currentYear && month == currentMonth) {
+          currentIndex = i;
+          break;
+        }
+      }
+    }
+
+    // If still not found, try matching by label as fallback
+    if (currentIndex == -1) {
+      final currentMonthName = DateFormat('MMM').format(now);
+      currentIndex = seriesOrdered.indexWhere(
+        (item) => item.label.toLowerCase().contains(currentMonthName.toLowerCase())
+      );
+    }
+
+    // If still not found, select the last item (most recent month)
+    if (currentIndex == -1) {
+      currentIndex = seriesOrdered.length - 1;
+    }
+
+    // Scroll to center the current month
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCenter(currentIndex);
+    });
+  }
+
+  void _scrollToCenter(int targetIndex) {
+    if (!mounted) return;
+    
+    // Ensure targetIndex is valid
+    if (targetIndex < 0 || targetIndex >= seriesOrdered.length) {
+      return;
+    }
+
+    // Set selected index first
+    setState(() {
+      selectedIndex = targetIndex;
+    });
+
+    // Try to scroll immediately, if controller is ready
+    if (_scrollController.hasClients) {
+      _performScroll(targetIndex);
+    } else {
+      // Wait for controller to be ready
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted && _scrollController.hasClients) {
+          _performScroll(targetIndex);
+        } else if (mounted) {
+          // Try one more time
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (mounted && _scrollController.hasClients) {
+              _performScroll(targetIndex);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  void _performScroll(int targetIndex) {
+    if (!_scrollController.hasClients || !mounted) return;
+    if (targetIndex < 0 || targetIndex >= seriesOrdered.length) return;
+
+    // Get the visible width of the scroll view
+    final visibleWidth = _scrollController.position.viewportDimension;
+    
+    // Calculate the position of the target month (center of the month bar)
+    final targetMonthCenter = targetIndex * _itemWidth + (_itemWidth / 2);
+    
+    // Calculate scroll offset to center the target month
+    // We want the target month's center to be at the center of the visible area
+    final scrollOffset = targetMonthCenter - (visibleWidth / 2);
+    
+    // Clamp to valid range
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final clampedOffset = scrollOffset.clamp(0.0, maxScroll);
+
+    // Use jumpTo for immediate positioning
+    _scrollController.jumpTo(clampedOffset);
+    
+    // Verify the position after a short delay
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (_scrollController.hasClients && mounted) {
+        final currentOffset = _scrollController.offset;
+        final difference = (currentOffset - clampedOffset).abs();
+        // If there's a significant difference, adjust
+        if (difference > 5) {
+          _scrollController.jumpTo(clampedOffset);
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
@@ -61,24 +178,48 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
           seriesOrdered = [];
 
           if (data!.series.isNotEmpty) {
-            seriesOrdered = List<SeriesItem>.from(data!.series).reversed.toList();
+            // Sort series by date to ensure chronological order (oldest to newest)
+            seriesOrdered = List<SeriesItem>.from(data!.series);
+            seriesOrdered.sort((a, b) {
+              // Parse keys as dates (format: "YYYY-MM" or "YYYY-MM-DD")
+              final aParts = a.key.split('-');
+              final bParts = b.key.split('-');
+              if (aParts.length >= 2 && bParts.length >= 2) {
+                final aYear = int.tryParse(aParts[0]) ?? 0;
+                final aMonth = int.tryParse(aParts[1]) ?? 0;
+                final bYear = int.tryParse(bParts[0]) ?? 0;
+                final bMonth = int.tryParse(bParts[1]) ?? 0;
+                if (aYear != bYear) {
+                  return aYear.compareTo(bYear);
+                }
+                return aMonth.compareTo(bMonth);
+              }
+              return 0;
+            });
             for (var item in seriesOrdered) {
               amounts.add(item.amount);
             }
+            // Ensure selectedIndex is within bounds
+            if (selectedIndex >= seriesOrdered.length) {
+              selectedIndex = seriesOrdered.length - 1;
+            }
+            if (selectedIndex < 0 && seriesOrdered.isNotEmpty) {
+              selectedIndex = 0;
+            }
+            _scrollToCurrentMonth();
+          } else {
             selectedIndex = 0;
           }
-          setState(() {});
         }
       },
       builder: (context, state) {
         if (state is GetRevenueSeriesLoadingState && data == null) {
           return Material(
+            color: AppColor.white,
             child: Container(
               color: AppColor.white,
-              child: Center(
-                child: CupertinoActivityIndicator(
-                  color: AppColor.black,
-                ),
+              child: const Center(
+                child: CupertinoActivityIndicator(color: AppColor.black),
               ),
             ),
           );
@@ -88,14 +229,13 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
           return Material(
             child: Container(
               color: AppColor.white,
-              child: Center(
-                child: Text("noDataFound".tr()),
-              ),
+              child: Center(child: Text("noDataFound".tr())),
             ),
           );
         }
 
         return Material(
+          color: AppColor.white,
           child: Container(
             color: AppColor.white,
             child: Column(
@@ -111,9 +251,7 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                       ),
                       AppIconButton(
                         icon: AppIcons.close,
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
+                        onTap: () => Navigator.pop(context),
                       ),
                     ],
                   ),
@@ -124,6 +262,7 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                   width: MediaQuery.of(context).size.width,
                   color: AppColor.greyE5,
                 ),
+                SizedBox(height: 12.h),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Text(
@@ -140,21 +279,15 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                         Row(
                           children: [
                             Icon(
-                              data!.total.changePercent > 0
-                                  ? Icons.arrow_upward
-                                  : Icons.arrow_downward,
-                              color: data!.total.changePercent > 0
-                                  ? Colors.green
-                                  : Colors.red,
+                              data!.total.changePercent > 0 ? Icons.arrow_upward : Icons.arrow_downward,
+                              color: data!.total.changePercent > 0 ? Colors.green : Colors.red,
                               size: 16,
                             ),
                             SizedBox(width: 4.w),
                             Text(
                               "${data!.total.changePercent.toStringAsFixed(1)}%",
                               style: TextStyle(
-                                color: data!.total.changePercent > 0
-                                    ? Colors.green
-                                    : Colors.red,
+                                color: data!.total.changePercent > 0 ? Colors.green : Colors.red,
                                 fontSize: 14.sp,
                               ),
                             ),
@@ -163,9 +296,7 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                         ),
                       Text(
                         "${"lastUpdated".tr()}: ${data!.lastUpdatedAt != null ? DateTime.tryParse(data!.lastUpdatedAt!)?.toDDMMYYY() ?? DateTime.now().toDDMMYYY() : DateTime.now().toDDMMYYY()}",
-                        style: AppTextStyle.f400s14.copyWith(
-                          color: AppColor.grey58,
-                        ),
+                        style: AppTextStyle.f400s14.copyWith(color: AppColor.grey58),
                       ),
                     ],
                   ),
@@ -173,24 +304,31 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                 SizedBox(height: 20.h),
                 if (amounts.isNotEmpty)
                   Container(
-                    height: 312.h,
+                    height: 502.h,
                     margin: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(10, (i) {
-                            final value = 10 - i;
+                          children: List.generate(11, (i) {
+                            final value = 5.0 - (i * 0.5);
+                            String label;
+                            if (value == 0) {
+                              label = "0";
+                            } else if (value < 1) {
+                              label = "${(value * 1000).toInt()}k";
+                            } else if (value == value.toInt()) {
+                              label = "${value.toInt()} ${"mln".tr()}";
+                            } else {
+                              label = "${value.toStringAsFixed(1)} ${"mln".tr()}";
+                            }
                             return SizedBox(
-                              height: (280.h - 40.h) / 9,
+                              height: (280.h - 40.h) / 10,
                               child: Center(
                                 child: Text(
-                                  "$value ${"mln".tr()}",
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: Colors.black,
-                                  ),
+                                  label,
+                                  style: TextStyle(fontSize: 12.sp, color: Colors.black),
                                 ),
                               ),
                             );
@@ -199,16 +337,16 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                         SizedBox(width: 12.w),
                         Expanded(
                           child: SingleChildScrollView(
+                            controller: _scrollController,
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             child: SizedBox(
-                              width: amounts.length * 54.w,
+                              width: amounts.length * _itemWidth,
                               child: BarChart(
                                 BarChartData(
                                   minY: 0,
                                   maxY: _maxY,
                                   borderData: FlBorderData(show: false),
-                                  backgroundColor: Colors.transparent,
                                   gridData: FlGridData(
                                     drawVerticalLine: false,
                                     horizontalInterval: _interval,
@@ -218,42 +356,36 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                                     ),
                                   ),
                                   barGroups: List.generate(amounts.length, (i) {
-                                    final isSelected = selectedIndex == i;
-                                    final clamped = amounts[i].clamp(0.0, _maxY);
+                                    final isSelected = selectedIndex >= 0 && selectedIndex < amounts.length && selectedIndex == i;
                                     return BarChartGroupData(
                                       x: i,
-                                      groupVertically: true,
-                                      barsSpace: 0.w,
                                       barRods: [
                                         BarChartRodData(
-                                          toY: clamped,
+                                          toY: (i < amounts.length ? amounts[i] : 0.0).clamp(0.0, _maxY),
                                           width: 42.w,
                                           borderRadius: BorderRadius.circular(10),
-                                          color: !isSelected
-                                              ? AppColor.greyF4
-                                              : AppColor.yellowFFC,
+                                          color: isSelected ? AppColor.yellowFFC : AppColor.greyE5,
                                         ),
                                       ],
                                     );
                                   }),
                                   titlesData: FlTitlesData(
-                                    topTitles: AxisTitles(),
-                                    rightTitles: AxisTitles(),
-                                    leftTitles: AxisTitles(),
+                                    topTitles: const AxisTitles(),
+                                    rightTitles: const AxisTitles(),
+                                    leftTitles: const AxisTitles(),
                                     bottomTitles: AxisTitles(
                                       sideTitles: SideTitles(
                                         showTitles: true,
                                         reservedSize: 28.h,
                                         getTitlesWidget: (v, meta) {
-                                          if (v.toInt() >= 0 && v.toInt() < seriesOrdered.length) {
+                                          int index = v.toInt();
+                                          if (index >= 0 && index < seriesOrdered.length && index < amounts.length) {
                                             return Padding(
                                               padding: EdgeInsets.only(top: 8.h),
                                               child: Text(
-                                                seriesOrdered[v.toInt()].label,
+                                                seriesOrdered[index].label,
                                                 style: AppTextStyle.f400s14.copyWith(
-                                                  color: selectedIndex == v.toInt()
-                                                      ? AppColor.black
-                                                      : AppColor.grey77,
+                                                  color: (selectedIndex >= 0 && selectedIndex < seriesOrdered.length && selectedIndex == index) ? AppColor.black : AppColor.grey77,
                                                 ),
                                               ),
                                             );
@@ -264,42 +396,31 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                                     ),
                                   ),
                                   barTouchData: BarTouchData(
-                                    enabled: true,
+                                    touchCallback: (event, response) {
+                                      if (response != null && response.spot != null && event.isInterestedForInteractions) {
+                                        final newIndex = response.spot!.touchedBarGroupIndex;
+                                        if (newIndex >= 0 && newIndex < amounts.length && newIndex < seriesOrdered.length) {
+                                          setState(() {
+                                            selectedIndex = newIndex;
+                                          });
+                                        }
+                                      }
+                                    },
                                     touchTooltipData: BarTouchTooltipData(
-                                      tooltipPadding: const EdgeInsets.all(8),
+                                      getTooltipColor: (group) => AppColor.yellowFFC,
                                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                                        final value = groupIndex >= 0 && groupIndex < amounts.length
-                                            ? amounts[groupIndex].toInt()
-                                            : rod.toY.toInt();
+                                        if (groupIndex >= 0 && groupIndex < amounts.length) {
+                                          return BarTooltipItem(
+                                            "${"revenue".tr()}\n${amounts[groupIndex].toInt().priceFormat()} UZS",
+                                            TextStyle(fontSize: 11.sp, color: AppColor.white),
+                                          );
+                                        }
                                         return BarTooltipItem(
-                                          "${"revenue".tr()}\n",
-                                          TextStyle(
-                                            fontSize: 11.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black87,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: "${value.priceFormat()} UZS",
-                                              style: TextStyle(
-                                                fontSize: 11.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
+                                          "${"revenue".tr()}\n0 UZS",
+                                          TextStyle(fontSize: 11.sp, color: AppColor.white),
                                         );
                                       },
                                     ),
-                                    touchCallback: (event, response) {
-                                      if (response != null &&
-                                          response.spot != null &&
-                                          event.isInterestedForInteractions) {
-                                        setState(() {
-                                          selectedIndex = response.spot!.touchedBarGroupIndex;
-                                        });
-                                      }
-                                    },
                                   ),
                                 ),
                               ),
@@ -310,11 +431,7 @@ class _RevenueStatisticScreenState extends State<RevenueStatisticScreen> {
                     ),
                   )
                 else
-                  Expanded(
-                    child: Center(
-                      child: Text("noDataFound".tr()),
-                    ),
-                  ),
+                  Expanded(child: Center(child: Text("noDataFound".tr()))),
               ],
             ),
           ),

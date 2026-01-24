@@ -89,7 +89,9 @@ class FirebaseHelper {
         if (response.payload == null) return;
 
         final data = jsonDecode(response.payload!);
-        if (data["verifyUrl"] != null) {
+        if (data["id"] != null) {
+          RxBus.post(tag: "booking_notification", data["id"]);
+        } else if (data["verifyUrl"] != null) {
           RxBus.post(tag: "notification", data["verifyUrl"]);
         }
       },
@@ -97,7 +99,9 @@ class FirebaseHelper {
         if (response.payload == null) return;
 
         final data = jsonDecode(response.payload!);
-        if (data["verifyUrl"] != null) {
+        if (data["id"] != null) {
+          RxBus.post(tag: "booking_notification", data["id"]);
+        } else if (data["verifyUrl"] != null) {
           RxBus.post(tag: "notification", data["verifyUrl"]);
         }
       },
@@ -172,7 +176,11 @@ class FirebaseHelper {
 
     // When tapping on notification
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage event) {
-      RxBus.post(tag: "notification", event.data["verifyUrl"]);
+      if (event.data["id"] != null) {
+        RxBus.post(tag: "booking_notification", event.data["id"]);
+      } else if (event.data["verifyUrl"] != null) {
+        RxBus.post(tag: "notification", event.data["verifyUrl"]);
+      }
     });
   }
 

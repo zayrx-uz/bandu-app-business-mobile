@@ -13,9 +13,11 @@ class WeekItem extends StatefulWidget {
     super.key,
     required this.onChange,
     this.initialData,
+    this.onTap,
   });
   final ValueChanged<Map<String, dynamic>> onChange;
   final Map<String, dynamic>? initialData;
+  final VoidCallback? onTap;
 
   @override
   State<WeekItem> createState() => _WeekItemState();
@@ -72,6 +74,7 @@ class _WeekItemState extends State<WeekItem> {
   }
 
   void _showTimePicker(int index, bool isOpenTime) {
+    widget.onTap?.call();
     String dayKey = dayEn[index];
     DateTime initialDateTime = DateTime.now();
 
@@ -110,6 +113,7 @@ class _WeekItemState extends State<WeekItem> {
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: AppButton(
                 onTap: () {
+                  FocusScope.of(context).unfocus();
                   String formattedTime = DateFormat('HH:mm').format(selectedTime);
 
                   String? currentOpen = isOpenTime ? formattedTime : schedule[dayKey]!["open"];
@@ -199,6 +203,7 @@ class _WeekItemState extends State<WeekItem> {
                           GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTap: () {
+                              widget.onTap?.call();
                               setState(() {
                                 expandedStates[index] = !isExpanded;
                               });
@@ -242,7 +247,9 @@ class _WeekItemState extends State<WeekItem> {
                                     children: [
                                       Expanded(
                                         child: GestureDetector(
-                                          onTap: () => _showTimePicker(index, true),
+                                          onTap: () {
+                                            _showTimePicker(index, true);
+                                          },
                                           child: Container(
                                             padding: EdgeInsets.all(10.w),
                                             decoration: BoxDecoration(
@@ -263,7 +270,9 @@ class _WeekItemState extends State<WeekItem> {
                                       SizedBox(width: 10.w),
                                       Expanded(
                                         child: GestureDetector(
-                                          onTap: () => _showTimePicker(index, false),
+                                          onTap: () {
+                                            _showTimePicker(index, false);
+                                          },
                                           child: Container(
                                             padding: EdgeInsets.all(10.w),
                                             decoration: BoxDecoration(

@@ -71,8 +71,9 @@ class HomeRepository implements AbstractHomeRepository {
   Future<HttpResult> setPlace({
     required String name,
     required int number,
+    List<int>? employeeIds,
   }) async {
-    return await homeProvider.setPlace(name, number);
+    return await homeProvider.setPlace(name, number, employeeIds);
   }
 
 
@@ -80,8 +81,15 @@ class HomeRepository implements AbstractHomeRepository {
   Future<HttpResult> updatePlace({
     required int number,
     required int id,
+    String? name,
+    List<int>? employeeIds,
   }) async {
-    return await homeProvider.updatePlace(number, id);
+    return await homeProvider.updatePlace(
+      number: number,
+      id: id,
+      name: name,
+      employeeIds: employeeIds,
+    );
   }
 
 
@@ -154,8 +162,17 @@ class HomeRepository implements AbstractHomeRepository {
     required String phone,
     required String role,
     required int id,
+    String? password,
+    List<int>? resourceIds,
   }) async {
-    return await homeProvider.updateEmployee(name, phone,id , role);
+    return await homeProvider.updateEmployee(
+      name: name,
+      phone: phone,
+      id: id,
+      role: role,
+      password: password,
+      resourceIds: resourceIds,
+    );
   }
 
   @override
@@ -210,7 +227,6 @@ class HomeRepository implements AbstractHomeRepository {
     required bool isBookable,
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
-    required List<Map<String, dynamic>> images,
     List<int>? employeeIds,
   }) async {
     return await homeProvider.createResource(
@@ -222,8 +238,33 @@ class HomeRepository implements AbstractHomeRepository {
       isBookable: isBookable,
       isTimeSlotBased: isTimeSlotBased,
       timeSlotDurationMinutes: timeSlotDurationMinutes,
-      images: images,
       employeeIds: employeeIds,
+    );
+  }
+
+  @override
+  Future<HttpResult> postResourceImages({
+    required int resourceId,
+    required List<Map<String, dynamic>> images,
+  }) async {
+    return await homeProvider.postResourceImages(
+      resourceId: resourceId,
+      images: images,
+    );
+  }
+
+  @override
+  Future<HttpResult> patchResourceImage({
+    required int resourceId,
+    required int imageId,
+    required String url,
+    bool isMain = true,
+  }) async {
+    return await homeProvider.patchResourceImage(
+      resourceId: resourceId,
+      imageId: imageId,
+      url: url,
+      isMain: isMain,
     );
   }
 
@@ -243,7 +284,6 @@ class HomeRepository implements AbstractHomeRepository {
     required bool isBookable,
     required bool isTimeSlotBased,
     required int timeSlotDurationMinutes,
-    required List<Map<String, dynamic>> images,
     List<int>? employeeIds,
   }) async {
     return await homeProvider.updateResource(
@@ -256,7 +296,6 @@ class HomeRepository implements AbstractHomeRepository {
       isBookable: isBookable,
       isTimeSlotBased: isTimeSlotBased,
       timeSlotDurationMinutes: timeSlotDurationMinutes,
-      images: images,
       employeeIds: employeeIds,
     );
   }
@@ -430,5 +469,10 @@ class HomeRepository implements AbstractHomeRepository {
   @override
   Future<HttpResult> confirmPayment({required int id}) async {
     return await homeProvider.confirmPayment(id: id);
+  }
+
+  @override
+  Future<HttpResult> getIcons() async {
+    return await homeProvider.getIcons();
   }
 }

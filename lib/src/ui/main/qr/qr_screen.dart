@@ -128,6 +128,7 @@ class _QrScreenState extends State<QrScreen> {
                 create: (_) => HomeBloc(homeRepository: HomeRepository()),
                 child: BookingDetailBottomSheet(
                   bookingId: bookingId,
+                  isFromQrScan: true,
                 ),
               ),
             );

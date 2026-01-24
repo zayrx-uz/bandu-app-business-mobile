@@ -4,7 +4,6 @@ import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/auth/login_model.dart';
-import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/main/settings/edit/edit_profile_screen.dart';
@@ -128,11 +127,11 @@ class ProfileWidget extends StatelessWidget {
                       child: Center(
                         child: CupertinoButton(
                           onPressed: () {
+                            final homeBloc = context.read<HomeBloc>();
                             AppService.changePage(
                               context,
-                              BlocProvider(
-                                create: (_) =>
-                                    HomeBloc(homeRepository: HomeRepository()),
+                              BlocProvider.value(
+                                value: homeBloc,
                                 child: EditProfileScreen(),
                               ),
                             );

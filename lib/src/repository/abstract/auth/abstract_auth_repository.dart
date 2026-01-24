@@ -38,4 +38,6 @@ abstract class AbstractAuthRepository {
   });
 
   Future<HttpResult> uploadImage({required String filePath});
+
+  Future<HttpResult> logout();
 }

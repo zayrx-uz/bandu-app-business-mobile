@@ -1,14 +1,17 @@
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
-import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
-import 'package:dropdown_flutter/custom_dropdown.dart';
+import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
+import 'package:bandu_business/src/widget/main/place/select_people_count_widget.dart';
+import 'package:bandu_business/src/widget/main/place/selectable_employee_item_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,34 +27,57 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
   bool isActive = false;
   int number = 0;
   var n = [1, 2, 4, 6, 8, 12];
-  List<String> get item => [
-    "1 ${"people".tr()}",
-    "2 ${"people".tr()}",
-    "4 ${"people".tr()}",
-    "6 ${"people".tr()}",
-    "8 ${"people".tr()}",
-    "12 ${"people".tr()}",
-  ];
+  late List<String> item;
   TextEditingController nameController = TextEditingController();
+  List<EmployeeItemData>? employees;
+  Set<int> selectedEmployeeIds = {};
 
   @override
   void initState() {
-    nameController.addListener(check);
     super.initState();
+    item = [
+      "1 ${"people".tr()}",
+      "2 ${"people".tr()}",
+      "4 ${"people".tr()}",
+      "6 ${"people".tr()}",
+      "8 ${"people".tr()}",
+      "12 ${"people".tr()}",
+    ];
+    nameController.addListener(check);
+    BlocProvider.of<HomeBloc>(context).add(GetEmployeeEvent());
   }
+
 
   void check() {
     isActive = nameController.text.trim().length >= 3 && number != 0;
     setState(() {});
   }
 
+  void _toggleEmployee(int employeeId) {
+    setState(() {
+      if (selectedEmployeeIds.contains(employeeId)) {
+        selectedEmployeeIds.remove(employeeId);
+      } else {
+        selectedEmployeeIds.add(employeeId);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
+        if (state is GetEmployeeSuccessState) {
+          setState(() {
+            employees = state.data;
+          });
+        }
         if (state is SetPlaceSuccessState) {
           AppService.successToast(context, "placeCreated".tr());
           Navigator.pop(context);
+        }
+        if (state is HomeErrorState) {
+          CenterDialog.errorDialog(context, state.message);
         }
       },
       builder: (context, state) {
@@ -70,7 +96,10 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text("addPlace".tr(), style: AppTextStyle.f600s18),
+                          child: Text(
+                            "addPlace".tr(),
+                            style: AppTextStyle.f600s18,
+                          ),
                         ),
                         AppIconButton(
                           icon: AppIcons.close,
@@ -107,58 +136,69 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                   SizedBox(height: 8.h),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: DropdownFlutter<String>(
+                    child: SelectPeopleCountWidget(
                       hintText: "enterNumber".tr(),
-                      excludeSelected: false,
-                      hideSelectedFieldWhenExpanded: true,
-                      canCloseOutsideBounds: false,
-                      decoration: CustomDropdownDecoration(
-                        closedFillColor: AppColor.greyFA,
-                        expandedFillColor: AppColor.white,
-                        listItemStyle: AppTextStyle.f500s16,
-                        headerStyle: AppTextStyle.f500s16,
-                        closedSuffixIcon: AppSvgAsset(AppIcons.bottom),
-                        expandedSuffixIcon: Container(),
-                        closedBorder: Border.all(
-                          width: 1.h,
-                          color: AppColor.greyE5,
-                        ),
-                      ),
                       items: item,
-                      listItemBuilder: (a, b, s, d) {
-                        return Container(
-                          color: Colors.transparent,
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 16.h,
-                                width: 16.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColor.greyFA,
-                                  border: Border.all(
-                                    width: s ? 4.h : 1.h,
-                                    color: s
-                                        ? AppColor.yellowFFC
-                                        : AppColor.greyE5,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: Text(b, style: AppTextStyle.f500s16),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      onChanged: (value) {
+                      onSelect: (value) {
                         number = n[item.indexWhere((e) => e == value)];
                         check();
                       },
+                      onAddNew: (value) {
+                        try {
+                          final countText = value.trim().split(' ')[0];
+                          final count = int.parse(countText);
+                          if (count > 0) {
+                            setState(() {
+                              n.add(count);
+                              item.add("$count ${"people".tr()}");
+                            });
+                            number = count;
+                            check();
+                          }
+                        } catch (e) {
+                        }
+                      },
                     ),
                   ),
-                  Spacer(),
+                  if (employees != null && employees!.isNotEmpty) ...[
+                    SizedBox(height: 20.h),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(left: 16.w),
+                      child: Text(
+                        "selectEmployees".tr(),
+                        style: AppTextStyle.f500s16.copyWith(
+                          color: AppColor.black09,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: employees!.length,
+                        padding: EdgeInsets.only(bottom: 8.h),
+                        itemBuilder: (context, index) {
+                          final employee = employees![index];
+                          return SelectableEmployeeItemWidget(
+                            employee: employee,
+                            isSelected: selectedEmployeeIds.contains(employee.id),
+                            onTap: () => _toggleEmployee(employee.id),
+                          );
+                        },
+                      ),
+                    ),
+                  ] else if (state is GetEmployeeLoadingState) ...[
+                    SizedBox(height: 20.h),
+                    Center(
+                      child: CupertinoActivityIndicator(
+                        color: AppColor.black,
+                      ),
+                    ),
+                    Spacer(),
+                  ] else ...[
+                    Spacer(),
+                  ],
 
                   AppButton(
                     onTap: () {
@@ -167,6 +207,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                           SetPlaceEvent(
                             name: nameController.text,
                             number: number,
+                            employeeIds: selectedEmployeeIds.toList(),
                           ),
                         );
                       }

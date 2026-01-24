@@ -2,6 +2,7 @@ import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/booking/booking_detail_model.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
@@ -10,25 +11,26 @@ import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/custom_network_image.dart';
 import 'package:bandu_business/src/widget/main/booking/book_cancel.dart';
-import 'package:bandu_business/src/widget/main/qr/alice_checker_widget.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 class BookingDetailBottomSheet extends StatefulWidget {
   final int bookingId;
   final HomeBloc? parentBloc;
+  final bool isFromQrScan;
 
   const BookingDetailBottomSheet({
     super.key,
     required this.bookingId,
     this.parentBloc,
+    this.isFromQrScan = false,
   });
 
   @override
@@ -118,12 +120,19 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
   }
 
   String _getCategoryIcon() {
-    if (bookingDetail?.company.categories.isEmpty ?? true) {
+    final placeIconUrl = CacheService.getPlaceIcon();
+    
+    if (placeIconUrl.isNotEmpty) {
+      return placeIconUrl;
+    }
+    
+    final ikpuCode = CacheService.getCategoryIkpuCode();
+    
+    if (ikpuCode.isEmpty) {
       return AppIcons.placeSelect;
     }
-
-    final firstCategory = bookingDetail!.company.categories.first;
-    return HelperFunctions.getCategoryIconByIkpuCode(firstCategory.ikpuCode);
+    
+    return HelperFunctions.getCategoryIconByIkpuCode(ikpuCode);
   }
 
   @override
@@ -291,34 +300,78 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                     child: Column(
                       children: [
                         if (bookingDetail!.places.isNotEmpty)
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                            decoration: BoxDecoration(
-                              color: AppColor.yellowFF.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Text(
-                              bookingDetail!.places.first is Map
-                                  ? "T-${(bookingDetail!.places.first as Map)['name'] ?? '01'}"
-                                  : "T-01",
-                              style: AppTextStyle.f400s16.copyWith(
-                                color: AppColor.black,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                decoration: BoxDecoration(
+                                  color: AppColor.yellowFF.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Text(
+                                  bookingDetail!.places.first is Map
+                                      ? "${(bookingDetail!.places.first as Map)['name'] ?? ''}"
+                                      : "",
+                                  style: AppTextStyle.f400s16.copyWith(
+                                    color: AppColor.black,
+                                  ),
+                                ),
                               ),
-                            ),
+                              SizedBox(width: 8.w,),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                decoration: BoxDecoration(
+                                  color: AppColor.grey77.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Text(
+                                  bookingDetail!.places.first is Map
+                                      ? "${(bookingDetail!.places.first as Map)['capacity'] ?? ''}"
+                                      : "",
+                                  style: AppTextStyle.f400s16.copyWith(
+                                    color: AppColor.black,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+
                         if (bookingDetail!.places.isNotEmpty) SizedBox(height: 12.h),
-                        _getCategoryIcon().contains('assets/images/')
-                            ? Image.asset(
-                                _getCategoryIcon(),
+                        Builder(
+                          builder: (context) {
+                            final iconPath = _getCategoryIcon();
+                            
+                            if (iconPath.startsWith('http://') || iconPath.startsWith('https://')) {
+                              return SvgPicture.network(
+                                iconPath,
                                 height: 88.h,
                                 width: 80.h,
                                 fit: BoxFit.contain,
-                              )
-                            : AppSvgAsset(
-                                _getCategoryIcon(),
+                                placeholderBuilder: (context) => Container(
+                                  height: 88.h,
+                                  width: 80.h,
+                                  child: CupertinoActivityIndicator(),
+                                ),
+                              );
+                            } else if (iconPath.contains('assets/images/')) {
+                              return Image.asset(
+                                iconPath,
                                 height: 88.h,
                                 width: 80.h,
-                              ),
+                                fit: BoxFit.contain,
+                              );
+                            } else {
+                              return AppSvgAsset(
+                                iconPath,
+                                height: 88.h,
+                                width: 80.h,
+                              );
+                            }
+                          },
+                        ),
+
+
                       ],
                     ),
                   ),
@@ -338,7 +391,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             children: [
                               Text(
                                 "orderDate".tr(),
-                                style: AppTextStyle.f500s16.copyWith(
+                                style: AppTextStyle.f600s16.copyWith(
                                   color: AppColor.black,
                                 ),
                               ),
@@ -355,7 +408,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                                 child: Text(
-                                  bookingDetail!.bookingTime != null ? _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime) : "",
+                                  bookingDetail!.bookingTime != null ? _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime).substring(0 , 10) : "",
                                   style: AppTextStyle.f500s16,
                                 ),
                               ),
@@ -374,7 +427,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             children: [
                               Text(
                                 "orderTime".tr(),
-                                style: AppTextStyle.f500s16.copyWith(
+                                style: AppTextStyle.f600s16.copyWith(
                                   color: AppColor.black,
                                 ),
                               ),
@@ -391,7 +444,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                                 child: Text(
-                                  _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime),
+                                  _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime).substring(12 , 25),
                                   style: AppTextStyle.f500s16,
                                 ),
                               ),
@@ -411,7 +464,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             children: [
                               Text(
                                 "comment".tr(),
-                                style: AppTextStyle.f500s16.copyWith(
+                                style: AppTextStyle.f600s16.copyWith(
                                   color: AppColor.black,
                                 ),
                               ),
@@ -529,10 +582,11 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                           AppSvgAsset(AppIcons.hour, height: 16.h, width: 16.h),
                                           SizedBox(width: 4.w),
                                           Text(
-                                            "${resource.timeSlotDurationMinutes} ${resource.timeSlotDurationMinutes == 1 ? "minute".tr() : "minutes".tr()}",
+                                            "${resource.timeSlotDurationMinutes} ${"minute".tr()}",
                                             style: AppTextStyle.f400s14.copyWith(
                                               color: AppColor.grey77,
                                             ),
+
                                           ),
                                         ],
                                       ),
@@ -552,6 +606,26 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ],
                                 ),
                               ),
+                              // SizedBox(width: 4.w,),
+                              // Container(
+                              //   width: 30.w,
+                              //   height: 30.w,
+                              //   decoration: BoxDecoration(
+                              //     color : Colors.white,
+                              //     borderRadius: BorderRadius.circular(8.r),
+                              //     border: Border.all(
+                              //       width: 1.w,
+                              //       color : Colors.grey
+                              //     )
+                              //   ),
+                              //   child : Center(
+                              //     child: Text(resource.name , style: TextStyle(
+                              //       color : Colors.black,
+                              //       fontSize: 14.sp,
+                              //       fontWeight: FontWeight.w500
+                              //     ),),
+                              //   )
+                              // )
                             ],
                           ),
                         );
@@ -597,11 +671,80 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
     return bookingDetail!.status.toLowerCase() == "pending";
   }
 
+  bool _isBookingCompleted() {
+    if (bookingDetail == null) return false;
+    return bookingDetail!.status.toLowerCase() == "completed";
+  }
+
+  bool _shouldShowEarlyClose() {
+    // Early close should only be available for confirmed bookings
+    if (bookingDetail == null || !_isBookingConfirmed()) return false;
+    
+    // If booking is already completed or cancelled, don't show early close
+    if (_isBookingCompleted() || _isBookingCancelled()) return false;
+    
+    // Need both bookingTime and bookingEndTime to determine early close
+    if (bookingDetail!.bookingTime == null || bookingDetail!.bookingEndTime == null) {
+      return false;
+    }
+    
+    _ensureTimezoneInitialized();
+    final tashkent = tz.getLocation('Asia/Tashkent');
+    final now = tz.TZDateTime.now(tashkent);
+    final bookingTime = tz.TZDateTime.from(bookingDetail!.bookingTime!, tashkent);
+    final bookingEndTime = tz.TZDateTime.from(bookingDetail!.bookingEndTime!, tashkent);
+    
+    // Early close is available if:
+    // 1. Booking has started (bookingTime is in the past or now)
+    // 2. Booking hasn't ended yet (bookingEndTime is in the future)
+    // This means we can close it before the scheduled end time
+    final hasStarted = bookingTime.isBefore(now) || bookingTime.isAtSameMomentAs(now);
+    final hasNotEnded = bookingEndTime.isAfter(now);
+    
+    return hasStarted && hasNotEnded;
+  }
+
+  String _getCompleteButtonText() {
+    if (_shouldShowEarlyClose()) {
+      return "earlyClose".tr();
+    }
+    return "completeBooking".tr();
+  }
+
   Widget _buildActionButtons(BuildContext context, HomeState state) {
     final isPending = _isBookingPending();
     final isConfirmed = _isBookingConfirmed();
+    final isCompleted = _isBookingCompleted();
     
-    if (_isBookingCancelled()) {
+    if (_isBookingCancelled() || isCompleted) {
+      return SizedBox.shrink();
+    }
+    
+    if (widget.isFromQrScan) {
+      if (isPending || isConfirmed) {
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: AppButton(
+            onTap: () {
+              CenterDialog.completeBookingDialog(
+                context,
+                onConfirm: () {
+                  context.read<HomeBloc>().add(
+                    UpdateBookingStatusEvent(
+                      bookingId: widget.bookingId,
+                      status: "completed",
+                    ),
+                  );
+                },
+              );
+            },
+            text: _getCompleteButtonText(),
+            height: 48.h,
+            margin: EdgeInsets.zero,
+            loading: state is UpdateBookingStatusLoadingState,
+          ),
+        );
+      }
       return SizedBox.shrink();
     }
     
@@ -704,49 +847,33 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
-                  child: _buildPaymentConfirmButton(context, state),
+                  child: AppButton(
+                    onTap: () {
+                      CenterDialog.completeBookingDialog(
+                        context,
+                        onConfirm: () {
+                          context.read<HomeBloc>().add(
+                            UpdateBookingStatusEvent(
+                              bookingId: widget.bookingId,
+                              status: "completed",
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    text: _getCompleteButtonText(),
+                    height: 48.h,
+                    margin: EdgeInsets.zero,
+                    loading: state is UpdateBookingStatusLoadingState,
+                  ),
                 ),
               ],
             ),
-            // if (!_isPaymentPaid() && bookingDetail?.paymentId != null) ...[
-            //   SizedBox(height: 12.h),
-            //   _buildPaymentConfirmButton(context, state),
-            // ],
           ],
         ),
       );
     }
     
     return SizedBox.shrink();
-  }
-
-  Widget _buildPaymentConfirmButton(BuildContext context, HomeState state) {
-    final isConfirmingPayment = state is ConfirmPaymentLoadingState;
-    final isPaid = _isPaymentPaid();
-    final isConfirmed = _isBookingConfirmed();
-    
-    if (isPaid || !isConfirmed || bookingDetail?.paymentId == null) {
-      return SizedBox.shrink();
-    }
-
-    return AppButton(
-      onTap: () {
-        if (bookingDetail?.paymentId != null) {
-          CenterDialog.confirmPaymentDialog(
-            context,
-            paymentId: bookingDetail!.paymentId!,
-            onConfirm: () {
-              context.read<HomeBloc>().add(
-                ConfirmPaymentEvent(paymentId: bookingDetail!.paymentId!),
-              );
-            },
-          );
-        }
-      },
-      text: "confirmPayment".tr(),
-      height: 48.h,
-      margin: EdgeInsets.zero,
-      loading: isConfirmingPayment,
-    );
   }
 }

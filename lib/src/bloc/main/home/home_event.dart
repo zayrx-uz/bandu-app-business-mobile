@@ -115,22 +115,34 @@ class GetPlaceBusinessEvent extends HomeEvent {
 class SetPlaceEvent extends HomeEvent {
   final String name;
   final int number;
+  final List<int>? employeeIds;
 
-  SetPlaceEvent({required this.name, required this.number});
+  SetPlaceEvent({
+    required this.name,
+    required this.number,
+    this.employeeIds,
+  });
 
   @override
-  List<Object?> get props => [name, number];
+  List<Object?> get props => [name, number, employeeIds];
 }
 
 
 class UpdatePlaceEvent extends HomeEvent {
   final int number;
   final int id;
+  final String? name;
+  final List<int>? employeeIds;
 
-  UpdatePlaceEvent({required this.number , required this.id});
+  UpdatePlaceEvent({
+    required this.number,
+    required this.id,
+    this.name,
+    this.employeeIds,
+  });
 
   @override
-  List<Object?> get props => [ number];
+  List<Object?> get props => [number, id, name, employeeIds];
 }
 
 
@@ -228,16 +240,20 @@ class UpdateEmployeeEvent extends HomeEvent {
   final String phone;
   final String role;
   final int id;
+  final String? password;
+  final List<int>? resourceIds;
 
   UpdateEmployeeEvent({
     required this.name,
     required this.phone,
     required this.role,
     required this.id,
+    this.password,
+    this.resourceIds,
   });
 
   @override
-  List<Object?> get props => [name, phone, role];
+  List<Object?> get props => [name, phone, role, id, password, resourceIds];
 }
 
 class GetQrCodeEvent extends HomeEvent {
@@ -394,6 +410,7 @@ class EditResourceEvent extends HomeEvent {
   final int timeSlotDurationMinutes;
   final List<Map<String, dynamic>> images;
   final List<int>? employeeIds;
+  final List<int>? replacedImageIds;
 
   EditResourceEvent({
     required this.id,
@@ -407,6 +424,7 @@ class EditResourceEvent extends HomeEvent {
     required this.timeSlotDurationMinutes,
     required this.images,
     this.employeeIds,
+    this.replacedImageIds,
   });
 
   @override
@@ -422,6 +440,7 @@ class EditResourceEvent extends HomeEvent {
         timeSlotDurationMinutes,
         images,
         employeeIds,
+        replacedImageIds,
       ];
 }
 
@@ -574,4 +593,9 @@ class GetRevenueSeriesEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [companyId, period, date, clientDateTime];
+}
+
+class GetIconsEvent extends HomeEvent {
+  @override
+  List<Object?> get props => [];
 }

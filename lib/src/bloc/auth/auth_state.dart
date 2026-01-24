@@ -101,3 +101,7 @@ class VerifyResetCodeSuccessState extends AuthState {
 class ResetPasswordLoadingState extends AuthState {}
 
 class ResetPasswordSuccessState extends AuthState {}
+
+class LogoutLoadingState extends AuthState {}
+
+class LogoutSuccessState extends AuthState {}

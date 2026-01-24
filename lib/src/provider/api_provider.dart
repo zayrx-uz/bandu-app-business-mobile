@@ -267,9 +267,20 @@ class ApiProvider {
 
   Map<String, String> _header({bool isMultipart = false}) {
     final token = CacheService.getString('access_token');
+    final savedLang = CacheService.getString('language');
+    
+    // Get current language, default to 'ru' if not set
+    String lang = 'ru';
+    if (savedLang.isNotEmpty) {
+      final langLower = savedLang.toLowerCase();
+      if (langLower == 'uz' || langLower == 'en' || langLower == 'ru') {
+        lang = langLower;
+      }
+    }
+    
     final headers = <String, String>{
       'Accept': isMultipart ? '*/*' : 'application/json',
-      'lang': 'en',
+      'lang': lang,
     };
 
     if (token.isNotEmpty) {

@@ -26,7 +26,12 @@ class ResourceWidgetGrid extends StatelessWidget {
       children: [
         data.images.isNotEmpty
             ? CustomNetworkImage(
-          imageUrl: data.images.first.url,
+          imageUrl: data.images
+              .firstWhere(
+                (img) => img.isMain,
+                orElse: () => data.images.first,
+              )
+              .url,
           borderRadius: 12.r,
           width: double.infinity,
           height: 112.h,

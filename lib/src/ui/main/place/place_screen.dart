@@ -3,6 +3,7 @@ import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
+import 'package:bandu_business/src/helper/service/rx_bus.dart';
 import 'package:bandu_business/src/model/api/main/place/place_business_model.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class PlaceScreen extends StatefulWidget {
@@ -30,8 +32,17 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
   @override
   void initState() {
-    getData();
     super.initState();
+    getData();
+    _setupRxBus();
+  }
+
+  void _setupRxBus() {
+    RxBus.register(tag: "PLACE_ICON_UPDATED").listen((d) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   void getData() {
@@ -168,8 +179,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
   }
 
   Widget item(PlaceBusinessItemData item) {
-    final ikpuCode = CacheService.getCategoryIkpuCode();
-    final imagePath = HelperFunctions.getCategoryIconByIkpuCode(ikpuCode);
+    final placeIconUrl = CacheService.getPlaceIcon();
     
     return CupertinoButton(
       onPressed: () {
@@ -182,12 +192,13 @@ class _PlaceScreenState extends State<PlaceScreen> {
                 name: item.name,
                 id: item.id,
                 number: item.capacity,
+                employeeIds: item.workers.map((worker) => worker.id).toList(),
               ),
             );
           },
         ).then((on) {
-          getData();
-        });
+            getData();
+          });
       },
       padding: EdgeInsets.zero,
       child: Container(
@@ -216,18 +227,41 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ),
             ),
             SizedBox(height: 6.h),
-            imagePath.contains('assets/images/')
-                ? Image.asset(
-                    imagePath,
+            Builder(
+              builder: (context) {
+                if (placeIconUrl.isNotEmpty) {
+                  return SvgPicture.network(
+                    placeIconUrl,
                     width: 40.w,
                     height: 40.w,
-                    fit: BoxFit.cover,
-                  )
-                : AppSvgAsset(
-                    imagePath,
-                    width: 40.w,
-                    height: 40.w,
-                  ),
+                    fit: BoxFit.contain,
+                    placeholderBuilder: (context) => Container(
+                      width: 40.w,
+                      height: 40.w,
+                      child: CupertinoActivityIndicator(),
+                    ),
+                  );
+                }
+                
+                final cachedIcon = CacheService.getCategoryIcon();
+                final imagePath = cachedIcon.isNotEmpty 
+                    ? cachedIcon 
+                    : HelperFunctions.getCategoryIconByIkpuCode(CacheService.getCategoryIkpuCode());
+                
+                return imagePath.contains('assets/images/')
+                    ? Image.asset(
+                        imagePath,
+                        width: 40.w,
+                        height: 40.w,
+                        fit: BoxFit.cover,
+                      )
+                    : AppSvgAsset(
+                        imagePath,
+                        width: 40.w,
+                        height: 40.w,
+                      );
+              },
+            ),
             SizedBox(height: 4.h),
           ],
         ),

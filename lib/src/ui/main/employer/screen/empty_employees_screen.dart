@@ -113,7 +113,7 @@ class _EmptyEmployeesScreenState extends State<EmptyEmployeesScreen> {
                                   Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                                     child: Text(
-                                      data!.groups[i].groupName,
+                                      "employer".tr(),
                                       style: AppTextStyle.f600s16,
                                     ),
                                   ),

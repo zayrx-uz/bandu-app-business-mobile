@@ -1,3 +1,5 @@
+import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
+
 class PlaceBusinessModel {
   List<PlaceBusinessItemData> data;
   String message;
@@ -40,6 +42,7 @@ class PlaceBusinessItemData {
   dynamic positionY;
   Booking? booking;
   dynamic placeCategory;
+  List<EmployeeItemData> workers;
 
   PlaceBusinessItemData({
     required this.id,
@@ -50,6 +53,7 @@ class PlaceBusinessItemData {
     required this.positionY,
     required this.booking,
     required this.placeCategory,
+    required this.workers,
   });
 
   factory PlaceBusinessItemData.fromJson(Map<String, dynamic> json) => PlaceBusinessItemData(
@@ -63,6 +67,11 @@ class PlaceBusinessItemData {
         ? Booking.fromJson({})
         : Booking.fromJson(json["booking"]),
     placeCategory: json["placeCategory"],
+    workers: json["workers"] == null
+        ? []
+        : List<EmployeeItemData>.from(
+            json["workers"].map((x) => EmployeeItemData.fromJson(x)),
+          ),
   );
 }
 

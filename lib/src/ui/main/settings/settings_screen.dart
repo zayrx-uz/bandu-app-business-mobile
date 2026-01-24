@@ -4,6 +4,7 @@ import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/constants/constants.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
+import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/helper/service/rx_bus.dart';
 import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -127,8 +128,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ],
-                    SizedBox(height: 16.h),
-                    SettingsButtonWidget(
+                    if(CacheService.getString("user_role") == "BUSINESS_OWNER" || CacheService.getString("user_role") == "MANAGER")SizedBox(height: 16.h),
+                    if(CacheService.getString("user_role") == "BUSINESS_OWNER" || CacheService.getString("user_role") == "MANAGER") SettingsButtonWidget(
                       icon: AppIcons.money,
                       text: "resource".tr(),
                       onTap: () {
@@ -185,14 +186,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (Platform.isAndroid) {
                           await launchUrl(
                             Uri.parse(
-                              'https://play.google.com/store/apps/details?id=uz.mobile.bandu&hl=ru',
+                              'https://play.google.com/store/apps/details?id=com.mobile.bandu_business&hl=ru',
                             ),
                             mode: LaunchMode.externalApplication,
                           );
                         } else {
                           await launchUrl(
                             Uri.parse(
-                              'https://apps.apple.com/us/app/bandu/id6757488779',
+                              'https://apps.apple.com/us/app/bandu-business/id6757434583',
                             ),
                             mode: LaunchMode.externalApplication,
                           );

@@ -45,7 +45,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
-      onPressed: onTap,
+      onPressed: loading ? null : onTap,
       padding: EdgeInsets.zero,
       child: Container(
         height: height ?? 48.h,

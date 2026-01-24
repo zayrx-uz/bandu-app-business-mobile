@@ -514,3 +514,14 @@ class GetRevenueSeriesSuccessState extends HomeState {
   @override
   List<Object?> get props => [data];
 }
+
+class GetIconsLoadingState extends HomeState {}
+
+class GetIconsSuccessState extends HomeState {
+  final List<icon_model.IconData> data;
+
+  GetIconsSuccessState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
+}

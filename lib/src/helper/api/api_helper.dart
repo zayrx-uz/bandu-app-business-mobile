@@ -17,6 +17,7 @@ class ApiHelper {
   static const verifyResetCode = "${baseUrl}api/otp-based-auth/verify-reset-code";
   static const resetPassword = "${baseUrl}api/otp-based-auth/reset-password";
   static const registerComplete = "${baseUrl}api/otp-based-auth/complete-registration";
+  static const logout = "${baseUrl}api/otp-based-auth/logout";
   static const media = "${baseUrl}api/upload/image/user";
   static const getCompany = "${baseUrl}api/company";
   static const getMyCompany = "${baseUrl}api/user/companies";
@@ -37,10 +38,12 @@ class ApiHelper {
   static const createResource = "${baseUrl}api/resource";
   static const uploadResourceImage = "${baseUrl}api/upload/image/resource";
   static const createResourceCategory = "${baseUrl}api/resource-category";
+  static String postResourceImages(int resourceId) => "${baseUrl}api/resource/$resourceId/images";
+  static String patchResourceImage(int resourceId, int imageId) => "${baseUrl}api/resource/$resourceId/images/$imageId";
   static const deleteResourceCategory = "${baseUrl}api/resource-category/";
   static const confirmBook = "${baseUrl}api/booking/";
   static const aliceChecker = "${baseUrl}api/payment/alice/check";
-  static const getOwnerBookings = "${baseUrl}api/booking/owner-bookings";
+  static const getOwnerBookings = "${baseUrl}api/booking/company-bookings";
   static const getBookingDetail = "${baseUrl}api/booking/";
   static const updateBookingStatus = "${baseUrl}api/booking/";
   static const dashboardSummary = "${baseUrl}api/dashboard/summary";
@@ -54,4 +57,5 @@ class ApiHelper {
   static const confirmPayment = "${baseUrl}api/payments/";
   static const getNotifications = "${baseUrl}api/notification/my";
   static const markNotificationRead = "${baseUrl}api/notification/";
+  static const getIcons = "${baseUrl}api/icons";
 }

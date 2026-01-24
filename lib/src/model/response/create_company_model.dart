@@ -14,6 +14,7 @@ class CreateCompanyModel {
   WorkingHours? workingHours;
   List<ImageCreateModel> images;
   int? serviceTypeId;
+  int? iconId;
 
   CreateCompanyModel({
     required this.name,
@@ -24,6 +25,7 @@ class CreateCompanyModel {
     required this.workingHours,
     required this.images,
     this.serviceTypeId,
+    this.iconId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -34,6 +36,7 @@ class CreateCompanyModel {
     "isOpen247": isOpen247,
     "workingHours": workingHours != null ? workingHours!.toJson() : {},
     "images": List<dynamic>.from(images.map((x) => x.toJson())),
+    if (iconId != null) "iconId": iconId,
   };
 }
 
@@ -47,6 +50,7 @@ class UpdateCompanyModel extends CreateCompanyModel {
     required super.workingHours,
     required super.images,
     super.serviceTypeId,
+    super.iconId,
   });
 
   @override
@@ -67,6 +71,10 @@ class UpdateCompanyModel extends CreateCompanyModel {
     
     if (workingHours != null) {
       json["workingHours"] = workingHours!.toJson();
+    }
+    
+    if (iconId != null) {
+      json["iconId"] = iconId;
     }
     
     return json;

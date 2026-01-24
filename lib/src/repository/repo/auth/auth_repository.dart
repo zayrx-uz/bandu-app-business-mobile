@@ -70,4 +70,9 @@ class AuthRepository implements AbstractAuthRepository {
   Future<HttpResult> uploadImage({required String filePath}) async {
     return await authProvider.uploadImage(filePath);
   }
+
+  @override
+  Future<HttpResult> logout() async {
+    return await authProvider.logout();
+  }
 }

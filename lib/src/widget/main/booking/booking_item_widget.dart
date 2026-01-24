@@ -13,8 +13,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
-class BookingItemWidget extends StatelessWidget {
+class BookingItemWidget extends StatefulWidget {
   final OwnerBookingItemData data;
   final bool showStatus;
 
@@ -25,40 +27,52 @@ class BookingItemWidget extends StatelessWidget {
   });
 
   @override
+  State<BookingItemWidget> createState() => _BookingItemWidgetState();
+}
+
+class _BookingItemWidgetState extends State<BookingItemWidget> {
+  bool _timezoneInitialized = false;
+
+  String _formatDateTime(DateTime? dateTime, DateTime? endTime) {
+    if (dateTime == null) return "";
+
+    _ensureTimezoneInitialized();
+    final tashkent = tz.getLocation('Asia/Tashkent');
+
+    final tashkentTime = tz.TZDateTime.from(dateTime, tashkent);
+    final date = tashkentTime.toDDMMYYY();
+    final startTime = tashkentTime.toString().substring(11, 16);
+
+    if (endTime != null) {
+      final tashkentEndTime = tz.TZDateTime.from(endTime, tashkent);
+      final endTimeStr = tashkentEndTime.toString().substring(11, 16);
+      return date;
+    }
+
+    return date;
+  }
+
+  void _ensureTimezoneInitialized() {
+    if (!_timezoneInitialized) {
+      try {
+        tz_data.initializeTimeZones();
+        _timezoneInitialized = true;
+      } catch (e) {
+        _timezoneInitialized = true;
+      }
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        final homeBloc = BlocProvider.of<HomeBloc>(context);
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (bottomSheetContext) {
-            return EasyLocalization(
-              supportedLocales: const [
-                Locale('en', 'EN'),
-                Locale('ru', 'RU'),
-                Locale('uz', 'UZ'),
-              ],
-              path: 'assets/translations',
-              startLocale:
-              EasyLocalization.of(context)?.locale ??
-                  const Locale('ru', 'RU'),
-              fallbackLocale: const Locale('ru', 'RU'),
-              child: BlocProvider.value(
-                value: homeBloc,
-                child: BookingDetailBottomSheet(
-                  bookingId: data.id,
-                  parentBloc: homeBloc,
-                ),
-              ),
-            );
-          },
-        );
+        _showBookingDetail(context);
       },
       child: Container(
         padding: EdgeInsets.all(16.w),
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+        margin: EdgeInsets.symmetric( vertical: 4.h),
         decoration: BoxDecoration(
           color: AppColor.white,
           border: Border.all(width: 1.h, color: AppColor.greyE5),
@@ -70,7 +84,7 @@ class BookingItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomNetworkImage(
-                  imageUrl: data.user.profilePicture ?? "",
+                  imageUrl: widget.data.user.profilePicture ?? "",
                   height: 56.h,
                   width: 56.h,
                   fit: BoxFit.cover,
@@ -82,11 +96,13 @@ class BookingItemWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        data.user.fullName,
+                        widget.data.user.fullName,
                         style: AppTextStyle.f500s20,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        data.bookingTime?.toDDMMYYY() ?? "",
+                        _formatDateTime(widget.data.bookingTime, widget.data.bookingEndTime),
                         style: AppTextStyle.f400s16.copyWith(
                           color: AppColor.grey58,
                         ),
@@ -94,35 +110,13 @@ class BookingItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                AppIconButton(icon: AppIcons.arrowBottom, onTap: (){
-                  final homeBloc = BlocProvider.of<HomeBloc>(context);
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (bottomSheetContext) {
-                      return EasyLocalization(
-                        supportedLocales: const [
-                          Locale('en', 'EN'),
-                          Locale('ru', 'RU'),
-                          Locale('uz', 'UZ'),
-                        ],
-                        path: 'assets/translations',
-                        startLocale:
-                        EasyLocalization.of(context)?.locale ??
-                            const Locale('ru', 'RU'),
-                        fallbackLocale: const Locale('ru', 'RU'),
-                        child: BlocProvider.value(
-                          value: homeBloc,
-                          child: BookingDetailBottomSheet(
-                            bookingId: data.id,
-                            parentBloc: homeBloc,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                } ,iconWidth: 14.w,)
+                AppIconButton(
+                  icon: AppIcons.arrowBottom,
+                  onTap: () {
+                    _showBookingDetail(context);
+                  },
+                  iconWidth: 14.w,
+                )
               ],
             ),
             Container(
@@ -134,57 +128,85 @@ class BookingItemWidget extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: showStatus
+                  child: widget.showStatus
                       ? Container(
-                          height: 48.h,
-                          padding: EdgeInsets.symmetric(horizontal: 12.w),
-                          decoration: BoxDecoration(
-                            color: AppColor.white,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              width: 1.h,
-                              color: AppColor.greyE5,
-                            ),
-                          ),
-                          child: Center(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                _getStatusText(data.status),
-                                style: AppTextStyle.f600s16.copyWith(
-                                  color: _getStatusColor(data.status),
-                                  fontSize: 14.sp,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        )
-                      : AppButton(
-                          onTap: () async {
-                            BottomDialog.bookCancel(context, bookingId: data.id);
-                          },
-                          height: 48.h,
-                          margin: EdgeInsets.zero,
-                          isGradient: false,
-                          backColor: AppColor.white,
-                          text: "cancelBooking".tr(),
+                    height: 48.h,
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    decoration: BoxDecoration(
+                      color: AppColor.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        width: 1.h,
+                        color: AppColor.greyE5,
+                      ),
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          _getStatusText(widget.data.status),
                           style: AppTextStyle.f600s16.copyWith(
-                            color: AppColor.cE52E4C,
+                            color: _getStatusColor(widget.data.status),
+                            fontSize: 14.sp,
                           ),
-                          border: Border.all(
-                            width: 1.h,
-                            color: AppColor.cE52E4C,
-                          ),
-                          leftIcon: AppIcons.trash,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                      ),
+                    ),
+                  )
+                      : AppButton(
+                    onTap: () async {
+                      BottomDialog.bookCancel(context, bookingId: widget.data.id);
+                    },
+                    height: 48.h,
+                    margin: EdgeInsets.zero,
+                    isGradient: false,
+                    backColor: AppColor.white,
+                    text: "cancelBooking".tr(),
+                    style: AppTextStyle.f600s16.copyWith(
+                      color: AppColor.cE52E4C,
+                    ),
+                    border: Border.all(
+                      width: 1.h,
+                      color: AppColor.cE52E4C,
+                    ),
+                    leftIcon: AppIcons.trash,
+                  ),
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showBookingDetail(BuildContext context) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (bottomSheetContext) {
+        return EasyLocalization(
+          supportedLocales: const [
+            Locale('en', 'EN'),
+            Locale('ru', 'RU'),
+            Locale('uz', 'UZ'),
+          ],
+          path: 'assets/translations',
+          startLocale: EasyLocalization.of(context)?.locale ?? const Locale('ru', 'RU'),
+          fallbackLocale: const Locale('ru', 'RU'),
+          child: BlocProvider.value(
+            value: homeBloc,
+            child: BookingDetailBottomSheet(
+              bookingId: widget.data.id,
+              parentBloc: homeBloc,
+            ),
+          ),
+        );
+      },
     );
   }
 

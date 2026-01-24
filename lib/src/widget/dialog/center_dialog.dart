@@ -1,4 +1,6 @@
+import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
+import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/device_helper/device_helper.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
@@ -19,36 +21,86 @@ class CenterDialog {
   static void logoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: Text("logOut".tr() , style  : TextStyle(
-              fontSize : isTablet(context) ? 12.sp : 16.sp
-          ),),
-          content: Text("areYouSureLogOut".tr() , style  : TextStyle(
-              fontSize : isTablet(context) ? 8.sp : 12.sp
-          ),),
-          actions: [
-            CupertinoButton(
-              child: Text(
-                "cancel".tr(),
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.blue00 , fontSize : isTablet(context) ? 12.sp : 16.sp),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            CupertinoButton(
-              child: Text(
-                "logOut".tr(),
-                style: AppTextStyle.f600s16.copyWith(color: AppColor.red00 , fontSize : isTablet(context) ? 12.sp : 16.sp),
-              ),
-              onPressed: () {
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return BlocProvider(
+          create: (_) => AuthBloc(authRepository: AuthRepository()),
+          child: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is LogoutSuccessState) {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                AppService.replacePage(context, OnboardScreen());
+              } else if (state is AuthErrorState) {
+                Navigator.of(dialogContext).pop();
                 CacheService.clear();
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 AppService.replacePage(context, OnboardScreen());
-              },
-            ),
-          ],
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is LogoutLoadingState;
+              return PopScope(
+                canPop: !isLoading,
+                child: CupertinoAlertDialog(
+                  title: Text(
+                    "logOut".tr(),
+                    style: TextStyle(
+                      fontSize: isTablet(context) ? 12.sp : 16.sp,
+                    ),
+                  ),
+                  content: Column(
+                    children: [
+                      if (isLoading)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: CupertinoActivityIndicator(
+                            color: AppColor.black,
+                          ),
+                        )
+                      else
+                        Text(
+                          "areYouSureLogOut".tr(),
+                          style: TextStyle(
+                            fontSize: isTablet(context) ? 8.sp : 12.sp,
+                          ),
+                        ),
+                    ],
+                  ),
+                  actions: [
+                    if (!isLoading)
+                      CupertinoButton(
+                        child: Text(
+                          "cancel".tr(),
+                          style: AppTextStyle.f600s16.copyWith(
+                            color: AppColor.blue00,
+                            fontSize: isTablet(context) ? 12.sp : 16.sp,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                      ),
+                    CupertinoButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                        context.read<AuthBloc>().add(LogoutEvent());
+                      },
+                      child: Text(
+                        "logOut".tr(),
+                        style: AppTextStyle.f600s16.copyWith(
+                          color: AppColor.red00,
+                          fontSize: isTablet(context) ? 12.sp : 16.sp,
+                        ),
+                      ),
+
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -548,8 +600,10 @@ class CenterDialog {
                           ),
                         ),
                   actions: [
-                    if (!isLoading)
                       CupertinoButton(
+                        onPressed: !isLoading ? () {
+                          Navigator.of(context).pop();
+                        } : (){},
                         child: Text(
                           "cancel".tr(),
                           style: AppTextStyle.f600s16.copyWith(
@@ -557,29 +611,78 @@ class CenterDialog {
                             fontSize: isTablet(context) ? 12.sp : 16.sp,
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
+
                       ),
                     CupertinoButton(
-                      child: isLoading
-                          ? CupertinoActivityIndicator()
-                          : Text(
-                              "confirm".tr(),
-                              style: AppTextStyle.f600s16.copyWith(
-                                color: AppColor.yellowFFC,
-                                fontSize: isTablet(context) ? 12.sp : 16.sp,
-                              ),
-                            ),
                       onPressed: isLoading ? null : () {
                         onConfirm();
                       },
+                      child: Text(
+                              "confirm".tr(),
+                              style: AppTextStyle.f600s16.copyWith(
+                                color: AppColor.black,
+                                fontSize: isTablet(context) ? 12.sp : 16.sp,
+                              ),
+                            ),
+
                     ),
                   ],
                 );
               },
             ),
           ),
+        );
+      },
+    );
+  }
+
+  static void completeBookingDialog(
+    BuildContext context, {
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text(
+            "completeBooking".tr(),
+            style: TextStyle(
+              fontSize: isTablet(context) ? 12.sp : 16.sp,
+            ),
+          ),
+          content: Text(
+            "areYouSureCompleteBooking".tr(),
+            style: TextStyle(
+              fontSize: isTablet(context) ? 8.sp : 12.sp,
+            ),
+          ),
+          actions: [
+            CupertinoButton(
+              child: Text(
+                "cancel".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.blue00,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "confirm".tr(),
+                style: AppTextStyle.f600s16.copyWith(
+                  color: AppColor.black,
+                  fontSize: isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+            ),
+          ],
         );
       },
     );

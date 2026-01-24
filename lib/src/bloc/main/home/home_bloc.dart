@@ -5,6 +5,7 @@ import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
 import 'package:bandu_business/src/model/api/main/home/category_model.dart';
 import 'package:bandu_business/src/model/api/main/home/company_detail_model.dart';
 import 'package:bandu_business/src/model/api/main/home/company_model.dart';
+import 'package:bandu_business/src/model/api/main/home/icon_model.dart' as icon_model;
 import 'package:bandu_business/src/model/api/main/home/place_model.dart';
 import 'package:bandu_business/src/model/api/main/home/resource_category_model.dart' as resource_category;
 import 'package:bandu_business/src/model/api/main/monitoring/monitoring_model.dart';
@@ -88,6 +89,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetEmptyEmployeesEvent>(_onGetEmptyEmployees);
     on<GetBookedEmployeesEvent>(_onGetBookedEmployees);
     on<GetRevenueSeriesEvent>(_onGetRevenueSeries);
+    on<GetIconsEvent>(_onGetIcons);
   }
 
   void _onGetCompany(GetCompanyEvent event, Emitter<HomeState> emit) async {
@@ -230,27 +232,69 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
 
         if (status.isGranted) {
-          final img = await pick.pickImage(
-          source: ImageSource.camera,
-          imageQuality: 70,
-          maxWidth: 1920,
-          maxHeight: 1920,
-        );
-          if (img != null) {
-            emit(GetImageSuccessState(img: img));
+          try {
+            final img = await pick.pickImage(
+              source: ImageSource.camera,
+              imageQuality: 70,
+              maxWidth: 1920,
+              maxHeight: 1920,
+            );
+            if (img != null) {
+              emit(GetImageSuccessState(img: img));
+            }
+          } catch (e) {
+            if (e.toString().contains('already_active')) {
+              await Future.delayed(const Duration(milliseconds: 300));
+              try {
+                final img = await pick.pickImage(
+                  source: ImageSource.camera,
+                  imageQuality: 70,
+                  maxWidth: 1920,
+                  maxHeight: 1920,
+                );
+                if (img != null) {
+                  emit(GetImageSuccessState(img: img));
+                }
+              } catch (e2) {
+                emit(HomeErrorState(message: "Kamera ochib bo'lmadi. Iltimos, qayta urinib ko'ring."));
+              }
+            } else {
+              emit(HomeErrorState(message: e.toString()));
+            }
           }
         } else {
           emit(HomeErrorState(message: "Kamera ruxsati berilmadi"));
         }
       } else {
-        final img = await pick.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 70,
-          maxWidth: 1920,
-          maxHeight: 1920,
-        );
-        if (img != null) {
-          emit(GetImageSuccessState(img: img));
+        try {
+          final img = await pick.pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 70,
+            maxWidth: 1920,
+            maxHeight: 1920,
+          );
+          if (img != null) {
+            emit(GetImageSuccessState(img: img));
+          }
+        } catch (e) {
+          if (e.toString().contains('already_active')) {
+            await Future.delayed(const Duration(milliseconds: 300));
+            try {
+              final img = await pick.pickImage(
+                source: ImageSource.gallery,
+                imageQuality: 70,
+                maxWidth: 1920,
+                maxHeight: 1920,
+              );
+              if (img != null) {
+                emit(GetImageSuccessState(img: img));
+              }
+            } catch (e2) {
+              emit(HomeErrorState(message: "Rasm tanlab bo'lmadi. Iltimos, qayta urinib ko'ring."));
+            }
+          } else {
+            emit(HomeErrorState(message: e.toString()));
+          }
         }
       }
     } catch (e) {
@@ -367,6 +411,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.setPlace(
         name: event.name,
         number: event.number,
+        employeeIds: event.employeeIds,
       );
       if (result.isSuccess) {
         emit(SetPlaceSuccessState());
@@ -384,6 +429,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.updatePlace(
         number: event.number,
         id: event.id,
+        name: event.name,
+        employeeIds: event.employeeIds,
       );
       if (result.isSuccess) {
         emit(UpdatePlaceSuccessState());
@@ -647,6 +694,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         phone: event.phone,
         id: event.id,
         role: event.role,
+        password: event.password,
+        resourceIds: event.resourceIds,
       );
       if (result.isSuccess) {
         emit(UpdateEmployeeSuccessState());
@@ -903,10 +952,28 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         isBookable: event.isBookable,
         isTimeSlotBased: event.isTimeSlotBased,
         timeSlotDurationMinutes: event.timeSlotDurationMinutes,
-        images: event.images,
         employeeIds: event.employeeIds,
       );
       if (result.isSuccess) {
+        int? resourceId;
+        if (result.result is Map && result.result.containsKey('data')) {
+          final data = result.result['data'];
+          if (data is Map && data.containsKey('id')) {
+            resourceId = data['id'] is int ? data['id'] : int.tryParse(data['id'].toString());
+          }
+        }
+        
+        if (resourceId != null && event.images.isNotEmpty) {
+          final imagesResult = await homeRepository.postResourceImages(
+            resourceId: resourceId,
+            images: event.images,
+          );
+          if (!imagesResult.isSuccess) {
+            emit(HomeErrorState(message: HelperFunctions.errorText(imagesResult.result)));
+            return;
+          }
+        }
+        
         emit(CreateResourceSuccessState());
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
@@ -932,10 +999,94 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         isBookable: event.isBookable,
         isTimeSlotBased: event.isTimeSlotBased,
         timeSlotDurationMinutes: event.timeSlotDurationMinutes,
-        images: event.images,
         employeeIds: event.employeeIds,
       );
       if (result.isSuccess) {
+        List<Map<String, dynamic>> newImages = [];
+        List<Map<String, dynamic>> existingImagesToUpdate = [];
+        
+        for (var image in event.images) {
+          if (image.containsKey('id') && image['id'] != null && image['id'] != 0) {
+            existingImagesToUpdate.add(image);
+          } else {
+            newImages.add(image);
+          }
+        }
+        
+        if (newImages.isNotEmpty) {
+          List<Map<String, dynamic>> processedNewImages = [];
+          for (var image in newImages) {
+            var imageUrl = image['url']?.toString() ?? '';
+            if (imageUrl.isNotEmpty && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+              final uploadResult = await homeRepository.uploadResourceImage(filePath: imageUrl);
+              if (uploadResult.isSuccess) {
+                if (uploadResult.result is Map && 
+                    uploadResult.result.containsKey('data') &&
+                    uploadResult.result['data'] is Map) {
+                  final data = uploadResult.result['data'];
+                  imageUrl = data['url'] ?? imageUrl;
+                } else {
+                  emit(HomeErrorState(message: HelperFunctions.errorText("Invalid upload response format")));
+                  return;
+                }
+              } else {
+                emit(HomeErrorState(message: HelperFunctions.errorText(uploadResult.result)));
+                return;
+              }
+            }
+            processedNewImages.add({
+              ...image,
+              'url': imageUrl,
+            });
+          }
+          
+          final postImagesResult = await homeRepository.postResourceImages(
+            resourceId: event.id,
+            images: processedNewImages,
+          );
+          if (!postImagesResult.isSuccess) {
+            emit(HomeErrorState(message: HelperFunctions.errorText(postImagesResult.result)));
+            return;
+          }
+        }
+        
+        final replacedIds = event.replacedImageIds ?? [];
+        for (var image in existingImagesToUpdate) {
+          final imageId = image['id'];
+          var imageUrl = image['url']?.toString() ?? '';
+          if (imageId == null || imageUrl.isEmpty) continue;
+
+          final id = imageId is int ? imageId : int.tryParse(imageId.toString()) ?? 0;
+          if (id <= 0 || !replacedIds.contains(id)) continue;
+
+          if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+            final uploadResult = await homeRepository.uploadResourceImage(filePath: imageUrl);
+            if (uploadResult.isSuccess &&
+                uploadResult.result is Map &&
+                uploadResult.result.containsKey('data') &&
+                uploadResult.result['data'] is Map) {
+              final data = uploadResult.result['data'];
+              imageUrl = (data['url'] ?? imageUrl).toString();
+            } else {
+              emit(HomeErrorState(message: HelperFunctions.errorText(
+                  uploadResult.result ?? "Invalid upload response format")));
+              return;
+            }
+          }
+
+          final isMain = image['isMain'] == true;
+          final patchResult = await homeRepository.patchResourceImage(
+            resourceId: event.id,
+            imageId: id,
+            url: imageUrl,
+            isMain: isMain,
+          );
+          if (!patchResult.isSuccess) {
+            emit(HomeErrorState(message: HelperFunctions.errorText(patchResult.result)));
+            return;
+          }
+        }
+        
         emit(EditResourceSuccessState());
         int companyId = CacheService.getInt("select_company") ?? 0;
         if (companyId > 0) {
@@ -1377,6 +1528,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (result.isSuccess) {
         final model = DashboardRevenueSeriesModel.fromJson(result.result);
         emit(GetRevenueSeriesSuccessState(data: model.data));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
+  }
+
+  void _onGetIcons(GetIconsEvent event, Emitter<HomeState> emit) async {
+    emit(GetIconsLoadingState());
+    try {
+      final result = await homeRepository.getIcons();
+      if (result.isSuccess) {
+        final iconModel = icon_model.IconModel.fromJson(result.result);
+        emit(GetIconsSuccessState(data: iconModel.data));
       } else {
         emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
       }

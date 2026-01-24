@@ -16,11 +16,14 @@ import 'package:bandu_business/src/ui/main/statistic/statistic_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
+import 'package:bandu_business/src/widget/main/booking/booking_detail_bottom_sheet.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class MainScreen extends StatefulWidget {
@@ -48,8 +51,24 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    setBus();
     super.initState();
+    setBus();
+    _checkInitialNotification();
+  }
+
+  Future<void> _checkInitialNotification() async {
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          if (initialMessage.data["id"] != null) {
+            RxBus.post(tag: "booking_notification", initialMessage.data["id"]);
+          } else if (initialMessage.data["verifyUrl"] != null) {
+            RxBus.post(tag: "notification", initialMessage.data["verifyUrl"]);
+          }
+        }
+      });
+    }
   }
 
   @override
@@ -128,10 +147,7 @@ class _MainScreenState extends State<MainScreen> {
     final isSelected = select == index;
     
     if (index == 1) {
-      final ikpuCode = CacheService.getCategoryIkpuCode();
-      final imagePath = ikpuCode.isNotEmpty 
-          ? HelperFunctions.getCategoryIconByIkpuCodeWithSelection(ikpuCode, isSelected)
-          : (isSelected ? AppIcons.placeSelect : AppIcons.place);
+      final placeIconUrl = CacheService.getPlaceIcon();
       
       return Expanded(
         child: CupertinoButton(
@@ -140,18 +156,44 @@ class _MainScreenState extends State<MainScreen> {
             color: Colors.transparent,
             child: Column(
               children: [
-                imagePath.contains('assets/images/')
-                    ? Image.asset(
-                        imagePath,
-                        width: isTablet(context) ? 20.sp : 24.w,
-                        height: isTablet(context) ? 20.sp : 24.w,
-                        fit: BoxFit.cover,
-                      )
-                    : AppSvgAsset(
-                        imagePath,
-                        width: isTablet(context) ? 20.sp : 24.w,
-                        height: isTablet(context) ? 20.sp : 24.w,
+                if (placeIconUrl.isNotEmpty)
+                  SizedBox(
+                    width: isTablet(context) ? 20.sp : 24.w,
+                    height: isTablet(context) ? 20.sp : 24.w,
+                    child: SvgPicture.network(
+                      placeIconUrl,
+                      width: isTablet(context) ? 20.sp : 24.w,
+                      height: isTablet(context) ? 20.sp : 24.w,
+                      fit: BoxFit.contain,
+                      colorFilter: ColorFilter.mode(
+                        isSelected ? AppColor.yellow8E : AppColor.greyA7,
+                        BlendMode.srcIn,
                       ),
+                    ),
+                  )
+                else ...[
+                  Builder(
+                    builder: (context) {
+                      final ikpuCode = CacheService.getCategoryIkpuCode();
+                      final imagePath = ikpuCode.isNotEmpty 
+                          ? HelperFunctions.getCategoryIconByIkpuCodeWithSelection(ikpuCode, isSelected)
+                          : (isSelected ? AppIcons.placeSelect : AppIcons.place);
+                      
+                      return imagePath.contains('assets/images/')
+                          ? Image.asset(
+                              imagePath,
+                              width: isTablet(context) ? 20.sp : 24.w,
+                              height: isTablet(context) ? 20.sp : 24.w,
+                              fit: BoxFit.cover,
+                            )
+                          : AppSvgAsset(
+                              imagePath,
+                              width: isTablet(context) ? 20.sp : 24.w,
+                              height: isTablet(context) ? 20.sp : 24.w,
+                            );
+                    },
+                  ),
+                ],
                 SizedBox(height: 4.h),
                 Text(
                   text,
@@ -223,6 +265,23 @@ class _MainScreenState extends State<MainScreen> {
         ),
       );
     });
+
+    RxBus.register(tag: "booking_notification").listen((bookingId) async {
+      if (!mounted) return;
+      final id = bookingId is int ? bookingId : (bookingId is String ? int.tryParse(bookingId) : null);
+      if (id == null) return;
+      
+      await showCupertinoModalBottomSheet(
+        context: sheetContext,
+        builder: (ctx) => BlocProvider(
+          create: (_) => HomeBloc(homeRepository: HomeRepository()),
+          child: BookingDetailBottomSheet(
+            bookingId: id,
+          ),
+        ),
+      );
+    });
+
     RxBus.register(tag: "language_changed").listen((d) {
       if (mounted) {
         setState(() {});
@@ -232,6 +291,12 @@ class _MainScreenState extends State<MainScreen> {
     RxBus.register(tag: "CHANGE_TAB").listen((index) {
       if (mounted && index is int) {
         select = index;
+        setState(() {});
+      }
+    });
+
+    RxBus.register(tag: "PLACE_ICON_UPDATED").listen((d) {
+      if (mounted) {
         setState(() {});
       }
     });

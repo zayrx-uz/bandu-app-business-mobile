@@ -107,3 +107,5 @@ class RegisterCompleteEvent extends AuthEvent {
   @override
   List<Object?> get props => [role, fullName, token , password];
 }
+
+class LogoutEvent extends AuthEvent {}

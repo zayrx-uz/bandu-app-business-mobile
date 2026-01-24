@@ -407,23 +407,56 @@ class BookingDetailCategory {
   int id;
   String name;
   String? description;
-  String ikpuCode;
+  BookingDetailServiceType? serviceType;
   dynamic metadata;
 
   BookingDetailCategory({
     required this.id,
     required this.name,
     this.description,
-    required this.ikpuCode,
+    this.serviceType,
     this.metadata,
   });
+
+  String get ikpuCode => serviceType?.ikpuCode ?? "";
 
   factory BookingDetailCategory.fromJson(Map<String, dynamic> json) =>
       BookingDetailCategory(
         id: json["id"] ?? 0,
         name: json["name"] ?? "",
         description: json["description"],
-        ikpuCode: json["ikpuCode"] ?? "",
+        serviceType: json["serviceType"] == null
+            ? null
+            : BookingDetailServiceType.fromJson(json["serviceType"]),
         metadata: json["metadata"],
+      );
+}
+
+class BookingDetailServiceType {
+  int id;
+  String name;
+  String ikpuCode;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  BookingDetailServiceType({
+    required this.id,
+    required this.name,
+    required this.ikpuCode,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory BookingDetailServiceType.fromJson(Map<String, dynamic> json) =>
+      BookingDetailServiceType(
+        id: json["id"] ?? 0,
+        name: json["name"] ?? "",
+        ikpuCode: json["ikpuCode"] ?? "",
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.tryParse(json["createdAt"]) ?? DateTime.now(),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.tryParse(json["updatedAt"]) ?? DateTime.now(),
       );
 }

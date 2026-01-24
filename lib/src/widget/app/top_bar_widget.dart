@@ -50,7 +50,8 @@ class TopBarWidget extends StatelessWidget {
           SizedBox(width: 10.w,),
           if (left != null) left!,
           if (isAppName)
-            TopAppName()
+            Expanded(
+                child: Center(child: TopAppName()))
           else
             Expanded(
               child: Center(

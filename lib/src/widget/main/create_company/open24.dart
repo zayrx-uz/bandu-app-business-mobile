@@ -10,9 +10,11 @@ class Open24Item extends StatefulWidget {
     super.key,
     required this.onChange,
     this.value = false,
+    this.onTap,
   });
   final ValueChanged<bool> onChange;
   final bool value;
+  final VoidCallback? onTap;
 
   @override
   State<Open24Item> createState() => _Open24ItemState();
@@ -39,6 +41,7 @@ class _Open24ItemState extends State<Open24Item> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
+        widget.onTap?.call();
         value = !value;
         setState(() {});
         widget.onChange.call(value);
@@ -67,6 +70,7 @@ class _Open24ItemState extends State<Open24Item> {
             CupertinoSwitch(
               value: value,
               onChanged: (v) {
+                widget.onTap?.call();
                 value = v;
                 setState(() {});
                 widget.onChange.call(value);

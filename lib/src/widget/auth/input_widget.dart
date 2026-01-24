@@ -52,11 +52,15 @@ class InputWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+
                     keyboardType: inputType,
                     cursorColor: Colors.grey,
                     textCapitalization: TextCapitalization.sentences,
                     controller: controller,
                     inputFormatters: format,
+                    onSubmitted: (v){
+
+                    },
                     readOnly: readOnly,
                     style: AppTextStyle.f500s16.copyWith(
                       color: AppColor.black09,

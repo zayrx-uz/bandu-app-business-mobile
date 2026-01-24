@@ -5,6 +5,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/top_bar_widget.dart';
+import 'package:bandu_business/src/widget/app/unfocus_keyboard_widget.dart';
 import 'package:bandu_business/src/widget/auth/input_widget.dart';
 import 'package:bandu_business/src/widget/auth/set_image_widget.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
@@ -65,9 +66,10 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      body: BlocConsumer<HomeBloc, HomeState>(
+    return UnfocusKeyboard(
+      child: Scaffold(
+        backgroundColor: AppColor.white,
+        body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is GetImageSuccessState) {
             setState(() {
@@ -79,11 +81,12 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
           }
           if (state is UploadResourceImageSuccessState) {
             setState(() {
-              uploadedImages.add({
+              final newImage = <String, dynamic>{
                 "url": state.url,
                 "index": uploadedImages.length + 1,
                 "isMain": uploadedImages.isEmpty,
-              });
+              };
+              uploadedImages = [...uploadedImages, newImage];
               _networkImageUrl = state.url;
             });
           }
@@ -256,7 +259,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                             price: int.parse(priceController.text.replaceAll(" ", "")),
                             resourceCategoryId: selectedCategoryId,
                             isBookable: isBookable,
-                            isTimeSlotBased: isTimeSlotBased,
+                            isTimeSlotBased: timeSlotDurationMinutes != 0 ,
                             timeSlotDurationMinutes: timeSlotDurationMinutes,
                             images: uploadedImages,
                             employeeIds: selectedEmployeeIds.isNotEmpty ? selectedEmployeeIds : null,
@@ -276,6 +279,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
             ],
           );
         },
+      ),
       ),
     );
   }

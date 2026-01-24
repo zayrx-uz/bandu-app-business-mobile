@@ -189,7 +189,7 @@ class OwnerPlace {
   int id;
   String name;
   int capacity;
-  String? visualMetadata;
+  dynamic visualMetadata;
   int positionX;
   int positionY;
   bool isActive;
@@ -201,7 +201,7 @@ class OwnerPlace {
     this.visualMetadata,
     required this.positionX,
     required this.positionY,
-    required this.isActive,
+    this.isActive = true,
   });
 
   factory OwnerPlace.fromJson(Map<String, dynamic> json) => OwnerPlace(
@@ -211,7 +211,7 @@ class OwnerPlace {
         visualMetadata: json["visualMetadata"],
         positionX: json["positionX"] ?? 0,
         positionY: json["positionY"] ?? 0,
-        isActive: json["isActive"] ?? false,
+        isActive: json["isActive"] ?? true,
       );
 }
 
@@ -223,10 +223,10 @@ class OwnerBookingUser {
   String? lastName;
   String? profilePicture;
   DateTime? birthDate;
-  String gender;
+  String? gender;
   bool verified;
   bool isBlocked;
-  String role;
+  List<String> roles;
   int? companyId;
   String fcmToken;
   String? telegramId;
@@ -241,10 +241,10 @@ class OwnerBookingUser {
     this.lastName,
     this.profilePicture,
     this.birthDate,
-    required this.gender,
+    this.gender,
     required this.verified,
     required this.isBlocked,
-    required this.role,
+    required this.roles,
     this.companyId,
     required this.fcmToken,
     this.telegramId,
@@ -262,20 +262,22 @@ class OwnerBookingUser {
         profilePicture: json["profilePicture"],
         birthDate: json["birthDate"] == null
             ? null
-            : DateTime.parse(json["birthDate"]),
-        gender: json["gender"] ?? "",
+            : DateTime.tryParse(json["birthDate"]),
+        gender: json["gender"],
         verified: json["verified"] ?? false,
         isBlocked: json["isBlocked"] ?? false,
-        role: json["role"] ?? "",
+        roles: json["roles"] == null || json["roles"] is! List
+            ? []
+            : List<String>.from(json["roles"].map((x) => x.toString())),
         companyId: json["companyId"],
         fcmToken: json["fcmToken"] ?? "",
         telegramId: json["telegramId"],
         createdAt: json["createdAt"] == null
             ? null
-            : DateTime.parse(json["createdAt"]),
+            : DateTime.tryParse(json["createdAt"]),
         updatedAt: json["updatedAt"] == null
             ? null
-            : DateTime.parse(json["updatedAt"]),
+            : DateTime.tryParse(json["updatedAt"]),
       );
 
   factory OwnerBookingUser.empty() => OwnerBookingUser(
@@ -286,10 +288,10 @@ class OwnerBookingUser {
         lastName: null,
         profilePicture: null,
         birthDate: null,
-        gender: "",
+        gender: null,
         verified: false,
         isBlocked: false,
-        role: "",
+        roles: [],
         companyId: null,
         fcmToken: "",
         telegramId: null,

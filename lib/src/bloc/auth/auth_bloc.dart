@@ -46,6 +46,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     ///reset password event
     on<ResetPasswordEvent>(_resetPassword);
+
+    ///logout event
+    on<LogoutEvent>(_logout);
   }
 
   void _splashChange(SplashChangeEvent event, Emitter<AuthState> emit) async {
@@ -249,6 +252,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       emit(AuthErrorState(message: e.toString()));
+    }
+  }
+
+  void _logout(LogoutEvent event, Emitter<AuthState> emit) async {
+    emit(LogoutLoadingState());
+    try {
+      final result = await authRepository.logout();
+      if (result.isSuccess) {
+        CacheService.clear();
+        emit(LogoutSuccessState());
+      } else {
+        CacheService.clear();
+        emit(LogoutSuccessState());
+      }
+    } catch (e) {
+      CacheService.clear();
+      emit(LogoutSuccessState());
     }
   }
 }

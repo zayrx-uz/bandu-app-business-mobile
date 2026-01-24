@@ -23,9 +23,9 @@ class AddEmployeeScreen extends StatefulWidget {
 }
 
 class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   String role = "";
   bool isManager = false;
 
@@ -33,6 +33,30 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   void initState() {
     super.initState();
     context.read<HomeBloc>().add(GetMeEvent());
+
+    nameController.addListener(_onInputChanged);
+    phoneController.addListener(_onInputChanged);
+    passwordController.addListener(_onInputChanged);
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onInputChanged() {
+    setState(() {});
+  }
+
+  bool get _isFormValid {
+    return nameController.text.isNotEmpty &&
+        phoneController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        passwordController.text.length >= 6 &&
+        role.isNotEmpty;
   }
 
   @override
@@ -115,37 +139,36 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                         SelectRoleWidget(
                           excludeOwnerAndModerator: !isManager,
                           onlyWorker: isManager,
+                          initialRole: role.isNotEmpty ? role : null,
                           role: (d) {
-                            role = d;
-                            setState(() {});
+                            setState(() {
+                              role = d;
+                            });
                           },
                         ),
                       ],
                     ),
                   ),
                   AppButton(
-                    onTap: () {
-                      if (nameController.text.isEmpty ||
-                          role == "" ||
-                          passwordController.text.isEmpty ||
-                          phoneController.text.isEmpty) {
-                        CenterDialog.errorDialog(
-                          context,
-                          "pleaseFillAllFields".tr(),
-                        );
-                        return;
-                      } else {
-                        BlocProvider.of<HomeBloc>(context).add(
-                          SaveEmployeeEvent(
-                            name: nameController.text,
-                            phone: "998${phoneController.text}",
-                            password: passwordController.text,
-                            role: role.replaceAll(" ", "_").toUpperCase(),
-                          ),
-                        );
-                      }
+                    onTap: _isFormValid
+                        ? () {
+                      BlocProvider.of<HomeBloc>(context).add(
+                        SaveEmployeeEvent(
+                          name: nameController.text,
+                          phone: "998${phoneController.text}",
+                          password: passwordController.text,
+                          role: role.replaceAll(" ", "_").toUpperCase(),
+                        ),
+                      );
+                    }
+                        : () {
+                      CenterDialog.errorDialog(
+                        context,
+                        "pleaseFillAllFields".tr(),
+                      );
                     },
                     loading: loading,
+                    isGradient: _isFormValid,
                     text: "save".tr(),
                   ),
                   SizedBox(height: 24.h),
