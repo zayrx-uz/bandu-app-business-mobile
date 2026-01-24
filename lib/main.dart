@@ -50,7 +50,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  await Firebase.initializeApp();
+  await FirebaseHelper.init();
   await FirebaseHelper.initNotification();
   runApp(
     EasyLocalization(

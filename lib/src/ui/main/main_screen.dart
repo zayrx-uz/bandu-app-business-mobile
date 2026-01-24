@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
@@ -11,6 +13,10 @@ import 'package:bandu_business/src/ui/main/employer/employer_screen.dart';
 import 'package:bandu_business/src/ui/main/place/place_screen.dart';
 import 'package:bandu_business/src/ui/main/qr/qr_screen.dart';
 import 'package:bandu_business/src/ui/main/qr/screen/qr_booking_screen.dart';
+import 'package:bandu_business/src/model/api/main/notification/notification_model.dart';
+import 'package:bandu_business/src/provider/main/home/home_provider.dart';
+import 'package:bandu_business/src/ui/main/booking/booking_detail_screen.dart';
+import 'package:bandu_business/src/ui/main/settings/notification_screen/notification_screen.dart';
 import 'package:bandu_business/src/ui/main/settings/settings_screen.dart';
 import 'package:bandu_business/src/ui/main/statistic/statistic_screen.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
@@ -36,6 +42,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late BuildContext sheetContext;
   int select = 0;
+  bool _hasOpenedBookingDetailFromNotification = false;
   List<String> icon = [
     AppIcons.home,
     AppIcons.building,
@@ -61,10 +68,47 @@ class _MainScreenState extends State<MainScreen> {
     if (initialMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          if (initialMessage.data["id"] != null) {
-            RxBus.post(tag: "booking_notification", initialMessage.data["id"]);
-          } else if (initialMessage.data["verifyUrl"] != null) {
-            RxBus.post(tag: "notification", initialMessage.data["verifyUrl"]);
+          final eventData = initialMessage.data;
+          if (eventData.isEmpty) {
+            RxBus.post(null, tag: "open_notification_screen");
+            return;
+          }
+          
+          dynamic bookingId;
+          
+          if (eventData.containsKey("booking_id")) {
+            bookingId = eventData["booking_id"];
+          } else if (eventData.containsKey("id")) {
+            bookingId = eventData["id"];
+          } else if (eventData.containsKey("data")) {
+            try {
+              final dataStr = eventData["data"];
+              if (dataStr is String) {
+                final data = jsonDecode(dataStr);
+                if (data is Map) {
+                  if (data.containsKey("booking_id")) {
+                    bookingId = data["booking_id"];
+                  } else if (data.containsKey("id")) {
+                    bookingId = data["id"];
+                  }
+                }
+              } else if (dataStr is Map) {
+                if (dataStr.containsKey("booking_id")) {
+                  bookingId = dataStr["booking_id"];
+                } else if (dataStr.containsKey("id")) {
+                  bookingId = dataStr["id"];
+                }
+              }
+            } catch (e) {
+            }
+          }
+          
+          if (bookingId != null) {
+            RxBus.post(bookingId, tag: "booking_notification");
+          } else if (eventData.containsKey("verifyUrl")) {
+            RxBus.post(eventData["verifyUrl"], tag: "notification");
+          } else {
+            RxBus.post(null, tag: "open_notification_screen");
           }
         }
       });
@@ -275,18 +319,28 @@ class _MainScreenState extends State<MainScreen> {
 
     RxBus.register(tag: "booking_notification").listen((bookingId) async {
       if (!mounted) return;
-      final id = bookingId is int ? bookingId : (bookingId is String ? int.tryParse(bookingId) : null);
-      if (id == null) return;
       
-      await showCupertinoModalBottomSheet(
-        context: sheetContext,
-        builder: (ctx) => BlocProvider(
-          create: (_) => HomeBloc(homeRepository: HomeRepository()),
-          child: BookingDetailBottomSheet(
-            bookingId: id,
+      int? id;
+      if (bookingId is int) {
+        id = bookingId;
+      } else if (bookingId is String) {
+        id = int.tryParse(bookingId);
+      } else if (bookingId is num) {
+        id = bookingId.toInt();
+      }
+      
+      if (id == null || id <= 0) return;
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        AppService.changePage(
+          sheetContext,
+          BlocProvider(
+            create: (_) => HomeBloc(homeRepository: HomeRepository()),
+            child: BookingDetailScreen(bookingId: id!),
           ),
-        ),
-      );
+        );
+      });
     });
 
     RxBus.register(tag: "language_changed").listen((d) {
@@ -306,6 +360,44 @@ class _MainScreenState extends State<MainScreen> {
       if (mounted) {
         setState(() {});
       }
+    });
+
+    RxBus.register(tag: "open_notification_screen").listen((d) async {
+      if (!mounted) return;
+      
+      final provider = HomeProvider();
+      final result = await provider.getNotifications(page: 1, limit: 1);
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        
+        int? bookingId;
+        
+        if (result.isSuccess && result.result != null) {
+          try {
+            final model = NotificationModel.fromJson(result.result);
+            if (model.data.isNotEmpty) {
+              final firstNotification = model.data.first;
+              if (firstNotification.bookingId != null && firstNotification.bookingId! > 0) {
+                bookingId = firstNotification.bookingId;
+              }
+            }
+          } catch (e) {
+          }
+        }
+        
+        if (bookingId != null && bookingId > 0) {
+          AppService.changePage(
+            sheetContext,
+            BlocProvider(
+              create: (_) => HomeBloc(homeRepository: HomeRepository()),
+              child: BookingDetailScreen(bookingId: bookingId),
+            ),
+          );
+        } else {
+          AppService.changePage(sheetContext, const NotificationScreen());
+        }
+      });
     });
   }
 }

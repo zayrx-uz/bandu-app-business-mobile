@@ -378,7 +378,9 @@ class HomeProvider extends ApiProvider {
   }
 
   Future<HttpResult> extendTime(int bookingId) async {
-    return await postRequest("${ApiHelper.extendTime}$bookingId/extend-time", {});
+    return await patchRequest("${ApiHelper.extendTime}$bookingId/extend-time", {
+      "note": ""
+    });
   }
 
   Future<HttpResult> updateBookingStatus({

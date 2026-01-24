@@ -29,6 +29,7 @@ class NotificationItemData {
   String description;
   String type;
   dynamic data;
+  int? bookingId;
   DateTime? sentAt;
   DateTime? readAt;
 
@@ -39,6 +40,7 @@ class NotificationItemData {
     required this.description,
     required this.type,
     this.data,
+    this.bookingId,
     this.sentAt,
     this.readAt,
   });
@@ -53,6 +55,7 @@ class NotificationItemData {
         description: json["description"] ?? "",
         type: json["type"] ?? "",
         data: json["data"],
+        bookingId: json["bookingId"],
         sentAt: json["sentAt"] == null
             ? null
             : DateTime.parse(json["sentAt"]),
