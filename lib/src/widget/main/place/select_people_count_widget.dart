@@ -74,9 +74,11 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
             .toList();
       }
     });
-    if (_isExpanded && _overlayEntry != null) {
-      _overlayEntry!.markNeedsBuild();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isExpanded && _overlayEntry != null && mounted) {
+        _overlayEntry!.markNeedsBuild();
+      }
+    });
   }
 
   bool _shouldShowAddButton() {
@@ -134,10 +136,15 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
   }
 
   void _openDropdown() {
+    if (_isExpanded) return;
     setState(() => _isExpanded = true);
     _animationController.forward();
-    _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _isExpanded) {
+        _overlayEntry = _createOverlayEntry();
+        Overlay.of(context).insert(_overlayEntry!);
+      }
+    });
   }
 
   void _closeDropdown() {
@@ -163,23 +170,33 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
     final size = renderBox.size;
 
     return OverlayEntry(
-      builder: (context) => GestureDetector(
-        onTap: () {},
-        behavior: HitTestBehavior.translucent,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: _closeDropdown,
-                child: Container(color: Colors.transparent),
+      builder: (context) {
+        final mediaQuery = MediaQuery.of(context);
+        final keyboardHeight = mediaQuery.viewInsets.bottom;
+        final screenHeight = mediaQuery.size.height;
+        final dropdownBottom = renderBox.localToGlobal(Offset(0, size.height)).dy;
+        final availableSpaceBelow = screenHeight - dropdownBottom - keyboardHeight;
+        final shouldShowAbove = availableSpaceBelow < 200.h && keyboardHeight > 0;
+        
+        return GestureDetector(
+          onTap: () {},
+          behavior: HitTestBehavior.translucent,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: _closeDropdown,
+                  child: Container(color: Colors.transparent),
+                ),
               ),
-            ),
-            Positioned(
-              width: size.width,
-              child: CompositedTransformFollower(
-                link: _layerLink,
-                showWhenUnlinked: false,
-                offset: Offset(0, size.height + 4.h),
+              Positioned(
+                width: size.width,
+                child: CompositedTransformFollower(
+                  link: _layerLink,
+                  showWhenUnlinked: false,
+                  offset: shouldShowAbove 
+                      ? Offset(0, -(size.height + 4.h + 300.h))
+                      : Offset(0, size.height + 4.h),
                 child: Material(
                   elevation: 8,
                   borderRadius: BorderRadius.circular(12.r),
@@ -322,16 +339,28 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
                     ),
                   ),
                 ),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    
+    if (_isExpanded && _overlayEntry != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _overlayEntry != null) {
+          _overlayEntry!.markNeedsBuild();
+        }
+      });
+    }
+    
     return CompositedTransformTarget(
       link: _layerLink,
       child: GestureDetector(
@@ -341,6 +370,7 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
             _openDropdown();
           }
         },
+        behavior: _isExpanded ? HitTestBehavior.translucent : HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -365,31 +395,62 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
             children: [
               Expanded(
                 child: _isExpanded
-                    ? TextField(
-                        controller: _searchController,
-                        autofocus: true,
-                        style: AppTextStyle.f500s16.copyWith(
-                          color: Colors.black,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: widget.hintText,
-                          hintStyle: AppTextStyle.f500s16.copyWith(
-                            color: AppColor.greyA7,
-                          ),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (value) {
-                          if (!_isExpanded) {
-                            setState(() => _isExpanded = true);
-                            _animationController.forward();
+                    ? Focus(
+                        onFocusChange: (hasFocus) {
+                          if (!hasFocus && _searchController.text.isEmpty) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted && _searchController.text.isEmpty) {
+                                _closeDropdown();
+                              }
+                            });
                           }
-                          if (_selectedItem != null && value != _selectedItem) {
-                            setState(() => _selectedItem = null);
-                          }
-                          _filterItems();
                         },
+                        child: TextField(
+                          controller: _searchController,
+                          autofocus: true,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.done,
+                          style: AppTextStyle.f500s16.copyWith(
+                            color: Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: widget.hintText,
+                            hintStyle: AppTextStyle.f500s16.copyWith(
+                              color: AppColor.greyA7,
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          onChanged: (value) {
+                            if (_selectedItem != null && value != _selectedItem) {
+                              setState(() => _selectedItem = null);
+                            }
+                            _filterItems();
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_overlayEntry != null && mounted) {
+                                _overlayEntry!.markNeedsBuild();
+                              }
+                            });
+                          },
+                          onTap: () {
+                            if (!_isExpanded) {
+                              _openDropdown();
+                            }
+                          },
+                          onSubmitted: (value) {
+                            if (value.trim().isNotEmpty && widget.onAddNew != null) {
+                              try {
+                                final count = int.parse(value.trim());
+                                if (count > 0) {
+                                  widget.onAddNew!("$count ${"people".tr()}");
+                                  _closeDropdown();
+                                }
+                              } catch (e) {
+                              }
+                            }
+                          },
+                        ),
                       )
                     : Text(
                         _selectedItem ?? widget.hintText,

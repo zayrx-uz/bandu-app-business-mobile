@@ -16,7 +16,7 @@ import 'package:bandu_business/src/widget/dialog/bottom_dialog.dart';
 import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 import 'package:bandu_business/src/widget/main/settings/profile_widget.dart';
 import 'package:bandu_business/src/widget/main/settings/settings_button_widget.dart';
-import 'package:bandu_business/src/provider/api_provider.dart';
+import 'package:bandu_business/src/helper/alice/alice_logger.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -117,14 +117,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         launchUrl(Uri.parse(help));
                       },
                     ),
-                    if (kDebugMode && ApiProvider.alice != null) ...[
+                    if (kDebugMode && AliceLogger.isEnabled) ...[
                       SizedBox(height: 16.h),
                       SettingsButtonWidget(
                         icon: AppIcons.monitoring,
                         text: "HTTP Inspector",
                         margin: EdgeInsets.zero,
                         onTap: () {
-                          ApiProvider.alice?.showInspector();
+                          AliceLogger.showInspector();
                         },
                       ),
                     ],

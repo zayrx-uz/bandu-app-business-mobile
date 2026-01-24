@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'package:alice/alice.dart';
-import 'package:alice/model/alice_configuration.dart';
 import 'package:bandu_business/src/bloc/auth/auth_bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:bandu_business/src/helper/alice/alice_logger.dart';
 import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
-import 'package:bandu_business/src/provider/api_provider.dart';
 import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
 import 'package:bandu_business/src/ui/splash/splash_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -23,16 +21,9 @@ void main() async {
   await CacheService.init();
   
   if (kDebugMode) {
-    ApiProvider.alice = Alice(
-      configuration: AliceConfiguration(
-        showNotification: true,
-        showInspectorOnShake: true,
-        navigatorKey: navigatorKey,
-      ),
-    );
-    ApiProvider.alice?.setNavigatorKey(navigatorKey);
+    AliceLogger.init(navigatorKey);
   }
-  
+
   String savedLang = CacheService.getString('language');
   Locale startLocale = const Locale('ru', 'RU');
   

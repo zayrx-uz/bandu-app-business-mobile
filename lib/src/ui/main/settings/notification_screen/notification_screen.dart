@@ -9,6 +9,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -26,10 +28,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   bool _hasMore = true;
+  bool _timezoneInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    _ensureTimezoneInitialized();
     _loadNotifications();
     _scrollController.addListener(_onScroll);
   }
@@ -38,6 +42,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _ensureTimezoneInitialized() {
+    if (!_timezoneInitialized) {
+      try {
+        tz_data.initializeTimeZones();
+        _timezoneInitialized = true;
+      } catch (e) {
+        _timezoneInitialized = true;
+      }
+    }
   }
 
   void _onScroll() {
@@ -181,6 +196,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  DateTime? _convertToTashkent(DateTime? dateTime) {
+    if (dateTime == null) return null;
+    try {
+      final tashkent = tz.getLocation('Asia/Tashkent');
+      return tz.TZDateTime.from(dateTime, tashkent);
+    } catch (e) {
+      return dateTime;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,24 +253,27 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
                             final notification = _notifications[index];
                             final isFirst = index == 0;
-                            final previousDate = index > 0
-                                ? _notifications[index - 1].sentAt
+                            
+                            final currentSentAt = _convertToTashkent(notification.sentAt);
+                            final previousSentAt = index > 0 
+                                ? _convertToTashkent(_notifications[index - 1].sentAt)
                                 : null;
+                                
                             final showDate = isFirst ||
-                                (previousDate != null &&
-                                    notification.sentAt != null &&
-                                    (previousDate.year != notification.sentAt!.year ||
-                                        previousDate.month != notification.sentAt!.month ||
-                                        previousDate.day != notification.sentAt!.day));
+                                (previousSentAt != null &&
+                                    currentSentAt != null &&
+                                    (previousSentAt.year != currentSentAt.year ||
+                                        previousSentAt.month != currentSentAt.month ||
+                                        previousSentAt.day != currentSentAt.day));
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (showDate && notification.sentAt != null)
+                                if (showDate && currentSentAt != null)
                                   Padding(
                                     padding: EdgeInsets.only(bottom: 12.h),
                                     child: Text(
-                                      notification.sentAt!.toDDMMYYY(),
+                                      currentSentAt.toDDMMYYY(),
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w600,

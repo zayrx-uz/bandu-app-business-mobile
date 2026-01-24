@@ -30,10 +30,22 @@ class _SelectEmployeeWidgetState extends State<SelectEmployeeWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialSelectedIds != null) {
+    if (widget.initialSelectedIds != null && widget.initialSelectedIds!.isNotEmpty) {
       selectedEmployeeIds = Set.from(widget.initialSelectedIds!);
     }
     _loadEmployees();
+  }
+
+  @override
+  void didUpdateWidget(SelectEmployeeWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialSelectedIds != widget.initialSelectedIds) {
+      if (widget.initialSelectedIds != null && widget.initialSelectedIds!.isNotEmpty) {
+        setState(() {
+          selectedEmployeeIds = Set.from(widget.initialSelectedIds!);
+        });
+      }
+    }
   }
 
   void _loadEmployees() {
@@ -60,6 +72,9 @@ class _SelectEmployeeWidgetState extends State<SelectEmployeeWidget> {
         if (state is GetEmployeeSuccessState) {
           setState(() {
             employees = state.data;
+            if (widget.initialSelectedIds != null && widget.initialSelectedIds!.isNotEmpty) {
+              selectedEmployeeIds = Set.from(widget.initialSelectedIds!);
+            }
           });
         }
       },

@@ -595,6 +595,15 @@ class GetRevenueSeriesEvent extends HomeEvent {
   List<Object?> get props => [companyId, period, date, clientDateTime];
 }
 
+class ExtendTimeEvent extends HomeEvent {
+  final int bookingId;
+
+  ExtendTimeEvent({required this.bookingId});
+
+  @override
+  List<Object?> get props => [bookingId];
+}
+
 class GetIconsEvent extends HomeEvent {
   @override
   List<Object?> get props => [];

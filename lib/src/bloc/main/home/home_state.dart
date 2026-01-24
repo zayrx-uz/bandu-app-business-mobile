@@ -515,6 +515,17 @@ class GetRevenueSeriesSuccessState extends HomeState {
   List<Object?> get props => [data];
 }
 
+class ExtendTimeLoadingState extends HomeState {}
+
+class ExtendTimeSuccessState extends HomeState {
+  final int bookingId;
+
+  ExtendTimeSuccessState({required this.bookingId});
+
+  @override
+  List<Object?> get props => [bookingId];
+}
+
 class GetIconsLoadingState extends HomeState {}
 
 class GetIconsSuccessState extends HomeState {

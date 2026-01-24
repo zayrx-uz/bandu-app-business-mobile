@@ -160,16 +160,23 @@ class _MainScreenState extends State<MainScreen> {
                   SizedBox(
                     width: isTablet(context) ? 20.sp : 24.w,
                     height: isTablet(context) ? 20.sp : 24.w,
-                    child: SvgPicture.network(
-                      placeIconUrl,
-                      width: isTablet(context) ? 20.sp : 24.w,
-                      height: isTablet(context) ? 20.sp : 24.w,
-                      fit: BoxFit.contain,
-                      colorFilter: ColorFilter.mode(
-                        isSelected ? AppColor.yellow8E : AppColor.greyA7,
-                        BlendMode.srcIn,
-                      ),
-                    ),
+                    child: placeIconUrl.endsWith('.svg')
+                        ? SvgPicture.network(
+                            placeIconUrl,
+                            width: isTablet(context) ? 20.sp : 24.w,
+                            height: isTablet(context) ? 20.sp : 24.w,
+                            fit: BoxFit.contain,
+                            colorFilter: ColorFilter.mode(
+                              isSelected ? AppColor.yellow8E : AppColor.greyA7,
+                              BlendMode.srcIn,
+                            ),
+                          )
+                        : Image.network(
+                            placeIconUrl,
+                            width: isTablet(context) ? 20.sp : 24.w,
+                            height: isTablet(context) ? 20.sp : 24.w,
+                            fit: BoxFit.contain,
+                          ),
                   )
                 else ...[
                   Builder(

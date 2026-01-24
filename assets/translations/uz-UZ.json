@@ -263,6 +263,7 @@
   "pleaseSelectCategory" : "Iltimos, kategoriyani tanlang",
   "pleaseSelectIcon" : "Iltimos, belgini tanlang",
   "pleaseEnterPrice" : "Iltimos, narxni kiriting",
+  "pleaseUploadImage" : "Iltimos, rasm yuklang",
   "companyNotSelected" : "Kompaniya tanlanmagan",
   "hours" : "soat",
   "minutesShort" : "min",
@@ -363,5 +364,5 @@
   "pleaseSetWorkingHours" : "Iltimos, ish vaqtini belgilang",
   "resourceCategories" : "Resurs kategoriyalari",
   "active" : "Faol",
-  "inactive" : "No faol"
+  "inactive" : "Faol emas"
 }

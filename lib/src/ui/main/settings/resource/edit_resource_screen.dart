@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
@@ -86,10 +88,29 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
       ).url;
     }
 
-    if (widget.resourceData.metadata != null && widget.resourceData.metadata is Map) {
-      final metadata = widget.resourceData.metadata as Map;
-      if (metadata.containsKey('employeeIds') && metadata['employeeIds'] is List) {
-        selectedEmployeeIds = List<int>.from(metadata['employeeIds']);
+    if (widget.resourceData.businessUsers.isNotEmpty) {
+      selectedEmployeeIds = widget.resourceData.businessUsers.map((e) => e.id).toList();
+    } else if (widget.resourceData.metadata != null) {
+      Map<String, dynamic>? metadata;
+      if (widget.resourceData.metadata is Map) {
+        metadata = widget.resourceData.metadata as Map<String, dynamic>;
+      } else if (widget.resourceData.metadata is String) {
+        try {
+          final decoded = jsonDecode(widget.resourceData.metadata as String);
+          if (decoded is Map) {
+            metadata = Map<String, dynamic>.from(decoded);
+          }
+        } catch (e) {
+        }
+      }
+      
+      if (metadata != null && metadata.containsKey('employeeIds') && metadata['employeeIds'] is List) {
+        final employeeIdsList = metadata['employeeIds'] as List;
+        selectedEmployeeIds = employeeIdsList.map((e) {
+          if (e is int) return e;
+          if (e is String) return int.tryParse(e) ?? 0;
+          return 0;
+        }).where((e) => e > 0).toList();
       }
     }
   }
@@ -342,7 +363,8 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
     int hours = timeSlotDurationMinutes ~/ 60;
     int minutes = timeSlotDurationMinutes % 60;
     int selectedHours = hours.clamp(0, 100);
-    int selectedMinutes = minutes.clamp(0, 59);
+    int selectedMinutesIndex = (minutes ~/ 5).clamp(0, 11);
+    int selectedMinutes = selectedMinutesIndex * 5;
     
     showCupertinoModalPopup(
       context: context,
@@ -446,17 +468,18 @@ class _EditResourceScreenState extends State<EditResourceScreen> {
                             Expanded(
                               flex: 2,
                               child: CupertinoPicker(
-                                scrollController: FixedExtentScrollController(initialItem: selectedMinutes),
+                                scrollController: FixedExtentScrollController(initialItem: selectedMinutesIndex),
                                 itemExtent: 50.h,
                                 onSelectedItemChanged: (int index) {
                                   setModalState(() {
-                                    selectedMinutes = index;
+                                    selectedMinutesIndex = index;
+                                    selectedMinutes = index * 5;
                                   });
                                 },
-                                children: List<Widget>.generate(60, (int index) {
+                                children: List<Widget>.generate(12, (int index) {
                                   return Center(
                                     child: Text(
-                                      index.toString(),
+                                      (index * 5).toString(),
                                       style: TextStyle(
                                         fontSize: 22.sp,
                                         fontWeight: FontWeight.w600,

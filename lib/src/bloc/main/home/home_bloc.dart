@@ -1,3 +1,4 @@
+import 'package:bandu_business/src/helper/service/rx_bus.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/auth/login_model.dart';
@@ -90,6 +91,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<GetBookedEmployeesEvent>(_onGetBookedEmployees);
     on<GetRevenueSeriesEvent>(_onGetRevenueSeries);
     on<GetIconsEvent>(_onGetIcons);
+    on<ExtendTimeEvent>(_onExtendTime);
+  }
+
+  void _onExtendTime(ExtendTimeEvent event, Emitter<HomeState> emit) async {
+    emit(ExtendTimeLoadingState());
+    try {
+      final result = await homeRepository.extendTime(bookingId: event.bookingId);
+      if (result.isSuccess) {
+        emit(ExtendTimeSuccessState(bookingId: event.bookingId));
+      } else {
+        emit(HomeErrorState(message: HelperFunctions.errorText(result.result)));
+      }
+    } catch (e) {
+      emit(HomeErrorState(message: HelperFunctions.errorText(e)));
+    }
   }
 
   void _onGetCompany(GetCompanyEvent event, Emitter<HomeState> emit) async {
@@ -169,6 +185,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       if (result.isSuccess) {
         final companyDetailModel = CompanyDetailModel.fromJson(result.result);
+        if (companyDetailModel.data.icon != null && companyDetailModel.data.icon!.url.isNotEmpty) {
+          CacheService.savePlaceIcon(companyDetailModel.data.icon!.url);
+          RxBus.post(1, tag: "PLACE_ICON_UPDATED");
+        } else {
+          CacheService.savePlaceIcon('');
+          RxBus.post(1, tag: "PLACE_ICON_UPDATED");
+        }
         emit(GetCompanyDetailSuccessState(data: companyDetailModel.data));
       } else {
         emit(HomeErrorState(message: result.error.toString()));
@@ -521,6 +544,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final result = await homeRepository.getMyCompany();
       if (result.isSuccess) {
         final companyData = CompanyData.fromJson(result.result["data"]);
+        if (companyData.icon != null && companyData.icon!.url.isNotEmpty) {
+          CacheService.savePlaceIcon(companyData.icon!.url);
+          RxBus.post(1, tag: "PLACE_ICON_UPDATED");
+        } else {
+          CacheService.savePlaceIcon('');
+          RxBus.post(1, tag: "PLACE_ICON_UPDATED");
+        }
         emit(GetMyCompanySuccessState(data: companyData));
       } else {
         emit(HomeErrorState(message: result.error.toString()));

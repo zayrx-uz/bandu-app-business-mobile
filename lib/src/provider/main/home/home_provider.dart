@@ -127,7 +127,7 @@ class HomeProvider extends ApiProvider {
 
   Future<HttpResult> deleteEmployee({required int id }) async {
     return await deleteRequest(
-      "${ApiHelper.getCompany}/${HelperFunctions.getCompanyId()}/members/$id",
+      "${ApiHelper.getEmployee}/$id",
     );
   }
 
@@ -375,6 +375,10 @@ class HomeProvider extends ApiProvider {
 
   Future<HttpResult> getBookingDetail({required int bookingId}) async {
     return await getRequest("${ApiHelper.getBookingDetail}$bookingId");
+  }
+
+  Future<HttpResult> extendTime(int bookingId) async {
+    return await postRequest("${ApiHelper.extendTime}$bookingId/extend-time", {});
   }
 
   Future<HttpResult> updateBookingStatus({

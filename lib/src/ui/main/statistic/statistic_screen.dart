@@ -12,7 +12,7 @@ import 'package:bandu_business/src/ui/main/place/screen/empty_places_screen.dart
 import 'package:bandu_business/src/ui/main/place/screen/booked_places_screen.dart';
 import 'package:bandu_business/src/ui/main/employer/screen/empty_employees_screen.dart';
 import 'package:bandu_business/src/ui/main/employer/screen/booked_employees_screen.dart';
-import 'package:bandu_business/src/ui/main/statistic/screen/balans_bottom_sheet.dart';
+import 'package:bandu_business/src/ui/main/statistic/screen/revenue_screen.dart';
 import 'package:bandu_business/src/widget/app/app_icon_button.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
@@ -86,10 +86,11 @@ class _StatisticScreenState extends State<StatisticScreen> {
                         title: "dailyRevenue".tr(),
                         desc: "${data!.totalRevenue.priceFormat()} UZS",
                         onTap: () {
-                          CupertinoScaffold.showCupertinoModalBottomSheet(
-                            context: context,
-                            builder: (_) => BalansBottomSheet(
-                              totalRevenue: data!.totalRevenue,
+                          AppService.changePage(
+                            context,
+                            BlocProvider(
+                              create: (_) => HomeBloc(homeRepository: HomeRepository()),
+                              child: const RevenueScreen(),
                             ),
                           );
                         },

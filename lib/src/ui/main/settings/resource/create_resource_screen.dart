@@ -61,7 +61,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   bool get isFormValid {
     return nameController.text.isNotEmpty &&
         selectedCategoryId != -1 &&
-        priceController.text.isNotEmpty;
+        priceController.text.isNotEmpty &&
+        uploadedImages.isNotEmpty;
   }
 
   @override
@@ -247,6 +248,10 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                             CenterDialog.errorDialog(context, "pleaseEnterPrice".tr());
                             return;
                           }
+                          if (uploadedImages.isEmpty) {
+                            CenterDialog.errorDialog(context, "pleaseUploadImage".tr());
+                            return;
+                          }
                           final companyId = HelperFunctions.getCompanyId() ?? 0;
                           if (companyId == 0) {
                             CenterDialog.errorDialog(context, "companyNotSelected".tr());
@@ -288,7 +293,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     int hours = timeSlotDurationMinutes ~/ 60;
     int minutes = timeSlotDurationMinutes % 60;
     int selectedHours = hours.clamp(0, 100);
-    int selectedMinutes = minutes.clamp(0, 59);
+    int selectedMinutesIndex = (minutes ~/ 5).clamp(0, 11);
+    int selectedMinutes = selectedMinutesIndex * 5;
 
     showCupertinoModalPopup(
       context: context,
@@ -393,17 +399,18 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                             Expanded(
                               flex: 2,
                               child: CupertinoPicker(
-                                scrollController: FixedExtentScrollController(initialItem: selectedMinutes),
+                                scrollController: FixedExtentScrollController(initialItem: selectedMinutesIndex),
                                 itemExtent: 50.h,
                                 onSelectedItemChanged: (int index) {
                                   setModalState(() {
-                                    selectedMinutes = index;
+                                    selectedMinutesIndex = index;
+                                    selectedMinutes = index * 5;
                                   });
                                 },
-                                children: List<Widget>.generate(60, (int index) {
+                                children: List<Widget>.generate(12, (int index) {
                                   return Center(
                                     child: Text(
-                                      index.toString(),
+                                      (index * 5).toString(),
                                       style: TextStyle(
                                         fontSize: 22.sp,
                                         fontWeight: FontWeight.w600,

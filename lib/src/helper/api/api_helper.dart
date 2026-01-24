@@ -46,6 +46,7 @@ class ApiHelper {
   static const getOwnerBookings = "${baseUrl}api/booking/company-bookings";
   static const getBookingDetail = "${baseUrl}api/booking/";
   static const updateBookingStatus = "${baseUrl}api/booking/";
+  static const extendTime = "${baseUrl}api/booking/";
   static const dashboardSummary = "${baseUrl}api/dashboard/summary";
   static const dashboardRevenueSeries = "${baseUrl}api/dashboard/revenue/series";
   static const dashboardIncomingCustomersSeries = "${baseUrl}api/dashboard/incoming-customers/series";

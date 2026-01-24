@@ -334,6 +334,10 @@ class HomeRepository implements AbstractHomeRepository {
     return await homeProvider.getBookingDetail(bookingId: bookingId);
   }
 
+  Future<HttpResult> extendTime({required int bookingId}) async {
+    return await homeProvider.extendTime(bookingId);
+  }
+
   @override
   Future<HttpResult> updateBookingStatus({
     required int bookingId,

@@ -261,17 +261,34 @@ class _BookedPlacesScreenState extends State<BookedPlacesScreen> {
             Builder(
               builder: (context) {
                 if (placeIconUrl.isNotEmpty) {
-                  return SvgPicture.network(
-                    placeIconUrl,
-                    width: 40.w,
-                    height: 40.w,
-                    fit: BoxFit.contain,
-                    placeholderBuilder: (context) => Container(
+                  if (placeIconUrl.endsWith('.svg')) {
+                    return SvgPicture.network(
+                      placeIconUrl,
                       width: 40.w,
                       height: 40.w,
-                      child: CupertinoActivityIndicator(),
-                    ),
-                  );
+                      fit: BoxFit.contain,
+                      placeholderBuilder: (context) => Container(
+                        width: 40.w,
+                        height: 40.w,
+                        child: CupertinoActivityIndicator(),
+                      ),
+                    );
+                  } else {
+                    return Image.network(
+                      placeIconUrl,
+                      width: 40.w,
+                      height: 40.w,
+                      fit: BoxFit.contain,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          width: 40.w,
+                          height: 40.w,
+                          child: CupertinoActivityIndicator(),
+                        );
+                      },
+                    );
+                  }
                 }
                 
                 final cachedIcon = CacheService.getCategoryIcon();

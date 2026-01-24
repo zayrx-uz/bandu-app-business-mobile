@@ -1,3 +1,5 @@
+import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
+
 class ResourceModel {
   List<Datum> data;
   String message;
@@ -30,6 +32,7 @@ class Datum {
   bool isTimeSlotBased;
   int timeSlotDurationMinutes;
   List<Image> images;
+  List<EmployeeItemData> businessUsers;
 
   Datum({
     required this.id,
@@ -41,6 +44,7 @@ class Datum {
     required this.isTimeSlotBased,
     required this.timeSlotDurationMinutes,
     required this.images,
+    required this.businessUsers,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -57,6 +61,9 @@ class Datum {
     images: json["images"] == null || json["images"] is! List
         ? []
         : List<Image>.from((json["images"] as List).map((x) => Image.fromJson(x))),
+    businessUsers: json["businessUsers"] == null || json["businessUsers"] is! List
+        ? []
+        : List<EmployeeItemData>.from((json["businessUsers"] as List).map((x) => EmployeeItemData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -69,6 +76,7 @@ class Datum {
     "isTimeSlotBased": isTimeSlotBased,
     "timeSlotDurationMinutes": timeSlotDurationMinutes,
     "images": List<dynamic>.from(images.map((x) => x.toJson())),
+    // "businessUsers": List<dynamic>.from(businessUsers.map((x) => x.toJson())),
   };
 }
 

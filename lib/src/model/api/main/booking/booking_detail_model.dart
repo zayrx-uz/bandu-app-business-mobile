@@ -237,6 +237,7 @@ class BookingDetailResource {
   bool isBookable;
   bool isTimeSlotBased;
   int? timeSlotDurationMinutes;
+  List<BookingDetailImage> images;
 
   BookingDetailResource({
     required this.id,
@@ -246,6 +247,7 @@ class BookingDetailResource {
     required this.isBookable,
     required this.isTimeSlotBased,
     this.timeSlotDurationMinutes,
+    required this.images,
   });
 
   factory BookingDetailResource.fromJson(Map<String, dynamic> json) =>
@@ -257,6 +259,11 @@ class BookingDetailResource {
         isBookable: json["isBookable"] ?? false,
         isTimeSlotBased: json["isTimeSlotBased"] ?? false,
         timeSlotDurationMinutes: json["timeSlotDurationMinutes"],
+        images: json["images"] == null || json["images"] is! List
+            ? []
+            : List<BookingDetailImage>.from(
+                (json["images"] as List)
+                    .map((x) => BookingDetailImage.fromJson(x))),
       );
 
   factory BookingDetailResource.empty() => BookingDetailResource(
@@ -267,6 +274,48 @@ class BookingDetailResource {
         isBookable: false,
         isTimeSlotBased: false,
         timeSlotDurationMinutes: null,
+        images: [],
+      );
+}
+
+class BookingDetailImage {
+  int id;
+  String url;
+  String filename;
+  String mimeType;
+  int size;
+  int index;
+  bool isMain;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  BookingDetailImage({
+    required this.id,
+    required this.url,
+    required this.filename,
+    required this.mimeType,
+    required this.size,
+    required this.index,
+    required this.isMain,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory BookingDetailImage.fromJson(Map<String, dynamic> json) =>
+      BookingDetailImage(
+        id: json["id"] ?? 0,
+        url: json["url"]?.toString() ?? "",
+        filename: json["filename"]?.toString() ?? "",
+        mimeType: json["mimeType"]?.toString() ?? "",
+        size: json["size"] ?? 0,
+        index: json["index"] ?? 0,
+        isMain: json["isMain"] ?? false,
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.tryParse(json["createdAt"]?.toString() ?? ""),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.tryParse(json["updatedAt"]?.toString() ?? ""),
       );
 }
 

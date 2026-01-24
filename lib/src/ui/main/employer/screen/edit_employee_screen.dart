@@ -154,83 +154,83 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                           hint: "enterPassword".tr(),
                         ),
                         SizedBox(height: 12.h),
-                        if (resourceData != null && resourceData!.data.isNotEmpty)
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "resources".tr(),
-                                  style: AppTextStyle.f500s16,
-                                ),
-                                SizedBox(height: 8.h),
-                                Container(
-                                  constraints: BoxConstraints(maxHeight: 200.h),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    color: AppColor.greyFA,
-                                    border: Border.all(
-                                      width: 1.h,
-                                      color: AppColor.greyE5,
-                                    ),
-                                  ),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: resourceData!.data.length,
-                                    itemBuilder: (context, index) {
-                                      final resource = resourceData!.data[index];
-                                      final isSelected = selectedResourceIds.contains(resource.id);
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            if (isSelected) {
-                                              selectedResourceIds.remove(resource.id);
-                                            } else {
-                                              selectedResourceIds.add(resource.id);
-                                            }
-                                          });
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 12.w,
-                                            vertical: 10.h,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? AppColor.yellowFFC.withValues(alpha: 0.1)
-                                                : Colors.transparent,
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                width: index < resourceData!.data.length - 1 ? 1.h : 0,
-                                                color: AppColor.greyE5,
-                                              ),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  resource.name,
-                                                  style: AppTextStyle.f500s14,
-                                                ),
-                                              ),
-                                              if (isSelected)
-                                                Icon(
-                                                  Icons.check_circle,
-                                                  color: AppColor.yellowFFC,
-                                                  size: 20.w,
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        // if (resourceData != null && resourceData!.data.isNotEmpty)
+                        //   Container(
+                        //     margin: EdgeInsets.symmetric(horizontal: 16.w),
+                        //     child: Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         Text(
+                        //           "resources".tr(),
+                        //           style: AppTextStyle.f500s16,
+                        //         ),
+                        //         SizedBox(height: 8.h),
+                        //         Container(
+                        //           constraints: BoxConstraints(maxHeight: 200.h),
+                        //           decoration: BoxDecoration(
+                        //             borderRadius: BorderRadius.circular(12.r),
+                        //             color: AppColor.greyFA,
+                        //             border: Border.all(
+                        //               width: 1.h,
+                        //               color: AppColor.greyE5,
+                        //             ),
+                        //           ),
+                        //           child: ListView.builder(
+                        //             shrinkWrap: true,
+                        //             itemCount: resourceData!.data.length,
+                        //             itemBuilder: (context, index) {
+                        //               final resource = resourceData!.data[index];
+                        //               final isSelected = selectedResourceIds.contains(resource.id);
+                        //               return GestureDetector(
+                        //                 onTap: () {
+                        //                   setState(() {
+                        //                     if (isSelected) {
+                        //                       selectedResourceIds.remove(resource.id);
+                        //                     } else {
+                        //                       selectedResourceIds.add(resource.id);
+                        //                     }
+                        //                   });
+                        //                 },
+                        //                 child: Container(
+                        //                   padding: EdgeInsets.symmetric(
+                        //                     horizontal: 12.w,
+                        //                     vertical: 10.h,
+                        //                   ),
+                        //                   decoration: BoxDecoration(
+                        //                     color: isSelected
+                        //                         ? AppColor.yellowFFC.withValues(alpha: 0.1)
+                        //                         : Colors.transparent,
+                        //                     border: Border(
+                        //                       bottom: BorderSide(
+                        //                         width: index < resourceData!.data.length - 1 ? 1.h : 0,
+                        //                         color: AppColor.greyE5,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                   child: Row(
+                        //                     children: [
+                        //                       Expanded(
+                        //                         child: Text(
+                        //                           resource.name,
+                        //                           style: AppTextStyle.f500s14,
+                        //                         ),
+                        //                       ),
+                        //                       if (isSelected)
+                        //                         Icon(
+                        //                           Icons.check_circle,
+                        //                           color: AppColor.yellowFFC,
+                        //                           size: 20.w,
+                        //                         ),
+                        //                     ],
+                        //                   ),
+                        //                 ),
+                        //               );
+                        //             },
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     ),
                   ),
