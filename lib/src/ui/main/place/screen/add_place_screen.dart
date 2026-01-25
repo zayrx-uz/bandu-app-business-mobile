@@ -139,24 +139,40 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     child: SelectPeopleCountWidget(
                       hintText: "enterNumber".tr(),
                       items: item,
+                      initialItem: number > 0 ? '$number ${"people".tr()}' : null,
                       onSelect: (value) {
-                        number = n[item.indexWhere((e) => e == value)];
-                        check();
+                        try {
+                          final countText = value.trim().split(RegExp(r'\s+')).first;
+                          final count = int.parse(countText);
+                          if (count > 0) {
+                            setState(() {
+                              number = count;
+                            });
+                            check();
+                          }
+                        } catch (_) {
+                          final idx = item.indexWhere((e) => e == value);
+                          if (idx >= 0 && idx < n.length) {
+                            setState(() {
+                              number = n[idx];
+                            });
+                            check();
+                          }
+                        }
                       },
                       onAddNew: (value) {
                         try {
-                          final countText = value.trim().split(' ')[0];
+                          final countText = value.trim().split(RegExp(r'\s+')).first;
                           final count = int.parse(countText);
                           if (count > 0) {
                             setState(() {
                               n.add(count);
                               item.add("$count ${"people".tr()}");
+                              number = count;
                             });
-                            number = count;
                             check();
                           }
-                        } catch (e) {
-                        }
+                        } catch (_) {}
                       },
                     ),
                   ),

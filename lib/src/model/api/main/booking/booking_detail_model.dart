@@ -1,3 +1,5 @@
+import 'package:bandu_business/src/model/api/main/employee/employee_model.dart';
+
 class BookingDetailModel {
   BookingDetailData data;
   String message;
@@ -336,6 +338,7 @@ class BookingDetailUser {
   String? telegramId;
   DateTime? createdAt;
   DateTime? updatedAt;
+  List<AuthProvider> authProviders;
 
   BookingDetailUser({
     required this.id,
@@ -354,6 +357,7 @@ class BookingDetailUser {
     this.telegramId,
     this.createdAt,
     this.updatedAt,
+    required this.authProviders,
   });
 
   factory BookingDetailUser.fromJson(Map<String, dynamic> json) =>
@@ -380,6 +384,10 @@ class BookingDetailUser {
         updatedAt: json["updatedAt"] == null
             ? null
             : DateTime.parse(json["updatedAt"]),
+        authProviders: json["authProviders"] == null || json["authProviders"] is! List
+            ? []
+            : List<AuthProvider>.from(
+                json["authProviders"].map((x) => AuthProvider.fromJson(x))),
       );
 
   factory BookingDetailUser.empty() => BookingDetailUser(
@@ -399,6 +407,7 @@ class BookingDetailUser {
         telegramId: null,
         createdAt: null,
         updatedAt: null,
+        authProviders: [],
       );
 }
 

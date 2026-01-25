@@ -21,6 +21,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingDetailBottomSheet extends StatefulWidget {
   final int bookingId;
@@ -35,7 +36,8 @@ class BookingDetailBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<BookingDetailBottomSheet> createState() => _BookingDetailBottomSheetState();
+  State<BookingDetailBottomSheet> createState() =>
+      _BookingDetailBottomSheetState();
 }
 
 class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
@@ -47,7 +49,9 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
   @override
   void initState() {
     super.initState();
-    context.read<HomeBloc>().add(GetBookingDetailEvent(bookingId: widget.bookingId));
+    context.read<HomeBloc>().add(
+      GetBookingDetailEvent(bookingId: widget.bookingId),
+    );
   }
 
   String _formatDateTime(DateTime? dateTime, DateTime? endTime) {
@@ -79,9 +83,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
       }
     }
   }
-
-
-
 
   Color _getBookingStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -117,17 +118,17 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
 
   String _getCategoryIcon() {
     final placeIconUrl = CacheService.getPlaceIcon();
-    
+
     if (placeIconUrl.isNotEmpty) {
       return placeIconUrl;
     }
-    
+
     final ikpuCode = CacheService.getCategoryIkpuCode();
-    
+
     if (ikpuCode.isEmpty) {
       return AppIcons.placeSelect;
     }
-    
+
     return HelperFunctions.getCategoryIconByIkpuCode(ikpuCode);
   }
 
@@ -141,8 +142,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
           _errorMessage = null;
           setState(() {});
         } else if (state is HomeErrorState) {
-          if (state is! UpdateBookingStatusLoadingState && 
-              state is! CancelBookingLoadingState && 
+          if (state is! UpdateBookingStatusLoadingState &&
+              state is! CancelBookingLoadingState &&
               state is! ExtendTimeLoadingState &&
               state is! ConfirmPaymentLoadingState &&
               state is! CheckAlicePaymentLoadingState) {
@@ -156,11 +157,13 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final companyId = HelperFunctions.getCompanyId() ?? 0;
               if (companyId > 0) {
-                widget.parentBloc!.add(GetOwnerBookingsEvent(
-                  page: 1,
-                  limit: 10,
-                  companyId: companyId,
-                ));
+                widget.parentBloc!.add(
+                  GetOwnerBookingsEvent(
+                    page: 1,
+                    limit: 10,
+                    companyId: companyId,
+                  ),
+                );
               }
             });
           }
@@ -170,55 +173,69 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final companyId = HelperFunctions.getCompanyId() ?? 0;
               if (companyId > 0) {
-                widget.parentBloc!.add(GetOwnerBookingsEvent(
-                  page: 1,
-                  limit: 10,
-                  companyId: companyId,
-                ));
+                widget.parentBloc!.add(
+                  GetOwnerBookingsEvent(
+                    page: 1,
+                    limit: 10,
+                    companyId: companyId,
+                  ),
+                );
               }
             });
           }
         } else if (state is ConfirmPaymentSuccessState) {
-          context.read<HomeBloc>().add(GetBookingDetailEvent(bookingId: widget.bookingId));
+          context.read<HomeBloc>().add(
+            GetBookingDetailEvent(bookingId: widget.bookingId),
+          );
           if (widget.parentBloc != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final companyId = HelperFunctions.getCompanyId() ?? 0;
               if (companyId > 0) {
-                widget.parentBloc!.add(GetOwnerBookingsEvent(
-                  page: 1,
-                  limit: 10,
-                  companyId: companyId,
-                ));
+                widget.parentBloc!.add(
+                  GetOwnerBookingsEvent(
+                    page: 1,
+                    limit: 10,
+                    companyId: companyId,
+                  ),
+                );
               }
             });
           }
         } else if (state is CheckAlicePaymentSuccessState) {
           if (state.isPaid) {
-            context.read<HomeBloc>().add(GetBookingDetailEvent(bookingId: widget.bookingId));
+            context.read<HomeBloc>().add(
+              GetBookingDetailEvent(bookingId: widget.bookingId),
+            );
             if (widget.parentBloc != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 final companyId = HelperFunctions.getCompanyId() ?? 0;
                 if (companyId > 0) {
-                  widget.parentBloc!.add(GetOwnerBookingsEvent(
-                    page: 1,
-                    limit: 10,
-                    companyId: companyId,
-                  ));
+                  widget.parentBloc!.add(
+                    GetOwnerBookingsEvent(
+                      page: 1,
+                      limit: 10,
+                      companyId: companyId,
+                    ),
+                  );
                 }
               });
             }
           }
         } else if (state is ExtendTimeSuccessState) {
-          context.read<HomeBloc>().add(GetBookingDetailEvent(bookingId: widget.bookingId));
+          context.read<HomeBloc>().add(
+            GetBookingDetailEvent(bookingId: widget.bookingId),
+          );
           if (widget.parentBloc != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final companyId = HelperFunctions.getCompanyId() ?? 0;
               if (companyId > 0) {
-                widget.parentBloc!.add(GetOwnerBookingsEvent(
-                  page: 1,
-                  limit: 10,
-                  companyId: companyId,
-                ));
+                widget.parentBloc!.add(
+                  GetOwnerBookingsEvent(
+                    page: 1,
+                    limit: 10,
+                    companyId: companyId,
+                  ),
+                );
               }
             });
           }
@@ -226,7 +243,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
       },
       builder: (context, state) {
         final isLoading = state is GetBookingDetailLoadingState;
-        
+
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.9,
@@ -266,23 +283,32 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            SizedBox(width: 10.w,),
-                            if(bookingDetail != null) 
+                            SizedBox(width: 10.w),
+                            if (bookingDetail != null)
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 6.h,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: _getBookingStatusBackgroundColor(bookingDetail!.status),
+                                  color: _getBookingStatusBackgroundColor(
+                                    bookingDetail!.status,
+                                  ),
                                   borderRadius: BorderRadius.circular(10.r),
                                   border: Border.all(
                                     width: 1.w,
-                                    color: _getBookingStatusColor(bookingDetail!.status).withValues(alpha: 0.3),
+                                    color: _getBookingStatusColor(
+                                      bookingDetail!.status,
+                                    ).withValues(alpha: 0.3),
                                   ),
                                 ),
                                 child: Text(
                                   bookingDetail!.status.getLocalizedStatus(),
                                   style: AppTextStyle.f500s20.copyWith(
                                     fontSize: 14.sp,
-                                    color: _getBookingStatusColor(bookingDetail!.status),
+                                    color: _getBookingStatusColor(
+                                      bookingDetail!.status,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -300,15 +326,13 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 if (isLoading)
                   Padding(
                     padding: EdgeInsets.all(40.h),
-                    child: CupertinoActivityIndicator(
-                      color: AppColor.black0D,
-                    ),
+                    child: CupertinoActivityIndicator(color: AppColor.black0D),
                   )
                 else if (_hasError)
                   Padding(
                     padding: EdgeInsets.all(40.h),
                     child: EmptyWidget(
-                      text: "noDataFound".tr(),
+                      text: _errorMessage ?? "noDataFound".tr(),
                     ),
                   )
                 else if (bookingDetail != null) ...[
@@ -318,10 +342,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                     padding: EdgeInsets.all(24.w),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(
-                        width: 1.w,
-                        color: AppColor.yellowFFC,
-                      ),
+                      border: Border.all(width: 1.w, color: AppColor.yellowFFC),
                       borderRadius: BorderRadius.circular(16.r),
                     ),
                     child: Column(
@@ -331,9 +352,14 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 6.h,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColor.yellowFF.withValues(alpha: 0.2),
+                                  color: AppColor.yellowFF.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 child: Text(
@@ -345,9 +371,12 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 8.w,),
+                              SizedBox(width: 8.w),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 6.h,
+                                ),
                                 decoration: BoxDecoration(
                                   color: AppColor.grey77.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8.r),
@@ -364,12 +393,14 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             ],
                           ),
 
-                        if (bookingDetail!.places.isNotEmpty) SizedBox(height: 12.h),
+                        if (bookingDetail!.places.isNotEmpty)
+                          SizedBox(height: 12.h),
                         Builder(
                           builder: (context) {
                             final iconPath = _getCategoryIcon();
-                            
-                            if (iconPath.startsWith('http://') || iconPath.startsWith('https://')) {
+
+                            if (iconPath.startsWith('http://') ||
+                                iconPath.startsWith('https://')) {
                               if (iconPath.endsWith('.svg')) {
                                 return SvgPicture.network(
                                   iconPath,
@@ -388,14 +419,16 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   height: 88.h,
                                   width: 80.h,
                                   fit: BoxFit.contain,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Container(
-                                      height: 88.h,
-                                      width: 80.h,
-                                      child: CupertinoActivityIndicator(),
-                                    );
-                                  },
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return Container(
+                                          height: 88.h,
+                                          width: 80.h,
+                                          child: CupertinoActivityIndicator(),
+                                        );
+                                      },
                                 );
                               }
                             } else if (iconPath.contains('assets/images/')) {
@@ -414,8 +447,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             }
                           },
                         ),
-
-
                       ],
                     ),
                   ),
@@ -441,7 +472,10 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                               ),
                               SizedBox(height: 8.h),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                  vertical: 12.h,
+                                ),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -452,7 +486,12 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                                 child: Text(
-                                  bookingDetail!.bookingTime != null ? _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime).substring(0 , 10) : "",
+                                  bookingDetail!.bookingTime != null
+                                      ? _formatDateTime(
+                                          bookingDetail!.bookingTime,
+                                          bookingDetail!.bookingEndTime,
+                                        ).substring(0, 10)
+                                      : "",
                                   style: AppTextStyle.f500s16,
                                 ),
                               ),
@@ -477,7 +516,10 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                               ),
                               SizedBox(height: 8.h),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                  vertical: 12.h,
+                                ),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -488,7 +530,10 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   ),
                                 ),
                                 child: Text(
-                                  _formatDateTime(bookingDetail!.bookingTime, bookingDetail!.bookingEndTime).substring(12 , 25),
+                                  _formatDateTime(
+                                    bookingDetail!.bookingTime,
+                                    bookingDetail!.bookingEndTime,
+                                  ).substring(12, 25),
                                   style: AppTextStyle.f500s16,
                                 ),
                               ),
@@ -496,8 +541,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                           ),
                         ),
 
-                        if(bookingDetail!.note.isNotEmpty)SizedBox(height: 12.h),
-                        if(bookingDetail!.note.isNotEmpty)Container(
+                        SizedBox(height: 12.h),
+                        Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: AppColor.white,
@@ -507,31 +552,111 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "comment".tr(),
+                                "phoneNumber".tr(),
                                 style: AppTextStyle.f600s16.copyWith(
                                   color: AppColor.black,
                                 ),
                               ),
                               SizedBox(height: 8.h),
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  border: Border.all(
-                                    width: 1.w,
-                                    color: AppColor.cE5E7E5,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w,
+                                        vertical: 12.h,
+                                      ),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(
+                                          12.r,
+                                        ),
+                                        border: Border.all(
+                                          width: 1.w,
+                                          color: AppColor.cE5E7E5,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        bookingDetail!
+                                                .user
+                                                .authProviders
+                                                .isNotEmpty
+                                            ? "+${bookingDetail!.user.authProviders.first.phoneNumber}"
+                                            : "",
+                                        style: AppTextStyle.f500s16,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                 bookingDetail!.note,
-                                  style: AppTextStyle.f500s16,
-                                ),
+                                  SizedBox(width: 10.w),
+                                  AppIconButton(
+                                    icon: AppIcons.phone,
+                                    onTap: () async {
+                                      final Uri launchUri = Uri(
+                                        scheme: 'tel',
+                                        path:
+                                            "+${bookingDetail!.user.authProviders.first.phoneNumber}",
+                                      );
+
+                                      if (await canLaunchUrl(launchUri)) {
+                                        await launchUrl(launchUri);
+                                      } else {
+                                        // Xatolik yuz bersa
+                                        print(
+                                          'Telefon ilovasini ochib bo\'lmadi',
+                                        );
+                                      }
+                                    },
+                                    width: 45.w,
+                                    height: 45.w,
+                                    borderRadius: 12.r,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
+                        if (bookingDetail!.note.isNotEmpty)
+                          SizedBox(height: 12.h),
+                        if (bookingDetail!.note.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: AppColor.white,
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "comment".tr(),
+                                  style: AppTextStyle.f600s16.copyWith(
+                                    color: AppColor.black,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 12.h,
+                                  ),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    border: Border.all(
+                                      width: 1.w,
+                                      color: AppColor.cE5E7E5,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    bookingDetail!.note,
+                                    style: AppTextStyle.f500s16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         // SizedBox(height: 12.h),
                         // Container(
                         //   width: double.infinity,
@@ -601,19 +726,24 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                           imageUrl = mainImage.url;
                         } else if (resource.metadata is Map &&
                             resource.metadata['images'] != null) {
-                          final metadataImages = resource.metadata['images'] as List;
+                          final metadataImages =
+                              resource.metadata['images'] as List;
                           if (metadataImages.isNotEmpty) {
-                            imageUrl = metadataImages.first['url']?.toString() ?? "";
+                            imageUrl =
+                                metadataImages.first['url']?.toString() ?? "";
                           }
                         }
-                        
+
                         return Container(
                           margin: EdgeInsets.only(bottom: 12.h),
                           padding: EdgeInsets.all(12.w),
                           decoration: BoxDecoration(
                             color: AppColor.white,
                             borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(width: 1.h, color: AppColor.greyE5),
+                            border: Border.all(
+                              width: 1.h,
+                              color: AppColor.greyE5,
+                            ),
                           ),
                           child: Row(
                             children: [
@@ -629,21 +759,29 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (resource.timeSlotDurationMinutes != null && resource.timeSlotDurationMinutes! > 0)
+                                    if (resource.timeSlotDurationMinutes !=
+                                            null &&
+                                        resource.timeSlotDurationMinutes! > 0)
                                       Row(
                                         children: [
-                                          AppSvgAsset(AppIcons.hour, height: 16.h, width: 16.h),
+                                          AppSvgAsset(
+                                            AppIcons.hour,
+                                            height: 16.h,
+                                            width: 16.h,
+                                          ),
                                           SizedBox(width: 4.w),
                                           Text(
                                             "${resource.timeSlotDurationMinutes} ${"minute".tr()}",
-                                            style: AppTextStyle.f400s14.copyWith(
-                                              color: AppColor.grey77,
-                                            ),
-
+                                            style: AppTextStyle.f400s14
+                                                .copyWith(
+                                                  color: AppColor.grey77,
+                                                ),
                                           ),
                                         ],
                                       ),
-                                    if (resource.timeSlotDurationMinutes != null && resource.timeSlotDurationMinutes! > 0)
+                                    if (resource.timeSlotDurationMinutes !=
+                                            null &&
+                                        resource.timeSlotDurationMinutes! > 0)
                                       SizedBox(height: 4.h),
                                     Text(
                                       resource.name,
@@ -661,7 +799,9 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                       Row(
                                         children: [
                                           CustomNetworkImage(
-                                            imageUrl: item.employee!.profilePicture ?? "",
+                                            imageUrl:
+                                                item.employee!.profilePicture ??
+                                                "",
                                             height: 24.h,
                                             width: 24.h,
                                             borderRadius: 100,
@@ -669,24 +809,33 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                           SizedBox(width: 8.w),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   item.employee!.fullName,
-                                                  style: AppTextStyle.f400s14.copyWith(
-                                                    color: AppColor.black09,
-                                                  ),
+                                                  style: AppTextStyle.f400s14
+                                                      .copyWith(
+                                                        color: AppColor.black09,
+                                                      ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                if (item.employee!.role.isNotEmpty)
+                                                if (item
+                                                    .employee!
+                                                    .role
+                                                    .isNotEmpty)
                                                   Text(
                                                     item.employee!.role,
-                                                    style: AppTextStyle.f400s12.copyWith(
-                                                      color: AppColor.grey77,
-                                                    ),
+                                                    style: AppTextStyle.f400s12
+                                                        .copyWith(
+                                                          color:
+                                                              AppColor.grey77,
+                                                        ),
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                               ],
                                             ),
@@ -735,7 +884,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
     );
   }
 
-
   bool _isBookingConfirmed() {
     if (bookingDetail == null) return false;
     return bookingDetail!.status.toLowerCase() == "confirmed";
@@ -756,7 +904,6 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
     if (bookingDetail == null) return false;
     return bookingDetail!.status.toLowerCase() == "completed";
   }
-
 
   Widget _buildActionButtons(BuildContext context, HomeState state) {
     if (bookingDetail == null) return SizedBox.shrink();
@@ -787,7 +934,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                         value: context.read<HomeBloc>(),
                         child: BookCancel(
                           bookingId: widget.bookingId,
-                          parentBloc: widget.parentBloc ?? context.read<HomeBloc>(),
+                          parentBloc:
+                              widget.parentBloc ?? context.read<HomeBloc>(),
                         ),
                       );
                     },
@@ -799,9 +947,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 isGradient: false,
                 backColor: AppColor.white,
                 border: Border.all(width: 1.h, color: AppColor.cE52E4C),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.cE52E4C,
-                ),
+                style: AppTextStyle.f600s16.copyWith(color: AppColor.cE52E4C),
               ),
             ),
             SizedBox(width: 12.w),
@@ -848,7 +994,8 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                         value: context.read<HomeBloc>(),
                         child: BookCancel(
                           bookingId: widget.bookingId,
-                          parentBloc: widget.parentBloc ?? context.read<HomeBloc>(),
+                          parentBloc:
+                              widget.parentBloc ?? context.read<HomeBloc>(),
                         ),
                       );
                     },
@@ -860,9 +1007,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                 isGradient: false,
                 backColor: AppColor.white,
                 border: Border.all(width: 1.h, color: AppColor.cE52E4C),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.cE52E4C,
-                ),
+                style: AppTextStyle.f600s16.copyWith(color: AppColor.cE52E4C),
               ),
             ),
             SizedBox(width: 12.w),
@@ -893,17 +1038,25 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
     }
 
     if (isCompleted) {
-      if (bookingDetail!.bookingTime == null || bookingDetail!.bookingEndTime == null) {
+      if (bookingDetail!.bookingTime == null ||
+          bookingDetail!.bookingEndTime == null) {
         return SizedBox.shrink();
       }
 
       _ensureTimezoneInitialized();
       final tashkent = tz.getLocation('Asia/Tashkent');
       final now = tz.TZDateTime.now(tashkent);
-      final bookingTime = tz.TZDateTime.from(bookingDetail!.bookingTime!, tashkent);
-      final bookingEndTime = tz.TZDateTime.from(bookingDetail!.bookingEndTime!, tashkent);
+      final bookingTime = tz.TZDateTime.from(
+        bookingDetail!.bookingTime!,
+        tashkent,
+      );
+      final bookingEndTime = tz.TZDateTime.from(
+        bookingDetail!.bookingEndTime!,
+        tashkent,
+      );
 
-      final isSameDay = now.year == bookingTime.year &&
+      final isSameDay =
+          now.year == bookingTime.year &&
           now.month == bookingTime.month &&
           now.day == bookingTime.day;
 
@@ -916,15 +1069,15 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
         child: AppButton(
           onTap: () {
             context.read<HomeBloc>().add(
-              ExtendTimeEvent(
-                bookingId: widget.bookingId,
-              ),
+              ExtendTimeEvent(bookingId: widget.bookingId),
             );
           },
           text: "earlyClose".tr(),
           height: 48.h,
           margin: EdgeInsets.zero,
-          loading: state is UpdateBookingStatusLoadingState || state is ExtendTimeLoadingState,
+          loading:
+              state is UpdateBookingStatusLoadingState ||
+              state is ExtendTimeLoadingState,
         ),
       );
     }
