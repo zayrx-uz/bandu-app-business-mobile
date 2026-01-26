@@ -357,7 +357,7 @@ class _BookingDetailBottomSheetState extends State<BookingDetailBottomSheet> {
                                   vertical: 6.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColor.yellowFF.withValues(
+                                  color: AppColor.yellowFFC.withValues(
                                     alpha: 0.2,
                                   ),
                                   borderRadius: BorderRadius.circular(8.r),

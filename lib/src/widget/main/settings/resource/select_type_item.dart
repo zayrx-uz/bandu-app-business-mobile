@@ -61,12 +61,12 @@ class SelectTypeWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.r),
             color: isActive != null && isActive
-                ? AppColor.yellowEF
+                ? AppColor.yellowFFC.withOpacity(0.4)
                 : AppColor.greyFA,
             border: Border.all(
               width: 1.h,
               color: isActive != null && isActive
-                  ? AppColor.yellowFF
+                  ? AppColor.yellowFFC
                   : AppColor.greyE5,
             ),
           ),
@@ -79,7 +79,7 @@ class SelectTypeWidget extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isActive != null && isActive
-                        ? AppColor.yellow8E
+                        ? AppColor.yellowFFC
                         : AppColor.greyE5,
                     width: isActive != null && isActive ? 4.h : 1.5.h,
                   ),
@@ -89,7 +89,9 @@ class SelectTypeWidget extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 10.w,),
-              Expanded(child: Text(name, style: AppTextStyle.f500s16)),
+              Expanded(child: Text(name, style: AppTextStyle.f500s16.copyWith(
+
+              ))),
 
             ],
           ),

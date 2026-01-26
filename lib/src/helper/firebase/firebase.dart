@@ -481,7 +481,7 @@ class FirebaseHelper {
 
   /// Get FCM token - checks cache first, then fetches from Firebase if needed
   /// Works for both Android and iOS
-  static Future<String?> getFcmToken() async {
+  static Future<String?>  getFcmToken() async {
     try {
       // First check cache
       String? cachedToken = CacheService.getString("fcm_token");

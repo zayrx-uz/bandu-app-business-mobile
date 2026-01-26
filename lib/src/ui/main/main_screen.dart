@@ -211,7 +211,7 @@ class _MainScreenState extends State<MainScreen> {
                             height: isTablet(context) ? 20.sp : 24.w,
                             fit: BoxFit.contain,
                             colorFilter: ColorFilter.mode(
-                              isSelected ? AppColor.yellow8E : AppColor.greyA7,
+                              isSelected ? AppColor.yellowFFC : AppColor.greyA7,
                               BlendMode.srcIn,
                             ),
                           )
@@ -241,6 +241,7 @@ class _MainScreenState extends State<MainScreen> {
                               imagePath,
                               width: isTablet(context) ? 20.sp : 24.w,
                               height: isTablet(context) ? 20.sp : 24.w,
+                        color : isSelected ? AppColor.yellow8E : AppColor.greyA7
                             );
                     },
                   ),
@@ -250,7 +251,7 @@ class _MainScreenState extends State<MainScreen> {
                   text,
                   maxLines: 1,
                   style: AppTextStyle.f500s10.copyWith(
-                    color: isSelected ? AppColor.yellow8E : AppColor.greyA7,
+                    color: isSelected ? AppColor.yellowFFC : AppColor.greyA7,
                   ),
                 ),
               ],
@@ -271,13 +272,13 @@ class _MainScreenState extends State<MainScreen> {
           color: Colors.transparent,
           child: Column(
             children: [
-              AppSvgAsset(isSelected ? iconSelect[index] : icon[index] , width : isTablet(context) ? 20.sp : 24.w , height: isTablet(context) ? 20.sp : 24.w,),
+              AppSvgAsset(isSelected ? iconSelect[index] : icon[index] , width : isTablet(context) ? 20.sp : 24.w , height: isTablet(context) ? 20.sp : 24.w, color: isSelected ?  AppColor.yellowFFC : AppColor.cD6D8D6),
               SizedBox(height: 4.h),
               Text(
                 text,
                 maxLines: 1,
                 style: AppTextStyle.f500s10.copyWith(
-                  color: isSelected ? AppColor.yellow8E : AppColor.greyA7,
+                  color: isSelected ?  AppColor.yellowFFC : AppColor.cA7AAA7,
                 ),
               ),
             ],
