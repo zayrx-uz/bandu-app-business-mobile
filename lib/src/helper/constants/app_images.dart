@@ -21,10 +21,15 @@ class AppImages{
   static const String createSuccess = 'assets/images/create_success.png';
   static const String enImage = 'assets/images/en.png';
   static const String ruImage = 'assets/images/ru.png';
-  static const String uzImage = 'assets/images/uzz.png';
+  static const String uzImage = 'assets/images/uz.png';
   static const String manVectorImage = 'assets/images/man_vector.png';
   static const String server = 'assets/images/server.png';
   static const String noConnection = 'assets/images/no_connection.png';
+
+  static const String uzbImage = 'assets/images/uzb.png';
+  static const String engImage = 'assets/images/en.png';
+  static const String rusImage = 'assets/images/ru.png';
+  static const String language = 'assets/images/language.jpg';
 
   static const String restaurantSelect = 'assets/images/restarant_select.png';
   static const String restaurantUnselect = 'assets/images/restarant_unselect.png';

@@ -3,6 +3,7 @@ import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/auth/login_model.dart';
 import 'package:bandu_business/src/repository/repo/auth/auth_repository.dart';
+import 'package:bandu_business/src/ui/auth/select_language_screen.dart';
 import 'package:bandu_business/src/ui/main/company/screen/select_company_screen.dart';
 import 'package:bandu_business/src/ui/main/main_screen.dart';
 import 'package:bandu_business/src/ui/onboard/on_borading.dart';
@@ -53,20 +54,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _splashChange(SplashChangeEvent event, Emitter<AuthState> emit) async {
     await Future.delayed(const Duration(seconds: 2));
-    if(CacheService.getBool("onboarding_view")){
-      if (CacheService.getToken() != '') {
-        if (HelperFunctions.getCompanyId() == -1 || HelperFunctions.getCompanyId() == null) {
-          emit(SplashChangeState(page: SelectCompanyScreen()));
-        } else {
+    if(CacheService.getBool("select_lan") == true){
+      if(CacheService.getBool("onboarding_view")){
+        if (CacheService.getToken() != '') {
+          if (HelperFunctions.getCompanyId() == -1 || HelperFunctions.getCompanyId() == null) {
+            emit(SplashChangeState(page: SelectCompanyScreen()));
+          } else {
 
-          emit(SplashChangeState(page: MainScreen()));
+            emit(SplashChangeState(page: SelectLanguageScreen()));
+          }
+        } else {
+          emit(SplashChangeState(page: OnboardScreen()));
         }
-      } else {
-        emit(SplashChangeState(page: OnboardScreen()));
+      }
+      else{
+        emit(SplashChangeState(page: Onboarding()));
       }
     }
     else{
-      emit(SplashChangeState(page: Onboarding()));
+      emit(SplashChangeState(page: SelectLanguageScreen()));
     }
 
   }

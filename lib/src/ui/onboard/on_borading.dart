@@ -153,7 +153,7 @@ class _OnboardingScreenState extends State<Onboarding> {
                                           begin: Alignment.centerLeft,
                                           end: Alignment.centerRight,
                                           colors: [
-                                            AppColor.c8E6D00,
+                                            AppColor.yellowFFC,
                                             AppColor.yellowFFC,
                                           ],
                                         ),
@@ -235,7 +235,7 @@ class _OnboardingScreenState extends State<Onboarding> {
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      AppColor.c8E6D00,
+                                      AppColor.yellowFFC,
                                       AppColor.yellowFFC,
                                     ],
                                   ),

@@ -267,7 +267,6 @@ class ApiProvider {
     final token = CacheService.getString('access_token');
     final savedLang = CacheService.getString('language');
     
-    // Get current language, default to 'ru' if not set
     String lang = 'ru';
     if (savedLang.isNotEmpty) {
       final langLower = savedLang.toLowerCase();
