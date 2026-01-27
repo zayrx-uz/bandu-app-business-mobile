@@ -1,4 +1,5 @@
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
+import 'package:bandu_business/src/helper/no_emoji_input_formatter.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
@@ -162,6 +163,7 @@ class _InputPasswordWidgetState extends State<InputPasswordWidget> {
                     obscureText: isView,
                     inputFormatters: [
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      NoEmojiInputFormatter(),
                     ],
                     style: AppTextStyle.f500s16.copyWith(
                         color: AppColor.black09,

@@ -11,6 +11,10 @@ import YandexMapsMobile
 
     YMKMapKit.setApiKey("d5c9e62b-6c61-4f7e-a8bf-0eb4eb01348b")
     GeneratedPluginRegistrant.register(with: self)
+
+    // APNS registration — FCM token olish uchun zarur (iOS)
+    application.registerForRemoteNotifications()
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

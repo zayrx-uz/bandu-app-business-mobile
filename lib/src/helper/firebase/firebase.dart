@@ -100,39 +100,49 @@ void notificationTapBackground(NotificationResponse response) {
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  
-  RemoteNotification? notification = message.notification;
-  if (notification == null) return;
+  try {
+    RemoteNotification? notification = message.notification;
+    final Map<String, dynamic> data = message.data;
+    String title = notification?.title ?? data['title']?.toString() ?? 'Bildirishnoma';
+    String body = notification?.body ?? data['body']?.toString() ?? data['message']?.toString() ?? '';
+    String payload = '{}';
+    try {
+      payload = jsonEncode(data);
+    } catch (_) {}
 
-  const androidDetails = AndroidNotificationDetails(
-    'high_importance_channel',
-    'channel_name',
-    icon: "app_icon",
-    importance: Importance.max,
-    priority: Priority.max,
-    playSound: true,
-    enableVibration: true,
-    showWhen: true,
-  );
+    const androidDetails = AndroidNotificationDetails(
+      'high_importance_channel',
+      'channel_name',
+      icon: "app_icon",
+      importance: Importance.max,
+      priority: Priority.max,
+      playSound: true,
+      enableVibration: true,
+      showWhen: true,
+    );
 
-  const iOSDetails = DarwinNotificationDetails(
-    presentSound: true,
-    presentAlert: true,
-    presentBadge: true,
-  );
+    const iOSDetails = DarwinNotificationDetails(
+      presentSound: true,
+      presentAlert: true,
+      presentBadge: true,
+    );
 
-  const notificationDetails = NotificationDetails(
-    iOS: iOSDetails,
-    android: androidDetails,
-  );
+    const notificationDetails = NotificationDetails(
+      iOS: iOSDetails,
+      android: androidDetails,
+    );
 
-  await flutterLocalNotificationsPlugin.show(
-    notification.hashCode,
-    notification.title,
-    notification.body,
-    notificationDetails,
-    payload: jsonEncode(message.data),
-  );
+    final int id = notification != null ? notification.hashCode : (message.hashCode & 0x7FFFFFFF);
+    await flutterLocalNotificationsPlugin.show(
+      id,
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
+    );
+  } catch (e) {
+    print('❌ FCM background handler xatolik: $e');
+  }
 }
 
 class FirebaseHelper {
@@ -295,7 +305,7 @@ class FirebaseHelper {
       final androidImplementation = flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
-      
+
       await androidImplementation?.createNotificationChannel(
         const AndroidNotificationChannel(
           'high_importance_channel',
@@ -306,6 +316,8 @@ class FirebaseHelper {
           enableVibration: true,
         ),
       );
+
+      await androidImplementation?.requestNotificationsPermission();
     }
 
     if (Platform.isIOS) {
@@ -339,40 +351,57 @@ class FirebaseHelper {
     // Handle cold start
     FirebaseMessaging.instance.getInitialMessage();
 
-    // Foreground messages
+    // Foreground messages — ilova ochiq bo‘lganda ham bildirishnoma ko‘rinsin
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) async {
       if (message == null) return;
-      RemoteNotification? notification = message.notification;
-      // Show notification if chat is not open
-      const androidDetails = AndroidNotificationDetails(
-        'high_importance_channel',
-        'channel_name',
-        icon: "app_icon",
-        importance: Importance.max,
-        priority: Priority.max,
-        playSound: true,
-        enableVibration: true,
-        showWhen: true,
-      );
+      try {
+        RemoteNotification? notification = message.notification;
+        final Map<String, dynamic> data = message.data;
 
-      const iOSDetails = DarwinNotificationDetails(
-        presentSound: true,
-        presentAlert: true,
-        presentBadge: true,
-      );
+        String title = notification?.title ?? data['title']?.toString() ?? 'Bildirishnoma';
+        String body = notification?.body ?? data['body']?.toString() ?? data['message']?.toString() ?? '';
 
-      const notificationDetails = NotificationDetails(
-        iOS: iOSDetails,
-        android: androidDetails,
-      );
+        String payload = '{}';
+        try {
+          payload = jsonEncode(data);
+        } catch (_) {}
 
-      flutterLocalNotificationsPlugin.show(
-        notification.hashCode,
-        notification?.title,
-        notification?.body,
-        notificationDetails,
-        payload: jsonEncode(message.data),
-      );
+        const androidDetails = AndroidNotificationDetails(
+          'high_importance_channel',
+          'channel_name',
+          icon: "app_icon",
+          importance: Importance.max,
+          priority: Priority.max,
+          playSound: true,
+          enableVibration: true,
+          showWhen: true,
+        );
+
+        const iOSDetails = DarwinNotificationDetails(
+          presentSound: true,
+          presentAlert: true,
+          presentBadge: true,
+        );
+
+        const notificationDetails = NotificationDetails(
+          iOS: iOSDetails,
+          android: androidDetails,
+        );
+
+        final int id = notification != null
+            ? notification.hashCode
+            : (message.hashCode & 0x7FFFFFFF);
+
+        await flutterLocalNotificationsPlugin.show(
+          id,
+          title,
+          body,
+          notificationDetails,
+          payload: payload,
+        );
+      } catch (e) {
+        print('❌ FCM onMessage xatolik: $e');
+      }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage event) {

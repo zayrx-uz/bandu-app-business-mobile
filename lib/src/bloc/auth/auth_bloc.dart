@@ -1,3 +1,4 @@
+import 'package:bandu_business/notif_test_screen.dart';
 import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
@@ -60,8 +61,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (HelperFunctions.getCompanyId() == -1 || HelperFunctions.getCompanyId() == null) {
             emit(SplashChangeState(page: SelectCompanyScreen()));
           } else {
-
-            emit(SplashChangeState(page: SelectLanguageScreen()));
+            emit(SplashChangeState(page: MainScreen()));
           }
         } else {
           emit(SplashChangeState(page: OnboardScreen()));
@@ -167,7 +167,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthErrorState(message: "Invalid response format"));
         }
       } else {
-        final errorMessage = result.result is Map 
+        final errorMessage = result.result is Map
             ? (result.result['message'] ?? result.result.toString())
             : result.result.toString();
         emit(AuthErrorState(message: errorMessage));

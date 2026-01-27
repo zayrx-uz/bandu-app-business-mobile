@@ -1,10 +1,10 @@
 import 'package:bandu_business/src/helper/constants/app_images.dart';
+import 'package:bandu_business/src/helper/no_emoji_input_formatter.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -66,7 +66,10 @@ class InputPhoneWidget extends StatelessWidget {
                       color: AppColor.black09,
                       fontSize:  isTablet(context) ? 12.sp : 16.sp
                     ),
-                    inputFormatters: [localMask],
+                    inputFormatters: [
+                      NoEmojiInputFormatter(),
+                      localMask,
+                    ],
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "-- --- -- --",

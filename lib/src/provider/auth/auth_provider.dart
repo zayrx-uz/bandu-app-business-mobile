@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:bandu_business/src/helper/api/api_helper.dart';
 import 'package:bandu_business/src/helper/firebase/firebase.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
@@ -5,17 +6,31 @@ import 'package:bandu_business/src/model/response/http_result.dart';
 import 'package:bandu_business/src/provider/api_provider.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class AuthProvider extends ApiProvider {
-  ///login
+  static String _getDeviceId() {
+    String? deviceId = CacheService.getString("device_id");
+    if (deviceId.isEmpty) {
+      deviceId = const Uuid().v4();
+      CacheService.saveString("device_id", deviceId);
+    }
+    return deviceId;
+  }
+
+  static String _getPlatform() {
+    return Platform.isIOS ? "ios" : "android";
+  }
+
   Future<HttpResult> login(String phone, String password, String role) async {
-    // Get FCM token - will fetch from Firebase if not in cache
     String? fcmToken = await FirebaseHelper.getFcmToken();
     final body = {
       'phoneNumber': phone,
       'password': password,
       "useType": "BUSINESS",
       "fcmToken": fcmToken ?? "",
+      "deviceId": _getDeviceId(),
+      "platform": _getPlatform(),
     };
     return await postRequest(ApiHelper.login, body);
   }
@@ -43,20 +58,23 @@ class AuthProvider extends ApiProvider {
   }
 
 
-  ///otp
   Future<HttpResult> registerComplete({
     required String role,
     required String fullName,
     required String token,
     required String password,
     required String fcmToken,
+    String? profilePicture,
+    String? gender,
   }) async {
     final body = {
       "registrationToken": token,
       "fullName": fullName,
       "password": password,
       "useType": "BUSINESS",
-      "fcmToken": fcmToken
+      "fcmToken": fcmToken,
+      "deviceId": _getDeviceId(),
+      "platform": _getPlatform(),
     };
     return await postRequest(ApiHelper.registerComplete, body);
   }

@@ -41,8 +41,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final lastNameController = TextEditingController();
   final phoneController = TextEditingController();
   final birthController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmController = TextEditingController();
   bool? isMale;
   XFile? img;
   String networkImage = "";
@@ -59,8 +57,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     nameController.addListener(check);
     firstNameController.addListener(check);
     lastNameController.addListener(check);
-    confirmController.addListener(check);
-    passwordController.addListener(check);
+    // confirmController.addListener(check);
+    // passwordController.addListener(check);
   }
 
   @override
@@ -70,18 +68,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     lastNameController.dispose();
     phoneController.dispose();
     birthController.dispose();
-    passwordController.dispose();
-    confirmController.dispose();
+    // passwordController.dispose();
+    // confirmController.dispose();
     super.dispose();
   }
 
   void check() {
     setState(() {
       final hasName = nameController.text.trim().length >= 3;
-      final passwordsMatch = passwordController.text.isEmpty ||
-          (passwordController.text == confirmController.text &&
-              passwordController.text.length >= 6);
-      isActive = hasName && passwordsMatch;
+      // final passwordsMatch = passwordController.text.isEmpty ||
+      //     (passwordController.text == confirmController.text &&
+      //         passwordController.text.length >= 6);
+      isActive = hasName ;
     });
   }
 
@@ -252,13 +250,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                               ),
                               SizedBox(height: 12.h),
-                              InputPasswordWidget(controller: passwordController),
-                              SizedBox(height: 12.h),
-                              InputPasswordWidget(
-                                controller: confirmController,
-                                title: "confirmPassword".tr(),
-                              ),
-                              SizedBox(height: 12.h),
+                              // InputPasswordWidget(controller: passwordController),
+                              // SizedBox(height: 12.h),
+                              // InputPasswordWidget(
+                              //   controller: confirmController,
+                              //   title: "confirmPassword".tr(),
+                              // ),
+                              // SizedBox(height: 12.h),
                               SelectGenderWidget(
                                 isMale: isMale,
                                 onTap: (s) {
@@ -291,21 +289,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   onTap: () {
                     if (loading || gettingData) return;
                     
-                    if (passwordController.text.isNotEmpty &&
-                        passwordController.text != confirmController.text) {
-                      setState(() {
-                        errorText = "passwordsDoNotMatch".tr();
-                      });
-                      return;
-                    }
+                    // if (passwordController.text.isNotEmpty &&
+                    //     passwordController.text != confirmController.text) {
+                    //   setState(() {
+                    //     errorText = "passwordsDoNotMatch".tr();
+                    //   });
+                    //   return;
+                    // }
 
-                    if (passwordController.text.isNotEmpty &&
-                        passwordController.text.length < 6) {
-                      setState(() {
-                        errorText = "passwordMustBeAtLeast6Characters".tr();
-                      });
-                      return;
-                    }
+                    // if (passwordController.text.isNotEmpty &&
+                    //     passwordController.text.length < 6) {
+                    //   setState(() {
+                    //     errorText = "passwordMustBeAtLeast6Characters".tr();
+                    //   });
+                    //   return;
+                    // }
 
                     final data = UserUpdateModel(
                       fullName: nameController.text.trim(),
@@ -324,9 +322,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       profilePicture:
                           img != null ? img!.path : (networkImage.isNotEmpty ? networkImage : ""),
                       phoneNumber: "998${phoneController.text.replaceAll(RegExp(r'[^0-9]'), '')}",
-                      password: passwordController.text.trim().isNotEmpty
-                          ? passwordController.text.trim()
-                          : null,
+                      password: "",
                     );
 
                     BlocProvider.of<HomeBloc>(context).add(

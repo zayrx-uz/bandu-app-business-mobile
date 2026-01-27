@@ -18,6 +18,8 @@ abstract class AbstractAuthRepository {
     required String token,
     required String password,
     required String fcmToken,
+    String? profilePicture,
+    String? gender,
   });
 
   Future<HttpResult> register({

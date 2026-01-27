@@ -19,7 +19,7 @@ class SelectLanguageScreen extends StatefulWidget {
 }
 
 class _SelectLanguageScreenState extends State<SelectLanguageScreen> {
-  int select = 0;
+  int select = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,6 @@ class _SelectLanguageScreenState extends State<SelectLanguageScreen> {
             AppButton(
               onTap: () {
                 CacheService.saveBool("select_lan", true);
-
                 AppService.changePage(context, Onboarding());
               },
               text: "continue".tr(),

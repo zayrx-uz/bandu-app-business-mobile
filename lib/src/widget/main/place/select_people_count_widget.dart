@@ -4,6 +4,7 @@ import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/widget/app/app_svg_icon.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SelectPeopleCountWidget extends StatefulWidget {
@@ -179,7 +180,7 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
         final shouldShowAbove = availableSpaceBelow < 200.h && keyboardHeight > 0;
         
         return GestureDetector(
-          onTap: () {},
+          onTap: _closeDropdown,
           behavior: HitTestBehavior.translucent,
           child: Stack(
             children: [
@@ -365,12 +366,10 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
       link: _layerLink,
       child: GestureDetector(
         key: _dropdownKey,
-        onTap: () {
-          if (!_isExpanded) {
-            _openDropdown();
-          }
+        onTap: _isExpanded ? null : () {
+          _openDropdown();
         },
-        behavior: _isExpanded ? HitTestBehavior.translucent : HitTestBehavior.opaque,
+        behavior: _isExpanded ? HitTestBehavior.deferToChild : HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -405,51 +404,53 @@ class _SelectPeopleCountWidgetState extends State<SelectPeopleCountWidget>
                             });
                           }
                         },
-                        child: TextField(
-                          controller: _searchController,
-                          autofocus: true,
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.done,
-                          style: AppTextStyle.f500s16.copyWith(
-                            color: Colors.black,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: widget.hintText,
-                            hintStyle: AppTextStyle.f500s16.copyWith(
-                              color: AppColor.greyA7,
+                        child: GestureDetector(
+                          onTap: () {},
+                          behavior: HitTestBehavior.opaque,
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.done,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            style: AppTextStyle.f500s16.copyWith(
+                              color: Colors.black,
                             ),
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          onChanged: (value) {
-                            if (_selectedItem != null && value != _selectedItem) {
-                              setState(() => _selectedItem = null);
-                            }
-                            _filterItems();
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (_overlayEntry != null && mounted) {
-                                _overlayEntry!.markNeedsBuild();
+                            decoration: InputDecoration(
+                              hintText: widget.hintText,
+                              hintStyle: AppTextStyle.f500s16.copyWith(
+                                color: AppColor.greyA7,
+                              ),
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (value) {
+                              if (_selectedItem != null && value != _selectedItem) {
+                                setState(() => _selectedItem = null);
                               }
-                            });
-                          },
-                          onTap: () {
-                            if (!_isExpanded) {
-                              _openDropdown();
-                            }
-                          },
-                          onSubmitted: (value) {
-                            if (value.trim().isNotEmpty && widget.onAddNew != null) {
-                              try {
-                                final count = int.parse(value.trim());
-                                if (count > 0) {
-                                  widget.onAddNew!("$count ${"people".tr()}");
-                                  _closeDropdown();
+                              _filterItems();
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (_overlayEntry != null && mounted) {
+                                  _overlayEntry!.markNeedsBuild();
                                 }
-                              } catch (e) {
+                              });
+                            },
+                            onSubmitted: (value) {
+                              if (value.trim().isNotEmpty && widget.onAddNew != null) {
+                                try {
+                                  final count = int.parse(value.trim());
+                                  if (count > 0) {
+                                    widget.onAddNew!("$count ${"people".tr()}");
+                                    _closeDropdown();
+                                  }
+                                } catch (e) {
+                                }
                               }
-                            }
-                          },
+                            },
+                          ),
                         ),
                       )
                     : Text(

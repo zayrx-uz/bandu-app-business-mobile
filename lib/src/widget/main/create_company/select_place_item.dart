@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/model/api/main/home/icon_model.dart' as icon_model;
 import 'package:bandu_business/src/theme/app_color.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 
 class SelectPlaceItem extends StatefulWidget {
   final Function(int, String)? onIconSelected;
@@ -62,7 +64,7 @@ class _SelectPlaceItemState extends State<SelectPlaceItem> {
               if (isLoading)
                 Expanded(
                   child: Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(color : AppColor.yellowFFC),
                   ),
                 )
               else if (icons.isEmpty)
@@ -111,18 +113,10 @@ class _SelectPlaceItemState extends State<SelectPlaceItem> {
                                 : null,
                           ),
                           child: Center(
-                            child: SvgPicture.network(
-                              icon.url,
+                            child: _SafeSvgNetwork(
+                              url: icon.url,
                               width: 40.w,
                               height: 40.w,
-                              fit: BoxFit.contain,
-                              placeholderBuilder: (context) => Container(
-                                width: 40.w,
-                                height: 40.w,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
                             ),
                           ),
                         ),
@@ -154,5 +148,136 @@ class _SelectPlaceItemState extends State<SelectPlaceItem> {
         );
       },
     );
+  }
+}
+
+class _SafeSvgNetwork extends StatefulWidget {
+  final String url;
+  final double width;
+  final double height;
+
+  const _SafeSvgNetwork({
+    required this.url,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  State<_SafeSvgNetwork> createState() => _SafeSvgNetworkState();
+}
+
+class _SafeSvgNetworkState extends State<_SafeSvgNetwork> {
+  bool _hasError = false;
+  bool _isLoading = true;
+  String? _svgString;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSvg();
+  }
+
+  Future<void> _loadSvg() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+
+      final response = await http.get(Uri.parse(widget.url))
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _svgString = response.body;
+          _isLoading = false;
+          _hasError = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
+      }
+    } catch (e) {
+      // Catch all errors including SocketException, TimeoutException, etc.
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: AppColor.grey58.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(
+          Icons.image_not_supported,
+          size: widget.width * 0.5,
+          color: AppColor.grey58,
+        ),
+      );
+    }
+
+    if (_isLoading) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: AppColor.yellowFFC,
+        ),
+      );
+    }
+
+    if (_svgString == null) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: AppColor.grey58.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(
+          Icons.image_not_supported,
+          size: widget.width * 0.5,
+          color: AppColor.grey58,
+        ),
+      );
+    }
+
+    try {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: SvgPicture.string(
+          _svgString!,
+          width: widget.width,
+          height: widget.height,
+          fit: BoxFit.contain,
+        ),
+      );
+    } catch (e) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: AppColor.grey58.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(
+          Icons.image_not_supported,
+          size: widget.width * 0.5,
+          color: AppColor.grey58,
+        ),
+      );
+    }
   }
 }

@@ -53,8 +53,10 @@ class AuthRepository implements AbstractAuthRepository {
     required String token,
     required String password,
     required String fcmToken,
+    String? profilePicture,
+    String? gender,
   }) async {
-    return await authProvider.registerComplete(role: role, fullName: fullName, token: token, password: password, fcmToken: fcmToken);
+    return await authProvider.registerComplete(role: role, fullName: fullName, token: token, password: password, fcmToken: fcmToken, profilePicture: profilePicture, gender: gender);
   }
 
   @override

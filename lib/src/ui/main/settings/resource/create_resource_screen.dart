@@ -32,6 +32,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController timeSlotController = TextEditingController();
+  FocusNode nameFocusNode = FocusNode();
+  FocusNode priceFocusNode = FocusNode();
   int selectedCategoryId = -1;
   bool isBookable = true;
   bool isTimeSlotBased = false;
@@ -41,6 +43,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
 
   XFile? img;
   String? _networkImageUrl;
+  double _previousKeyboardHeight = 0;
 
   @override
   void initState() {
@@ -48,6 +51,29 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     getData();
     nameController.addListener(() => setState(() {}));
     priceController.addListener(() => setState(() {}));
+  }
+
+  void _unfocusKeyboard() {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+      currentFocus.focusedChild?.unfocus();
+    }
+    nameFocusNode.unfocus();
+    priceFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final focusScope = FocusScope.of(context);
+        if (focusScope.focusedChild != null) {
+          focusScope.focusedChild?.unfocus();
+        }
+        nameFocusNode.unfocus();
+        priceFocusNode.unfocus();
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+    });
   }
 
   void getData() {
@@ -67,10 +93,38 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return UnfocusKeyboard(
-      child: Scaffold(
-        backgroundColor: AppColor.white,
-        body: BlocConsumer<HomeBloc, HomeState>(
+    final mediaQuery = MediaQuery.of(context);
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    
+    if (_previousKeyboardHeight > 0 && keyboardHeight == 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final focusScope = FocusScope.of(context);
+          if (focusScope.focusedChild != null || nameFocusNode.hasFocus || priceFocusNode.hasFocus) {
+            focusScope.focusedChild?.unfocus();
+            nameFocusNode.unfocus();
+            priceFocusNode.unfocus();
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
+        }
+      });
+    }
+    _previousKeyboardHeight = keyboardHeight;
+    
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          _unfocusKeyboard();
+        }
+      },
+      child: GestureDetector(
+        onTap: _unfocusKeyboard,
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          backgroundColor: AppColor.white,
+          body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is GetImageSuccessState) {
             setState(() {
@@ -136,12 +190,14 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                       SizedBox(height: 12.h),
                       InputWidget(
                         controller: nameController,
+                        focusNode: nameFocusNode,
                         title: "resourceName".tr(),
                         hint: "resourceNameHint".tr(),
                       ),
                       SizedBox(height: 12.h),
                       InputWidget(
                         controller: priceController,
+                        focusNode: priceFocusNode,
                         inputType: TextInputType.number,
                         title: "price".tr(),
                         hint: "priceHint".tr(),
@@ -187,7 +243,12 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                             ),
                             SizedBox(height: 8.h),
                             GestureDetector(
-                              onTap: () => _showTimeSlotPicker(context),
+                              onTap: () {
+                                _unfocusKeyboard();
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  _showTimeSlotPicker(context);
+                                });
+                              },
                               behavior: HitTestBehavior.opaque,
                               child: Container(
                                 height: 48.h,
@@ -216,7 +277,12 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                                     ),
                                     SizedBox(width: 8.w),
                                     GestureDetector(
-                                      onTap: () => _showTimeSlotPicker(context),
+                                      onTap: () {
+                                        _unfocusKeyboard();
+                                        Future.delayed(const Duration(milliseconds: 100), () {
+                                          _showTimeSlotPicker(context);
+                                        });
+                                      },
                                       child: AppSvgAsset(
                                         AppIcons.clock,
                                         height: 20.h,
@@ -284,7 +350,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
             ],
           );
         },
-      ),
+        ),
+        ),
       ),
     );
   }
@@ -476,6 +543,8 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
     nameController.dispose();
     priceController.dispose();
     timeSlotController.dispose();
+    nameFocusNode.dispose();
+    priceFocusNode.dispose();
     super.dispose();
   }
 }

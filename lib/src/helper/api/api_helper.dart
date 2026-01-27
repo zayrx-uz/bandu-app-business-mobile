@@ -6,9 +6,9 @@ class ApiHelper {
 
 
 
-  static const baseUrl = prodUrl;
+  static const baseUrl = devUrl;
 
-  static const uploadUrl = prodUrl;
+  static const uploadUrl = baseUrl;
 
   static const register = "${baseUrl}api/otp-based-auth/register";
   static const login = "${baseUrl}api/otp-based-auth/login";

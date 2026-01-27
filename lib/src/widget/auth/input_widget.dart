@@ -1,3 +1,4 @@
+import 'package:bandu_business/src/helper/no_emoji_input_formatter.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
@@ -15,6 +16,7 @@ class InputWidget extends StatelessWidget {
   final VoidCallback? onRightIconTap;
   final bool readOnly;
   final  TextInputType? inputType;
+  final FocusNode? focusNode;
 
   const InputWidget({
     super.key,
@@ -24,7 +26,9 @@ class InputWidget extends StatelessWidget {
     this.rightIcon,
     this.format,
     this.onRightIconTap,
-    this.readOnly = false, this.inputType,
+    this.readOnly = false, 
+    this.inputType,
+    this.focusNode,
   });
 
   @override
@@ -52,14 +56,17 @@ class InputWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
-
+                    focusNode: focusNode,
                     keyboardType: inputType,
                     cursorColor: Colors.grey,
                     textCapitalization: TextCapitalization.sentences,
                     controller: controller,
-                    inputFormatters: format,
+                    inputFormatters: [
+                      NoEmojiInputFormatter(),
+                      ...?format,
+                    ],
                     onSubmitted: (v){
-
+                      FocusScope.of(context).unfocus();
                     },
                     readOnly: readOnly,
                     style: AppTextStyle.f500s16.copyWith(

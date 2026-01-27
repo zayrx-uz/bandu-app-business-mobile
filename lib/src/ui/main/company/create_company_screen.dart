@@ -42,6 +42,7 @@ class CreateCompanyScreen extends StatefulWidget {
 
 class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   TextEditingController nameController = TextEditingController();
+  FocusNode nameFocusNode = FocusNode();
   int? selectedCategoryId;
   bool isOpen24 = false;
   List<int> resourceCategoryIds = [];
@@ -60,12 +61,18 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   bool open24 = false;
   int? selectedIconId;
   String? selectedIconUrl;
+  double _previousKeyboardHeight = 0;
 
   @override
   void initState() {
     super.initState();
     nameController.addListener(() {
       setState(() {});
+    });
+    nameFocusNode.addListener(() {
+      if (!nameFocusNode.hasFocus) {
+        _unfocusKeyboard();
+      }
     });
     getData();
     if (widget.companyId != null) {
@@ -76,6 +83,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   @override
   void dispose() {
     nameController.dispose();
+    nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -157,17 +165,47 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   }
 
   void _unfocusKeyboard() {
+    nameFocusNode.unfocus();
     FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        nameFocusNode.unfocus();
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _unfocusKeyboard,
-      behavior: HitTestBehavior.opaque,
-      child: Scaffold(
-        backgroundColor: AppColor.white,
-        body: BlocConsumer<HomeBloc, HomeState>(
+    final mediaQuery = MediaQuery.of(context);
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    
+    if (_previousKeyboardHeight > 0 && keyboardHeight == 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          if (nameFocusNode.hasFocus) {
+            _unfocusKeyboard();
+          }
+        }
+      });
+    }
+    _previousKeyboardHeight = keyboardHeight;
+    
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          _unfocusKeyboard();
+        }
+      },
+      child: GestureDetector(
+        onTap: _unfocusKeyboard,
+        behavior: HitTestBehavior.opaque,
+        child: Scaffold(
+          backgroundColor: AppColor.white,
+          body: BlocConsumer<HomeBloc, HomeState>(
           listener: (context, state) {
             if (state is GetCategorySuccessState) {
               categoryData = state.data.data;
@@ -261,6 +299,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                       SizedBox(height: 20.h),
                       InputWidget(
                         controller: nameController,
+                        focusNode: nameFocusNode,
                         title: "companyName".tr(),
                         hint: "companyName".tr(),
                       ),
@@ -625,6 +664,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
               ],
             );
           },
+        ),
         ),
       ),
     );

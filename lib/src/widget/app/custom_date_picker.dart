@@ -2,6 +2,7 @@ import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/theme/const_style.dart';
 import 'package:bandu_business/src/ui/onboard/onboard_screen.dart';
 import 'package:bandu_business/src/widget/app/app_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -45,7 +46,7 @@ class _DatePickerContentState extends State<_DatePickerContent> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Select Date",
+                "selectDate".tr(),
                 style: AppTextStyle.f600s20.copyWith(
                   fontSize: isTablet(context) ? 16.sp : 20.sp,
                 ),
@@ -54,7 +55,7 @@ class _DatePickerContentState extends State<_DatePickerContent> {
                 padding: EdgeInsets.zero,
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  "Cancel",
+                  "cancel".tr(),
                   style: AppTextStyle.f500s16.copyWith(
                     color: AppColor.grey77,
                     fontSize: isTablet(context) ? 12.sp : 16.sp,
@@ -86,7 +87,7 @@ class _DatePickerContentState extends State<_DatePickerContent> {
             ),
           ),
           child: AppButton(
-            text: "Select",
+            text: "select".tr(),
             isGradient: true,
             onTap: () {
               Navigator.pop(context, selectedDate);

@@ -48,9 +48,9 @@ class UserUpdateModel {
       json["gender"] = gender;
     }
 
-    if (password != null && password!.isNotEmpty) {
-      json["password"] = password;
-    }
+    // if (password != null && password!.isNotEmpty) {
+    //   json["password"] = password;
+    // }
 
     return json;
   }
