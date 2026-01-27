@@ -428,6 +428,7 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                 ),
               ),
             ) : SizedBox(),
+
           ),
         );
       },
