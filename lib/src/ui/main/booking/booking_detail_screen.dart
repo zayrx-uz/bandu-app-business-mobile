@@ -23,6 +23,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final int bookingId;
@@ -229,7 +230,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                       Container(
                                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                                         decoration: BoxDecoration(
-                                          color: AppColor.yellowFF.withValues(alpha: 0.2),
+                                          color: AppColor.yellowFFC.withValues(alpha: 0.2),
                                           borderRadius: BorderRadius.circular(8.r),
                                         ),
                                         child: Text(
@@ -318,6 +319,56 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
                             child: Column(
                               children: [
+                                if(bookingDetail != null && bookingDetail!.user.fullName.isNotEmpty)
+                                  Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: AppColor.white,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "firstName".tr(),
+                                          style: AppTextStyle.f600s16.copyWith(
+                                            color: AppColor.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.h),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 16.w,
+                                                  vertical: 12.h,
+                                                ),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(
+                                                    12.r,
+                                                  ),
+                                                  border: Border.all(
+                                                    width: 1.w,
+                                                    color: AppColor.cE5E7E5,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  bookingDetail!
+                                                      .user
+                                                      .fullName,
+                                                  style: AppTextStyle.f500s16,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                SizedBox(height: 12.h),
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -389,6 +440,83 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                     ],
                                   ),
                                 ),
+                                SizedBox(height: 12.h),
+                                if(bookingDetail != null && bookingDetail!.user.authProviders.first.phoneNumber.isNotEmpty)
+                                  Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: AppColor.white,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "phoneNumber".tr(),
+                                          style: AppTextStyle.f600s16.copyWith(
+                                            color: AppColor.black,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.h),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 16.w,
+                                                  vertical: 12.h,
+                                                ),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(
+                                                    12.r,
+                                                  ),
+                                                  border: Border.all(
+                                                    width: 1.w,
+                                                    color: AppColor.cE5E7E5,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  bookingDetail!
+                                                      .user
+                                                      .authProviders
+                                                      .isNotEmpty
+                                                      ? "+${bookingDetail!.user.authProviders.first.phoneNumber}"
+                                                      : "",
+                                                  style: AppTextStyle.f500s16,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 10.w),
+                                            AppIconButton(
+                                              icon: AppIcons.phone,
+                                              onTap: () async {
+                                                final Uri launchUri = Uri(
+                                                  scheme: 'tel',
+                                                  path:
+                                                  "+${bookingDetail!.user.authProviders.first.phoneNumber}",
+                                                );
+
+                                                if (await canLaunchUrl(launchUri)) {
+                                                  await launchUrl(launchUri);
+                                                } else {
+                                                  // Xatolik yuz bersa
+                                                  print(
+                                                    'Telefon ilovasini ochib bo\'lmadi',
+                                                  );
+
+                                                }
+                                              },
+                                              width: 45.w,
+                                              height: 45.w,
+                                              borderRadius: 12.r,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
 
                                 if(bookingDetail!.note.isNotEmpty)SizedBox(height: 12.h),
                                 if(bookingDetail!.note.isNotEmpty)Container(

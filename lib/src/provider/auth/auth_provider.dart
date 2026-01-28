@@ -127,6 +127,10 @@ class AuthProvider extends ApiProvider {
 
   ///logout
   Future<HttpResult> logout() async {
-    return await postRequest(ApiHelper.logout, {});
+    final body = {
+      "deviceId": _getDeviceId(),
+      "platform": _getPlatform(),
+    };
+    return await postRequest(ApiHelper.logout, body);
   }
 }

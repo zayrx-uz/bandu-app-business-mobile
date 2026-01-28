@@ -104,9 +104,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                           ),
                         ),
                         Text(
-                          data.roles.isNotEmpty 
-                              ? data.roles.first.toUpperCase() 
-                              : "",
+                          data.roles.toUpperCase(),
                           style: AppTextStyle.f400s14.copyWith(
                             color: AppColor.grey58,
                             fontSize: isTablet(context) ? 10.sp : 14.sp,
@@ -165,9 +163,7 @@ class _EmployerItemWidgetState extends State<EmployerItemWidget>
                               color: AppColor.black,
                             ),
                             child: Text(
-                              data.roles.isNotEmpty 
-                                  ? data.roles.first 
-                                  : "",
+                              data.roles,
                               style: AppTextStyle.f500s14.copyWith(
                                 color: AppColor.white,
                                 fontSize: isTablet(context) ? 10.sp : 14.sp,

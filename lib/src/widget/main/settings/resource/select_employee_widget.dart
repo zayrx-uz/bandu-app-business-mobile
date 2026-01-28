@@ -187,9 +187,7 @@ class _SelectEmployeeWidgetState extends State<SelectEmployeeWidget> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      employee.roles.isNotEmpty 
-                                          ? employee.roles.first.toUpperCase() 
-                                          : "",
+                                      employee.roles.toUpperCase(),
                                       style: AppTextStyle.f400s12.copyWith(
                                         color: AppColor.grey58,
                                       ),

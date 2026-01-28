@@ -201,7 +201,7 @@
   "areYouSureDeleteEmployee" : "Вы уверены, что хотите удалить этого сотрудника?",
   "pleaseFillAllFields" : "Пожалуйста, заполните все поля",
   "phoneNumber" : "Номер телефона",
-  "contactStatus" : "Статус контакта",
+  "contactStatus" : "Роль",
   "callPerson" : "Позвонить",
   "scanQrCode" : "Сканировать QR код",
   "alignQrInsideFrame" : "Выровняйте QR код внутри рамки",

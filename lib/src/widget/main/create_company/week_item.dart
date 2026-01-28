@@ -153,6 +153,15 @@ class _WeekItemState extends State<WeekItem> {
     );
   }
 
+  void _applyDefaultWorkingHours() {
+    for (var dayKey in dayEn) {
+      schedule[dayKey]!["open"] = "10:00";
+      schedule[dayKey]!["close"] = "21:00";
+      schedule[dayKey]!["closed"] = false;
+    }
+    widget.onChange(Map<String, dynamic>.from(schedule));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -175,7 +184,21 @@ class _WeekItemState extends State<WeekItem> {
               )),
               CupertinoSwitch(
                 value: isWorkingDaysEnabled,
-                onChanged: (v) => setState(() => isWorkingDaysEnabled = v),
+                onChanged: (v) {
+                  setState(() {
+                    isWorkingDaysEnabled = v;
+                    if (v) {
+                      _applyDefaultWorkingHours();
+                    } else {
+                      for (var dayKey in dayEn) {
+                        schedule[dayKey]!["open"] = null;
+                        schedule[dayKey]!["close"] = null;
+                        schedule[dayKey]!["closed"] = true;
+                      }
+                      widget.onChange(Map<String, dynamic>.from(schedule));
+                    }
+                  });
+                },
               ),
             ],
           ),

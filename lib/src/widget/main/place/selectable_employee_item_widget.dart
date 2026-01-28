@@ -83,9 +83,7 @@ class SelectableEmployeeItemWidget extends StatelessWidget {
                   ),
                   SizedBox(height: 2.h),
                   Text(
-                    employee.roles.isNotEmpty
-                        ? employee.roles.first.toUpperCase()
-                        : "",
+                    employee.roles.toUpperCase(),
                     style: AppTextStyle.f400s14.copyWith(
                       color: AppColor.grey58,
                       fontSize: 12.sp,

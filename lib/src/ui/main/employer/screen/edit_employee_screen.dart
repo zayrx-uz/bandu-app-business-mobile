@@ -59,7 +59,7 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
     super.initState();
 
     nameController.text = widget.data.fullName;
-    role = _getFirstRole(widget.data.roles);
+    role = widget.data.roles;
 
     String rawPhone = widget.data.authProviders.first.phoneNumber;
     if (rawPhone.startsWith("+998")) {

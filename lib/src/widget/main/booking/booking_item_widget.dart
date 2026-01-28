@@ -49,7 +49,7 @@ class _BookingItemWidgetState extends State<BookingItemWidget> {
       return date;
     }
 
-    return date;
+    return date ;
   }
 
   void _ensureTimezoneInitialized() {

@@ -1,7 +1,9 @@
+import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/extension/extension.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/model/api/main/notification/notification_model.dart';
 import 'package:bandu_business/src/provider/main/home/home_provider.dart';
+import 'package:bandu_business/src/repository/repo/main/home_repository.dart';
 import 'package:bandu_business/src/theme/app_color.dart';
 import 'package:bandu_business/src/ui/main/booking/booking_detail_screen.dart';
 import 'package:bandu_business/src/widget/app/empty_widget.dart';
@@ -11,6 +13,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -88,14 +91,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
         _isLoading = false;
       });
 
-          if (result.isSuccess && result.result != null) {
+      if (result.isSuccess && result.result != null) {
         try {
           final model = NotificationModel.fromJson(result.result);
           setState(() {
             _notifications = model.data;
             _hasMore = model.meta.page < model.meta.totalPages;
           });
-          
         } catch (e) {
           setState(() {
             _notifications = [];
@@ -192,8 +194,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
       );
     });
 
-    final result = await _provider.markNotificationAsRead(notificationId: notificationId);
-    
+    final result = await _provider.markNotificationAsRead(
+      notificationId: notificationId,
+    );
+
     if (mounted) {
       if (!result.isSuccess) {
         setState(() {
@@ -223,92 +227,111 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Expanded(
             child: _isLoading && _notifications.isEmpty
                 ? Center(
-                    child: CupertinoActivityIndicator(
-                      color: AppColor.black,
-                    ),
+                    child: CupertinoActivityIndicator(color: AppColor.black),
                   )
                 : _notifications.isEmpty
-                    ? RefreshIndicator(
-                        onRefresh: _refresh,
-                        child: SingleChildScrollView(
-                          physics: AlwaysScrollableScrollPhysics(),
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.7,
-                            child: Center(
-                              child: EmptyWidget(text: "noNotifications".tr()),
-                            ),
-                          ),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _refresh,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          padding: EdgeInsets.all(16.w),
-                          itemCount: _notifications.length + (_hasMore ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            if (index == _notifications.length) {
-                              return Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.h),
-                                  child: CupertinoActivityIndicator(
-                                    color: AppColor.black,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            final notification = _notifications[index];
-                            final isFirst = index == 0;
-                            
-                            final currentSentAt = _convertToTashkent(notification.sentAt);
-                            final previousSentAt = index > 0 
-                                ? _convertToTashkent(_notifications[index - 1].sentAt)
-                                : null;
-                                
-                            final showDate = isFirst ||
-                                (previousSentAt != null &&
-                                    currentSentAt != null &&
-                                    (previousSentAt.year != currentSentAt.year ||
-                                        previousSentAt.month != currentSentAt.month ||
-                                        previousSentAt.day != currentSentAt.day));
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (showDate && currentSentAt != null)
-                                  Padding(
-                                    padding: EdgeInsets.only(bottom: 12.h),
-                                    child: Text(
-                                      currentSentAt.toDDMMYYY(),
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16.sp,
-                                      ),
-                                    ),
-                                  ),
-                                NotificationItem(
-                                  data: notification,
-                                  onTap: () {
-                                    if (!notification.isRead) {
-                                      _markAsRead(notification.id);
-                                    }
-                                    if (notification.bookingId != null && notification.bookingId! > 0) {
-                                      AppService.changePage(
-                                        context,
-                                        BookingDetailScreen(bookingId: notification.bookingId!),
-                                      );
-                                    }
-                                  },
-                                ),
-                                if (index < _notifications.length - 1)
-                                  SizedBox(height: 12.h),
-                              ],
-                            );
-                          },
+                ? RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: Center(
+                          child: EmptyWidget(text: "noNotifications".tr()),
                         ),
                       ),
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.all(16.w),
+                      itemCount: _notifications.length + (_hasMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == _notifications.length) {
+                          return Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.h),
+                              child: CupertinoActivityIndicator(
+                                color: AppColor.black,
+                              ),
+                            ),
+                          );
+                        }
+
+                        final notification = _notifications[index];
+                        final isFirst = index == 0;
+
+                        final currentSentAt = _convertToTashkent(
+                          notification.sentAt,
+                        );
+                        final previousSentAt = index > 0
+                            ? _convertToTashkent(
+                                _notifications[index - 1].sentAt,
+                              )
+                            : null;
+
+                        final showDate =
+                            isFirst ||
+                            (previousSentAt != null &&
+                                currentSentAt != null &&
+                                (previousSentAt.year != currentSentAt.year ||
+                                    previousSentAt.month !=
+                                        currentSentAt.month ||
+                                    previousSentAt.day != currentSentAt.day));
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (showDate && currentSentAt != null)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 12.h),
+                                child: Text(
+                                  currentSentAt.toDDMMYYY(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                              ),
+                            NotificationItem(
+                              data: notification,
+                              onTap: () {
+                                if (!notification.isRead) {
+                                  _markAsRead(notification.id);
+                                }
+                                if (notification.bookingId != null &&
+                                    notification.bookingId! > 0) {
+                                  // final homeBloc = BlocProvider.of<HomeBloc>(context);
+                                  AppService.changePage(
+                                    context,
+                                    BlocProvider(
+                                      // value: BlocProvider.of<HomeBloc>(context),
+                                      create: (_) => HomeBloc(
+                                        homeRepository: HomeRepository(),
+                                      ),
+                                      child: BookingDetailScreen(
+                                        bookingId: notification.bookingId!,
+                                      ),
+                                    ),
+                                  );
+
+                                  // AppService.changePage(
+                                  //   context,
+                                  //   BookingDetailScreen(bookingId: notification.bookingId!),
+                                  // );
+                                }
+                              },
+                            ),
+                            if (index < _notifications.length - 1)
+                              SizedBox(height: 12.h),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
           ),
         ],
       ),
