@@ -150,6 +150,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                         child: Text(
                           "enterOtpCode".tr(),
                           style: AppTextStyle.f600s24.copyWith(
+
                             fontSize: isTablet(context) ? 18.sp : 24.sp,
                           ),
                         ),
@@ -203,7 +204,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                               color: AppColor.greyFA,
                               borderRadius: BorderRadius.circular(12.r),
                               border: Border.all(
-                                color: AppColor.yellowFF,
+                                color: AppColor.yellowFFC,
                                 width: 1.h,
                               ),
                               boxShadow: [
@@ -241,7 +242,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                           child: Text(
                             isResending ? "loading".tr() : "resend".tr(),
                             style: AppTextStyle.f400s16.copyWith(
-                              color: isResending ? AppColor.grey77 : AppColor.yellowFF,
+                              color: isResending ? AppColor.grey77 : AppColor.yellowFFC,
                               fontSize: isTablet(context) ? 12.sp : 16.sp,
                             ),
                           ),

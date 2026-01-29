@@ -49,7 +49,7 @@ class InputWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              color: AppColor.greyFA,
+              color: Colors.white,
               border: Border.all(width: 1.h, color: AppColor.greyE5),
             ),
             child: Row(

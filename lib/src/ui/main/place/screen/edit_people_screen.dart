@@ -249,11 +249,19 @@ class _EditPlaceScreenState extends State<EditPlaceScreen> {
                       SizedBox(width: 4.w),
                       GestureDetector(
                         onTap: (){
-                          BlocProvider.of<HomeBloc>(context).add(
-                            DeletePlaceEvent(
-                              id: widget.id,
-                            ),
-                          );
+                          if (state is! DeletePlaceLoadingState) {
+                            CenterDialog.deletePlaceDialog(
+                              context,
+                              placeId: widget.id,
+                              onDelete: () {
+                                BlocProvider.of<HomeBloc>(context).add(
+                                  DeletePlaceEvent(
+                                    id: widget.id,
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         },
                         child: Container(
                           width: 48.w,

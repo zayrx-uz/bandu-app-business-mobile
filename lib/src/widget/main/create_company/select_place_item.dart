@@ -102,7 +102,7 @@ class _SelectPlaceItemState extends State<SelectPlaceItem> {
                           height: 80.w,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColor.yellowFFC.withOpacity(0.6)
+                                ? AppColor.yellowFFC.withOpacity(0.2)
                                 : AppColor.grey58.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20.r),
                             border: isSelected
@@ -200,7 +200,6 @@ class _SafeSvgNetworkState extends State<_SafeSvgNetwork> {
         });
       }
     } catch (e) {
-      // Catch all errors including SocketException, TimeoutException, etc.
       setState(() {
         _isLoading = false;
         _hasError = true;
@@ -262,6 +261,7 @@ class _SafeSvgNetworkState extends State<_SafeSvgNetwork> {
           width: widget.width,
           height: widget.height,
           fit: BoxFit.contain,
+          color : AppColor.yellowFFC
         ),
       );
     } catch (e) {
@@ -275,7 +275,7 @@ class _SafeSvgNetworkState extends State<_SafeSvgNetwork> {
         child: Icon(
           Icons.image_not_supported,
           size: widget.width * 0.5,
-          color: AppColor.grey58,
+          color: AppColor.black,
         ),
       );
     }

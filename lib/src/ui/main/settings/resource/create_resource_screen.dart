@@ -40,6 +40,7 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
   int timeSlotDurationMinutes = 0;
   List<Map<String, dynamic>> uploadedImages = [];
   List<int> selectedEmployeeIds = [];
+  bool _hasShownEmployeeDialog = false;
 
   XFile? img;
   String? _networkImageUrl;
@@ -218,9 +219,17 @@ class _CreateResourceScreenState extends State<CreateResourceScreen> {
                       SizedBox(height: 12.h),
                       SelectEmployeeWidget(
                         onEmployeesSelected: (ids) {
+                          final wasEmpty = selectedEmployeeIds.isEmpty;
                           setState(() {
                             selectedEmployeeIds = ids;
                           });
+                          if (wasEmpty && ids.isNotEmpty && !_hasShownEmployeeDialog) {
+                            _hasShownEmployeeDialog = true;
+                            CenterDialog.employeeSelectionInfoDialog(
+                              context,
+                              onConfirm: () {},
+                            );
+                          }
                         },
                       ),
                       SizedBox(height: 12.h),

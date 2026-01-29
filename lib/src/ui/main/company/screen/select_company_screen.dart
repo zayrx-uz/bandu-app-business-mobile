@@ -3,6 +3,7 @@ import 'package:bandu_business/src/bloc/main/home/home_bloc.dart';
 import 'package:bandu_business/src/helper/constants/app_icons.dart';
 import 'package:bandu_business/src/helper/constants/app_images.dart';
 import 'package:bandu_business/src/helper/helper_functions.dart';
+import 'package:bandu_business/src/helper/device_helper/device_helper.dart';
 import 'package:bandu_business/src/helper/service/app_service.dart';
 import 'package:bandu_business/src/helper/service/cache_service.dart';
 import 'package:bandu_business/src/model/api/main/home/company_model.dart';
@@ -19,7 +20,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:bandu_business/src/widget/dialog/center_dialog.dart';
 
 class SelectCompanyScreen extends StatefulWidget {
   final bool canPop;
@@ -202,156 +204,56 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
                                 offset: Offset((1 - value) * -50, 0),
                                 child: Padding(
                                   padding: EdgeInsets.only(bottom: 12.h, left: 16.w, right: 16.w),
-                                  child: Slidable(
-                                    key: ValueKey(companyId),
-                                    endActionPane: ActionPane(
-                                      motion: const ScrollMotion(),
-                                      extentRatio: 0.5,
-                                      children: [
-                                        CacheService.getString("user_role") == "BUSINESS_OWNER" ? CustomSlidableAction(
-                                          onPressed: (context) {
-                                            if (updatingId == data![index].id ||
-                                                deletingId == data![index].id) {
-                                              return;
-                                            }
-                                            final item = data![index];
-                                            AppService.changePage(
-                                              context,
-                                              BlocProvider.value(
-                                                value: BlocProvider.of<HomeBloc>(context),
-                                                child: CreateCompanyScreen(companyId: item.id),
+                                  child: CupertinoButton(
+                                    onPressed: () {
+                                      selectedId = data![index].id;
+                                      setState(() {});
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    child: Container(
+                                      padding: EdgeInsets.all(
+                                          isTablet(context) ? 6.w : 16.w
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12.r),
+                                        color: AppColor.white,
+                                        border: Border.all(
+                                          width: selectedId == data![index].id ? 2.h : 1.h,
+                                          color: selectedId == data![index].id
+                                              ? AppColor.yellowFFC
+                                              : AppColor.greyE5,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              data![index].name,
+                                              style: AppTextStyle.f500s16.copyWith(
+                                                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp
                                               ),
-                                            );
-                                          },
-                                          backgroundColor: Colors.transparent,
-                                          child: Container(
-                                            width: double.infinity,
-                                            margin: EdgeInsets.symmetric(horizontal: 4.w),
-                                            decoration: BoxDecoration(
-                                              color: Colors.orange,
-                                              borderRadius: BorderRadius.circular(12.r),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.redAccent.withValues(alpha: 0.3),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 4),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                if (updatingId == data![index].id)
-                                                  SizedBox(
-                                                    width: 18.sp,
-                                                    height: 18.sp,
-                                                    child: const CupertinoActivityIndicator(
-                                                      radius: 9,
-                                                    ),
-                                                  )
-                                                else ...[
-                                                  Icon(Icons.edit, color: Colors.white, size: 22.sp),
-                                                  Text(
-                                                    "edit".tr(),
-                                                    style: TextStyle(color: Colors.white, fontSize: isTablet(context) ? 6.sp : 10.sp),
-                                                  ),
-                                                ],
-                                              ],
                                             ),
                                           ),
-                                        ) : SizedBox(),
-                                        CacheService.getString("user_role") == "BUSINESS_OWNER" ? CustomSlidableAction(
-                                          onPressed: (context) {
-                                            if (deletingId == data![index].id ||
-                                                updatingId == data![index].id) {
-                                              return;
-                                            }
-                                            BlocProvider.of<HomeBloc>(context).add(
-                                              DeleteCompanyEvent(companyId: data![index].id),
-                                            );
-                                          },
-                                          backgroundColor: Colors.transparent,
-                                          child: Container(
-                                            width: double.infinity,
-                                            margin: EdgeInsets.symmetric(horizontal: 4.w),
-                                            decoration: BoxDecoration(
-                                              color: Colors.redAccent,
-                                              borderRadius: BorderRadius.circular(12.r),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.redAccent.withValues(alpha: 0.3),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 4),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                if (deletingId == data![index].id)
-                                                  SizedBox(
-                                                    width: 18.sp,
-                                                    height: 18.sp,
-                                                    child: const CupertinoActivityIndicator(
-                                                      radius: 9,
-                                                    ),
-                                                  )
-                                                else ...[
-                                                  Icon(Icons.delete_outline, color: Colors.white, size: 22.sp),
-                                                  Text(
-                                                    "delete".tr(),
-                                                    style: TextStyle(color: Colors.white, fontSize: isTablet(context) ? 6.sp : 10.sp),
-                                                  ),
-                                                ],
-                                              ],
-                                            ),
-                                          ),
-                                        ) : SizedBox(),
-                                      ],
-                                    ),
-                                    child: CupertinoButton(
-                                      onPressed: () {
-                                        selectedId = data![index].id;
-                                        setState(() {});
-                                      },
-                                      padding: EdgeInsets.zero,
-                                      child: Container(
-                                        padding: EdgeInsets.all(
-                                            isTablet(context) ? 10.w : 16.w
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12.r),
-                                          color: AppColor.white,
-                                          border: Border.all(
-                                            width: 1.h,
-                                            color: AppColor.greyE5,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                data![index].name,
-                                                style: AppTextStyle.f500s16.copyWith(
-                                                  fontSize: isTablet(context) ? 12.sp : 16.sp
+                                          SizedBox(width: 12.w),
+                                          if (CacheService.getString("user_role") == "BUSINESS_OWNER")
+                                            GestureDetector(
+                                              onTapDown: (TapDownDetails details) {
+                                                if (updatingId == data![index].id ||
+                                                    deletingId == data![index].id) {
+                                                  return;
+                                                }
+                                                _showPopupMenu(context, details.globalPosition, index);
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(4.w),
+                                                child: SvgPicture.asset(
+                                                  AppIcons.threeDot,
+                                                  width: 20.w,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
                                             ),
-                                            Container(
-                                              height: 20.h,
-                                              width: 20.h,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  width: selectedId == data![index].id ? 4.h : 1.h,
-                                                  color: selectedId == data![index].id
-                                                      ? AppColor.yellowFFC
-                                                      : AppColor.greyF4,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -432,6 +334,83 @@ class _SelectCompanyScreenState extends State<SelectCompanyScreen> {
           ),
         );
       },
+    );
+  }
+
+  void _showPopupMenu(BuildContext context, Offset position, int index) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    final company = data![index];
+    
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        MediaQuery.of(context).size.width - position.dx,
+        MediaQuery.of(context).size.height - position.dy,
+      ),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      items: [
+        PopupMenuItem(
+          child: Row(
+            children: [
+              SvgPicture.asset(AppIcons.edit2, width: 20.w),
+              SizedBox(width: 12.w),
+              Text(
+                "edit".tr(),
+                style: TextStyle(
+                                                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            Future.delayed(Duration.zero, () {
+              if (updatingId == company.id || deletingId == company.id) {
+                return;
+              }
+              AppService.changePage(
+                context,
+                BlocProvider.value(
+                  value: homeBloc,
+                  child: CreateCompanyScreen(companyId: company.id),
+                ),
+              );
+            });
+          },
+        ),
+        PopupMenuItem(
+          child: Row(
+            children: [
+              SvgPicture.asset(AppIcons.delete, width: 20.w),
+              SizedBox(width: 12.w),
+              Text(
+                "delete".tr(),
+                style: TextStyle(
+                                                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            Future.delayed(Duration.zero, () {
+              if (deletingId == company.id || updatingId == company.id) {
+                return;
+              }
+              CenterDialog.deleteCompanyDialog(
+                context,
+                companyId: company.id,
+                onDelete: () {
+                  homeBloc.add(DeleteCompanyEvent(companyId: company.id));
+                },
+              );
+            });
+          },
+        ),
+      ],
     );
   }
 }

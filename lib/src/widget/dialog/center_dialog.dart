@@ -49,42 +49,42 @@ class CenterDialog {
                       fontSize: isTablet(context) ? 12.sp : 16.sp,
                     ),
                   ),
-                  content: Column(
-                    children: [
-                      if (isLoading)
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.h),
-                          child: CupertinoActivityIndicator(
-                            color: AppColor.black,
+                    content: Column(
+                      children: [
+                        if (isLoading)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: CupertinoActivityIndicator(
+                              color: AppColor.black,
+                            ),
+                          )
+                        else
+                          Text(
+                            "areYouSureLogOut".tr(),
+                            style: TextStyle(
+                              fontSize: isTablet(context) ? 8.sp : 12.sp,
+                            ),
                           ),
-                        )
-                      else
-                        Text(
-                          "areYouSureLogOut".tr(),
-                          style: TextStyle(
-                            fontSize: isTablet(context) ? 8.sp : 12.sp,
+                      ],
+                    ),
+                    actions: [
+                      if (!isLoading)
+                        CupertinoButton(
+                          child: Text(
+                            "cancel".tr(),
+                            style: AppTextStyle.f600s16.copyWith(
+                              color: AppColor.blue00,
+                              fontSize: isTablet(context) ? 12.sp : 16.sp,
+                            ),
                           ),
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                          },
                         ),
-                    ],
-                  ),
-                  actions: [
-                    if (!isLoading)
                       CupertinoButton(
-                        child: Text(
-                          "cancel".tr(),
-                          style: AppTextStyle.f600s16.copyWith(
-                            color: AppColor.blue00,
-                            fontSize: isTablet(context) ? 12.sp : 16.sp,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(dialogContext).pop();
-                        },
-                      ),
-                    CupertinoButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
+                        onPressed: isLoading
+                            ? null
+                            : () {
                         context.read<AuthBloc>().add(LogoutEvent());
                       },
                       child: Text(
@@ -147,9 +147,7 @@ class CenterDialog {
                     },
                   ),
                 CupertinoButton(
-                  child: isLoading
-                      ? CupertinoActivityIndicator()
-                      : Text(
+                  child: Text(
                           "delete".tr(),
                           style: AppTextStyle.f600s16.copyWith(
                             color: AppColor.red00,
@@ -273,50 +271,344 @@ class CenterDialog {
     required int employeeId,
     required Function() onDelete,
   }) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
-        return CupertinoAlertDialog(
-          title: Text(
-            "deleteEmployee".tr(),
-            style: TextStyle(
-              fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
-            ),
-          ),
-          content: Text(
-            "areYouSureDeleteEmployee".tr(),
-            style: TextStyle(
-              fontSize: DeviceHelper.isTablet(context) ? 8.sp : 12.sp,
-            ),
-          ),
-          actions: [
-            CupertinoButton(
-              child: Text(
-                "cancel".tr(),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.blue00,
-                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
+        return BlocProvider.value(
+          value: homeBloc,
+          child: BlocListener<HomeBloc, HomeState>(
+            listener: (context, state) {
+              if (state is DeleteEmployeeSuccessState) {
+                Navigator.of(dialogContext).pop();
+              }
+              if (state is HomeErrorState) {
+                Navigator.of(dialogContext).pop();
+                errorDialog(context, state.message);
+              }
+            },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                final isLoading = state is DeleteEmployeeLoadingState;
+                return PopScope(
+                  canPop: !isLoading,
+                  child: CupertinoAlertDialog(
+
+                    title: Text(
+                      "deleteEmployee".tr(),
+                      style: TextStyle(
+                        fontSize: isTablet(context) ? 12.sp : 16.sp,
+                      ),
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isLoading)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: CupertinoActivityIndicator(
+                              color: AppColor.black,
+                            ),
+                          )
+                        else
+                          Text(
+                            "areYouSureDeleteEmployee".tr(),
+                            style: TextStyle(
+                              fontSize: isTablet(context) ? 8.sp : 12.sp,
+                            ),
+                          ),
+                        if (!isLoading) SizedBox(height: 16.h),
+                        if (!isLoading)
+                          CupertinoButton(
+                            padding: EdgeInsets.zero,
+                            child: Text(
+                              "cancel".tr(),
+                              style: AppTextStyle.f600s16.copyWith(
+                                color: AppColor.blue00,
+                                fontSize: isTablet(context) ? 12.sp : 16.sp,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                            },
+                          ),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            onDelete();
+                          },
+                          child: Text(
+                            "delete".tr(),
+                            style: AppTextStyle.f600s16.copyWith(
+                              color: AppColor.red00,
+                              fontSize: isTablet(context) ? 12.sp : 16.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [],
+                  ),
+                );
               },
             ),
-            CupertinoButton(
-              child: Text(
-                "delete".tr(),
-                style: AppTextStyle.f600s16.copyWith(
-                  color: AppColor.red00,
-                  fontSize: DeviceHelper.isTablet(context) ? 12.sp : 16.sp,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                onDelete();
+          ),
+        );
+      },
+    );
+  }
+
+  static void deletePlaceDialog(
+    BuildContext context, {
+    required int placeId,
+    required Function() onDelete,
+  }) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: homeBloc,
+          child: BlocListener<HomeBloc, HomeState>(
+            listener: (context, state) {
+              if (state is DeletePlaceSuccessState) {
+                Navigator.of(dialogContext).pop();
+              }
+              if (state is HomeErrorState) {
+                Navigator.of(dialogContext).pop();
+                errorDialog(context, state.message);
+              }
+            },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                final isLoading = state is DeletePlaceLoadingState;
+                return PopScope(
+                  canPop: !isLoading,
+                  child: CupertinoAlertDialog(
+                    title: Text(
+                      "deletePlace".tr(),
+                      style: TextStyle(
+                        fontSize: isTablet(context) ? 12.sp : 16.sp,
+                      ),
+                    ),
+                    content: Column(
+                      children: [
+                        if (isLoading)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: CupertinoActivityIndicator(
+                              color: AppColor.black,
+                            ),
+                          )
+                        else
+                          Text(
+                            "areYouSureDeletePlace".tr(),
+                            style: TextStyle(
+                              fontSize: isTablet(context) ? 8.sp : 12.sp,
+                            ),
+                          ),
+                      ],
+                    ),
+                    actions: [
+                      if (!isLoading)
+                        CupertinoButton(
+                          child: Text(
+                            "cancel".tr(),
+                            style: AppTextStyle.f600s16.copyWith(
+                              color: AppColor.blue00,
+                              fontSize: isTablet(context) ? 12.sp : 16.sp,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                          },
+                        ),
+                      CupertinoButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                onDelete();
+                              },
+                        child: Text(
+                          "delete".tr(),
+                          style: AppTextStyle.f600s16.copyWith(
+                            color: AppColor.red00,
+                            fontSize: isTablet(context) ? 12.sp : 16.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
-          ],
+          ),
+        );
+      },
+    );
+  }
+
+  static void deleteCompanyDialog(
+    BuildContext context, {
+    required int companyId,
+    required Function() onDelete,
+  }) {
+    final homeBloc = BlocProvider.of<HomeBloc>(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: homeBloc,
+          child: BlocListener<HomeBloc, HomeState>(
+            listener: (context, state) {
+              if (state is DeleteCompanySuccessState && state.companyId == companyId) {
+                Navigator.of(dialogContext).pop();
+              }
+              if (state is HomeErrorState) {
+                Navigator.of(dialogContext).pop();
+                errorDialog(context, state.message);
+              }
+            },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                final isLoading = state is DeleteCompanyLoadingState && state.companyId == companyId;
+                return PopScope(
+                  canPop: !isLoading,
+                  child: CupertinoAlertDialog(
+                    title: Text(
+                      "deleteCompany".tr(),
+                      style: TextStyle(
+                        fontSize: isTablet(context) ? 12.sp : 16.sp,
+                      ),
+                    ),
+                    content: Column(
+                      children: [
+                        if (isLoading)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: CupertinoActivityIndicator(
+                              color: AppColor.black,
+                            ),
+                          )
+                        else
+                          Text(
+                            "areYouSureDeleteCompany".tr(),
+                            style: TextStyle(
+                              fontSize: isTablet(context) ? 8.sp : 12.sp,
+                            ),
+                          ),
+                      ],
+                    ),
+                    actions: [
+                      if (!isLoading)
+                        CupertinoButton(
+                          child: Text(
+                            "cancel".tr(),
+                            style: AppTextStyle.f600s16.copyWith(
+                              color: AppColor.blue00,
+                              fontSize: isTablet(context) ? 12.sp : 16.sp,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                          },
+                        ),
+                      CupertinoButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                onDelete();
+                              },
+                        child: Text(
+                          "delete".tr(),
+                          style: AppTextStyle.f600s16.copyWith(
+                            color: AppColor.red00,
+                            fontSize: isTablet(context) ? 12.sp : 16.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void employeeSelectionInfoDialog(
+    BuildContext context, {
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.r),
+              color: AppColor.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 56.w,
+                  height: 56.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColor.yellowFFC.withValues(alpha: 0.1),
+                  ),
+                  child: Icon(
+                    Icons.info_outline,
+                    color: AppColor.yellowFFC,
+                    size: 28.sp,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  "employeeSelectionInfo".tr(),
+                  style: TextStyle(
+                    fontSize: isTablet(context) ? 14.sp : 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColor.black09,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  "employeeSelectionMessage".tr(),
+                  style: TextStyle(
+                    fontSize: isTablet(context) ? 10.sp : 14.sp,
+                    height: 1.5,
+                    color: AppColor.grey58,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24.h),
+                SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    onTap: () {
+                      Navigator.of(dialogContext).pop();
+                      onConfirm();
+                    },
+                    text: "ok".tr(),
+                    isGradient: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

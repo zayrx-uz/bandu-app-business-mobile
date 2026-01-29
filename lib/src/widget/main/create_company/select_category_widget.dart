@@ -239,7 +239,7 @@ class _SelectCategoryWidgetState extends State<SelectCategoryWidget>
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: AppColor.greyFA,
+                  color: AppColor.white,
                   borderRadius: BorderRadius.circular(8.r),
                   border: Border.all(width: 1.h, color: AppColor.greyE5),
                 ),

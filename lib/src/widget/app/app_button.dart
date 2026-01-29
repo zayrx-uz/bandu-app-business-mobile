@@ -69,7 +69,7 @@ class AppButton extends StatelessWidget {
         child: loading
             ? Center(
                 child: CupertinoActivityIndicator(
-                  // backgroundColor: AppColor.white,
+                  color: AppColor.white,
                 ),
               )
             : child ??
